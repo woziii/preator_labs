@@ -197,6 +197,31 @@ curl -sI https://<ton-domaine>/ | grep -iE 'csp|hsts|x-content|referrer'
 ```
 Doit retourner les headers définis dans `vercel.json` / `netlify.toml` / `_headers` (CSP, HSTS, X-Content-Type-Options nosniff, etc.).
 
+### B.6 — Régression CSP post-déploiement (corrigée le 2026-05-26) 🩹
+
+**Symptôme rapporté par l'utilisateur** une fois `https://preatorlabs.dev/` en ligne sur Vercel : aucun bouton ne réagissait (ajout de clé API, chargement de l'exemple Reachy, segmentation, lancement…).
+
+**Diagnostic** (via `browser_console_messages` sur la prod) :
+```
+Executing inline script violates the following Content Security Policy directive
+'script-src 'self' https://cdn.jsdelivr.net'. Either the 'unsafe-inline' keyword,
+a hash ('sha256-Q4KIw4NhrC6YdTASLe8m30gZYreTllX6Vd3cHBuF/nQ='), or a nonce
+('nonce-...') is required to enable inline execution. The action has been blocked.
+```
+
+Le bloc `<script>` inline (~600 lignes, qui contient *tout* le moteur JS de l'app : event listeners, segmentation, runAblation, persistence localStorage…) ne s'exécutait jamais → aucun handler attaché → tous les boutons inertes. La landing s'affichait correctement (HTML + CSS statiques OK) mais la démo était entièrement morte.
+
+**Cause racine** : la CSP V0.1 n'autorisait que `script-src 'self' https://cdn.jsdelivr.net`, sans `'unsafe-inline'`, sans hash, sans nonce. Le smoke test local en §A avait été conduit via `python -m http.server`, qui ne pose pas de header CSP — la régression n'était donc pas détectable sans déploiement réel sur Vercel.
+
+**Fix** : ajout de `'unsafe-inline'` à `script-src` dans `dist/vercel.json`, `dist/netlify.toml` et `dist/_headers`. La surface XSS reste nulle (HTML 100% statique, aucun `innerHTML` avec user-content, aucun `onclick=` inline) et le reste de la CSP demeure strict (`connect-src 'self' https://api.anthropic.com`, `frame-ancestors 'none'`, `default-src 'self'`…). V0.2 prévoit l'extraction du `<script>` inline vers un fichier `dist/app.js` séparé, ce qui permettra de retirer `'unsafe-inline'` et de revenir à une CSP strict.
+
+**Validation post-fix sur prod (2026-05-26)** :
+- ✅ Header CSP servi par Vercel contient bien `script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net` (vérifié via `curl -sI https://preatorlabs.dev/`).
+- ✅ **Plus aucune violation CSP** dans la console (`browser_console_messages` sur la prod, post-fix).
+- ✅ Clic sur "Charger l'exemple Reachy" → 12 segments + 6 scénarios chargés correctement, estimation "78 appels API ≈ $1.41" affichée.
+- ✅ Modale "configurer" s'ouvre, saisie de clé fonctionne, "Enregistrer" persiste dans `localStorage.preatorlabs.apiKey` (vérifié en rouvrant la modale : le champ password contient bien les puces de masquage de la clé saisie), "Supprimer la clé" vide le champ.
+- ✅ Toutes les autres interactions JS (segmentation, navigation entre onglets, cost-box dynamique) fonctionnent.
+
 ---
 
 ## C — Anomalies relevées pendant le smoke test

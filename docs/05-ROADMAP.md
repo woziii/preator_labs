@@ -42,6 +42,7 @@ Améliorations incrémentales sans changement d'architecture.
 - [ ] Détection de contre-productivité (delta signé, pas absolu)
 - [ ] Optimisation de l'image OG (passer < 200 KB)
 - [ ] Compactage des appels (concurrence contrôlée à 3-5 req/s respectueuse d'Anthropic)
+- [ ] **Extraction du `<script>` inline vers `dist/app.js`** pour retirer `'unsafe-inline'` de `script-src` et revenir à une CSP strict (V0.1 a dû conserver `'unsafe-inline'` après la régression du 2026-05-26 sur Vercel — cf. `00-AGENT-SMOKE-TEST.md` §B.6). L'opération est sans risque tant qu'aucun `innerHTML` avec user-content n'est introduit dans le HTML.
 
 ## V1 — Moteur Python de référence
 
