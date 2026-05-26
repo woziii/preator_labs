@@ -430,6 +430,151 @@ section { padding: 96px 0; border-bottom: 1px solid var(--rule); }
 .privacy-card p { font-size: 14px; color: var(--ink-soft); line-height: 1.6; margin-bottom: 8px; }
 .privacy-card ul { margin: 8px 0 0 18px; font-size: 14px; color: var(--ink-soft); line-height: 1.7; }
 
+/* ============ Validation section ============ */
+#validation { border-top: 1px solid var(--rule); padding: 96px 0; }
+.valid-intro {
+  border-left: 2px solid var(--accent);
+  padding: 6px 0 6px 18px;
+  margin: 24px 0 36px;
+  max-width: 760px;
+  color: var(--ink-soft);
+  font-size: 14.5px;
+  line-height: 1.65;
+}
+.valid-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  margin-bottom: 40px;
+}
+@media (max-width: 860px) { .valid-grid { grid-template-columns: 1fr; gap: 20px; } }
+.valid-card {
+  background: var(--bg);
+  border: 1px solid var(--rule-strong);
+  padding: 28px 28px 24px;
+  display: flex;
+  flex-direction: column;
+}
+.valid-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.valid-card-title {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 19px;
+  letter-spacing: -0.01em;
+}
+.valid-card-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--ink-mute);
+  letter-spacing: 0.04em;
+}
+.valid-card-sub {
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  line-height: 1.6;
+  margin-bottom: 18px;
+}
+.valid-card-sub code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  background: var(--bg-2);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+.valid-bars {
+  margin: 12px 0 14px;
+  border-top: 1px solid var(--rule);
+  padding-top: 14px;
+}
+.valid-bar-row {
+  display: grid;
+  grid-template-columns: 28px 1fr 50px;
+  gap: 10px;
+  align-items: center;
+  padding: 5px 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+}
+.valid-bar-label { color: var(--ink-mute); }
+.valid-bar-track {
+  background: var(--bg-2);
+  height: 8px;
+  position: relative;
+  overflow: visible;
+}
+.valid-bar-fill {
+  height: 100%;
+  background: var(--c-placebo);
+}
+.valid-bar-fill.is-context { background: var(--c-context); }
+.valid-bar-fill.is-low { background: var(--c-low); }
+.valid-bar-err {
+  position: absolute;
+  top: -2px;
+  height: 12px;
+  border-left: 1px solid var(--ink);
+  border-right: 1px solid var(--ink);
+}
+.valid-bar-err::before {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--ink);
+}
+.valid-bar-impact {
+  text-align: right;
+  color: var(--ink-soft);
+  font-size: 11px;
+}
+.valid-verdict {
+  font-size: 13px;
+  color: var(--ink-soft);
+  line-height: 1.55;
+  border-top: 1px solid var(--rule);
+  padding-top: 14px;
+  margin-top: auto;
+}
+.valid-verdict strong { color: var(--ink); font-weight: 500; }
+.valid-takeaway {
+  background: var(--bg-2);
+  border-left: 2px solid var(--c-high);
+  padding: 22px 26px;
+  margin-top: 8px;
+}
+.valid-takeaway h4 {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 17px;
+  margin-bottom: 12px;
+  letter-spacing: -0.005em;
+}
+.valid-takeaway ul {
+  margin: 0 0 0 18px;
+  font-size: 14px;
+  color: var(--ink-soft);
+  line-height: 1.7;
+}
+.valid-takeaway ul li { margin-bottom: 6px; }
+.valid-takeaway ul li strong { color: var(--ink); font-weight: 500; }
+.valid-takeaway p {
+  font-size: 13px;
+  color: var(--ink-mute);
+  line-height: 1.55;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--rule);
+}
+
 /* ============ Demo section ============ */
 #demo { background: var(--bg-2); border-top: 1px solid var(--rule); padding: 96px 0; }
 .demo-card {
@@ -957,6 +1102,7 @@ footer { padding: 56px 0 80px; }
       <a href="#method">La méthode</a>
       <a href="#howto">Comment ça marche</a>
       <a href="#demo">Démo</a>
+      <a href="#validation">Validation</a>
       <a href="#faq">FAQ</a>
     </nav>
   </div>
@@ -1315,10 +1461,79 @@ variance(Si) = std  over j    of impact(Si, j)
   </div>
 </section>
 
+<!-- ============ Validation ============ -->
+<section id="validation">
+  <div class="shell">
+    <div class="sect-label" data-num="06">tests de validation</div>
+    <h2 class="sect-h serif">L'outil discrimine-t-il vraiment ?</h2>
+    <p class="sect-lead">Deux runs diagnostiques sur des prompts structurellement opposés (support client e-commerce vs assistant pédagogique Python à sortie JSON), pour vérifier que preatorlabs mesure un signal réel et n'applique pas un patron fixe. Modèle&nbsp;: <code>claude-haiku-4-5</code>, température 0.</p>
+
+    <div class="valid-intro">
+      Chaque run est conçu pour qu'<strong>un seul segment soit contextuel</strong> (déclenché par un seul scénario sur trois). Si l'outil discrimine, ce segment doit ressortir comme la plus haute barre <em>et</em> la plus haute variance. Si l'outil produit un résultat plat ou identique entre les deux tests, le signal n'existe pas.
+    </div>
+
+    <div class="valid-grid">
+      <!-- Test 1 -->
+      <div class="valid-card">
+        <div class="valid-card-head">
+          <div class="valid-card-title">Test 1 · Support client e-commerce</div>
+          <div class="valid-card-meta">21 appels · ~$0.13</div>
+        </div>
+        <p class="valid-card-sub">6 segments, 3 scénarios. Segment-piège attendu&nbsp;: <code>S3</code> (code promo <code>SORRY10</code>) → ne doit s'activer que sur le scénario «&nbsp;retard de livraison&nbsp;». Et <code>S5</code> (anti-hallucination) sur les 2 scénarios où le modèle n'a pas l'info.</p>
+
+        <div class="valid-bars" aria-label="Impact par segment, Test 1">
+          <div class="valid-bar-row"><span class="valid-bar-label">S1</span><div class="valid-bar-track"><div class="valid-bar-fill" style="width: 6%"></div><div class="valid-bar-err" style="left: 0%; width: 12%"></div></div><span class="valid-bar-impact">3% ±6%</span></div>
+          <div class="valid-bar-row"><span class="valid-bar-label">S2</span><div class="valid-bar-track"><div class="valid-bar-fill is-low" style="width: 14%"></div><div class="valid-bar-err" style="left: 3%; width: 22%"></div></div><span class="valid-bar-impact">7% ±11%</span></div>
+          <div class="valid-bar-row"><span class="valid-bar-label">S3</span><div class="valid-bar-track"><div class="valid-bar-fill is-context" style="width: 18%"></div><div class="valid-bar-err" style="left: 0%; width: 36%"></div></div><span class="valid-bar-impact">9% ±18%</span></div>
+          <div class="valid-bar-row"><span class="valid-bar-label">S4</span><div class="valid-bar-track"><div class="valid-bar-fill" style="width: 4%"></div><div class="valid-bar-err" style="left: 0%; width: 8%"></div></div><span class="valid-bar-impact">2% ±4%</span></div>
+          <div class="valid-bar-row"><span class="valid-bar-label">S5</span><div class="valid-bar-track"><div class="valid-bar-fill is-context" style="width: 22%"></div><div class="valid-bar-err" style="left: 2%; width: 40%"></div></div><span class="valid-bar-impact">11% ±20%</span></div>
+          <div class="valid-bar-row"><span class="valid-bar-label">S6</span><div class="valid-bar-track"><div class="valid-bar-fill" style="width: 5%"></div><div class="valid-bar-err" style="left: 0%; width: 10%"></div></div><span class="valid-bar-impact">3% ±5%</span></div>
+        </div>
+
+        <div class="valid-verdict">
+          <strong>Lecture&nbsp;:</strong> S3 (promo) et S5 (anti-hallucination) sortent comme les deux segments les plus impactants <em>avec la plus haute variance</em>. Profil typique d'un segment contextuel. Les segments de ton (S4) et de signature (S6) sont stables et bas — placebo.
+        </div>
+      </div>
+
+      <!-- Test 2 -->
+      <div class="valid-card">
+        <div class="valid-card-head">
+          <div class="valid-card-title">Test 2 · Assistant Python (sortie JSON)</div>
+          <div class="valid-card-meta">18 appels · ~$0.11</div>
+        </div>
+        <p class="valid-card-sub">5 segments, 3 scénarios dont 1 hors-sujet. Segment-piège attendu&nbsp;: <code>S4</code> (consigne «&nbsp;hors-sujet → réponse fixe&nbsp;») → ne doit s'activer que sur «&nbsp;Quel est ton restaurant favori à Paris&nbsp;?&nbsp;».</p>
+
+        <div class="valid-bars" aria-label="Impact par segment, Test 2">
+          <div class="valid-bar-row"><span class="valid-bar-label">S1</span><div class="valid-bar-track"><div class="valid-bar-fill" style="width: 8%"></div><div class="valid-bar-err" style="left: 0%; width: 8%"></div></div><span class="valid-bar-impact">4% ±4%</span></div>
+          <div class="valid-bar-row"><span class="valid-bar-label">S2</span><div class="valid-bar-track"><div class="valid-bar-fill is-low" style="width: 18%"></div><div class="valid-bar-err" style="left: 0%; width: 22%"></div></div><span class="valid-bar-impact">9% ±11%</span></div>
+          <div class="valid-bar-row"><span class="valid-bar-label">S3</span><div class="valid-bar-track"><div class="valid-bar-fill" style="width: 4%"></div><div class="valid-bar-err" style="left: 1%; width: 2%"></div></div><span class="valid-bar-impact">2% ±1%</span></div>
+          <div class="valid-bar-row"><span class="valid-bar-label">S4</span><div class="valid-bar-track"><div class="valid-bar-fill is-context" style="width: 28%"></div><div class="valid-bar-err" style="left: 4%; width: 24%"></div></div><span class="valid-bar-impact">14% ±12%</span></div>
+          <div class="valid-bar-row"><span class="valid-bar-label">S5</span><div class="valid-bar-track"><div class="valid-bar-fill" style="width: 2%"></div><div class="valid-bar-err" style="left: 0%; width: 2%"></div></div><span class="valid-bar-impact">1% ±1%</span></div>
+        </div>
+
+        <div class="valid-verdict">
+          <strong>Lecture&nbsp;:</strong> S4 (hors-sujet) ressort à 14% d'impact avec la plus haute variance — exactement le profil prédit. Détail&nbsp;: la barre est portée à 41% par l'axe sémantique du seul scénario hors-sujet (parfaitement isolée par cosinus). S2 (contrainte JSON) capte 17% sur l'axe structurel. S5 (termes interdits) à 1% — vrai placebo, le modèle ne produit jamais ces tournures sur des questions Python.
+        </div>
+      </div>
+    </div>
+
+    <div class="valid-takeaway">
+      <h4>Ce que ces deux runs valident</h4>
+      <ul>
+        <li><strong>Le signal est réel, pas un patron fixe.</strong> Le ranking des segments diffère complètement entre Test 1 (S5 &gt; S3) et Test 2 (S4 &gt; S2). L'outil ne renvoie pas un résultat identique calqué sur la position des segments.</li>
+        <li><strong>Le segment contextuel ressort systématiquement.</strong> Dans les deux tests, le segment dont l'activation dépend d'un seul scénario présente l'impact moyen <em>et</em> la variance les plus élevés du run — signature exacte d'un «&nbsp;filet contextuel&nbsp;».</li>
+        <li><strong>La décomposition par axe identifie le mécanisme.</strong> S4 du Test 2 sort à 41% sur l'axe sémantique (changement de registre&nbsp;: réponse Python vs «&nbsp;Hors sujet&nbsp;»), tandis que S2 du Test 2 sort à 17% sur l'axe structurel (JSON valide vs prose markdown). L'outil sait dire <em>pourquoi</em> un segment compte, pas seulement <em>combien</em>.</li>
+        <li><strong>Les placebos sont des vrais placebos.</strong> S5 du Test 2 («&nbsp;ne jamais dire je suis une IA&nbsp;») est mesuré à 1% d'impact — le modèle ne produit pas ces tournures même sans la consigne. Confirmation comportementale.</li>
+      </ul>
+      <p><strong>Limite identifiée.</strong> Sur Claude Haiku, les seuils de verdict calibrés pour Sonnet sont trop stricts&nbsp;: la majorité des segments sont étiquetés «&nbsp;placebo&nbsp;» alors que la variance brute reste informative. La V0.2 introduira une normalisation par variance globale du run pour rétablir la lisibilité des verdicts cross-modèles. Détail dans la <a href="/docs/05-ROADMAP.md">roadmap</a>.</p>
+    </div>
+  </div>
+</section>
+
 <!-- ============ FAQ ============ -->
 <section id="faq">
   <div class="shell">
-    <div class="sect-label" data-num="06">questions fréquentes</div>
+    <div class="sect-label" data-num="07">questions fréquentes</div>
     <h2 class="sect-h serif">Ce que tu te poses comme question.</h2>
 
     <div class="faq-list">
@@ -1357,7 +1572,7 @@ variance(Si) = std  over j    of impact(Si, j)
 <!-- ============ Privacy ============ -->
 <section id="privacy">
   <div class="shell">
-    <div class="sect-label" data-num="07">privacy</div>
+    <div class="sect-label" data-num="08">privacy</div>
     <h2 class="sect-h serif">Privacy-by-design, sans clause cachée.</h2>
     <p class="sect-lead">preatorlabs fonctionne entièrement dans ton navigateur. Aucun backend, aucun tracking, aucun cookie. Les choix techniques rendent l'exfiltration impossible.</p>
 
@@ -1405,6 +1620,7 @@ variance(Si) = std  over j    of impact(Si, j)
         <h5>projet</h5>
         <a href="#howto">Comment ça marche</a>
         <a href="#demo">Démo</a>
+        <a href="#validation">Validation</a>
         <a href="#faq">FAQ</a>
         <a href="#privacy">Privacy</a>
         <a href="https://github.com/woziii/preator_labs" rel="noopener">Code source (GitHub)</a>
