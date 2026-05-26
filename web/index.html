@@ -1,0 +1,2280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>preatorlabs — débogueur de prompt LLM par ablation multi-axes</title>
+<meta name="description" content="preatorlabs mesure objectivement, segment par segment, ce que chaque partie de ton prompt système fait réellement faire au LLM. Étude d'ablation sur 3 axes (structurel, comportemental, sémantique).">
+<meta name="theme-color" content="#1a1a18">
+<meta name="color-scheme" content="light">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="canonical" href="https://preatorlabs.dev/">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="preatorlabs">
+<meta property="og:title" content="preatorlabs — quelles parties de ton prompt comptent vraiment ?">
+<meta property="og:description" content="Une étude d'ablation rigoureuse, segment par segment, sur 3 axes orthogonaux. Pas d'avis subjectif — que des mesures.">
+<meta property="og:url" content="https://preatorlabs.dev/">
+<meta property="og:image" content="/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="fr_FR">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="preatorlabs — débogueur de prompt LLM">
+<meta name="twitter:description" content="Mesure objective, segment par segment, du rôle effectif de chaque partie d'un prompt système.">
+<meta name="twitter:image" content="/og-image.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=JetBrains+Mono:wght@400;500&family=Inter+Tight:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #f5f3ee;
+  --bg-2: #ebe7dd;
+  --ink: #1a1a18;
+  --ink-soft: #4a4842;
+  --ink-mute: #6e6c64;
+  --rule: rgba(26, 26, 24, 0.12);
+  --rule-strong: rgba(26, 26, 24, 0.25);
+  --accent: #c44322;
+  --accent-soft: #f4d9cf;
+  --c-critical: #962416;
+  --c-high: #275e41;
+  --c-context: #9a6018;
+  --c-mid: #4a463f;
+  --c-low: #7c7868;
+  --c-placebo: #50356b;
+  --c-struct: #1e5a85;
+  --c-behav: #2d6849;
+  --c-sem: #5a3e7a;
+}
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Inter Tight', system-ui, sans-serif;
+  font-weight: 400;
+  line-height: 1.6;
+  font-feature-settings: 'ss01', 'cv11';
+  text-rendering: optimizeLegibility;
+}
+.serif { font-family: 'Fraunces', Georgia, serif; font-weight: 400; letter-spacing: -0.01em; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 0.92em; }
+code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.88em;
+  background: var(--bg-2);
+  padding: 1px 6px;
+  border-radius: 2px;
+  color: var(--ink);
+}
+
+/* ============ Layout ============ */
+.shell { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
+@media (max-width: 720px) { .shell { padding: 0 20px; } }
+
+/* ============ Top bar ============ */
+.topbar {
+  border-bottom: 1px solid var(--rule);
+  padding: 18px 0;
+  position: sticky;
+  top: 0;
+  background: rgba(245, 243, 238, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 100;
+}
+.topbar-inner { display: flex; justify-content: space-between; align-items: center; }
+.brand {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.brand-mark {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ink);
+  position: relative;
+  flex-shrink: 0;
+}
+.brand-mark::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+}
+.nav { display: flex; gap: 28px; font-size: 14px; }
+.nav a { color: var(--ink-soft); text-decoration: none; transition: color 0.2s; }
+.nav a:hover { color: var(--ink); }
+@media (max-width: 720px) { .nav { display: none; } }
+
+/* ============ Hero ============ */
+.hero { padding: 88px 0 96px; border-bottom: 1px solid var(--rule); }
+.hero-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--ink-mute);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.hero-eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 32px; height: 1px;
+  background: var(--ink-mute);
+}
+.hero h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 400;
+  font-size: clamp(40px, 6.2vw, 76px);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  max-width: 940px;
+  margin-bottom: 32px;
+}
+.hero h1 em { font-style: italic; color: var(--accent); }
+.hero-sub {
+  font-size: clamp(17px, 1.6vw, 21px);
+  color: var(--ink-soft);
+  max-width: 680px;
+  line-height: 1.55;
+  margin-bottom: 44px;
+}
+.hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 22px;
+  font-size: 15px;
+  font-family: 'Inter Tight', sans-serif;
+  font-weight: 500;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--bg);
+  text-decoration: none;
+  border-radius: 0;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.btn:hover { background: var(--accent); border-color: var(--accent); }
+.btn-ghost { background: transparent; color: var(--ink); }
+.btn-ghost:hover { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.btn-arrow { transition: transform 0.18s; }
+.btn:hover .btn-arrow { transform: translateX(3px); }
+
+/* ============ Sections ============ */
+section { padding: 96px 0; border-bottom: 1px solid var(--rule); }
+@media (max-width: 720px) { section { padding: 64px 0; } }
+.sect-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.sect-label::before {
+  content: attr(data-num);
+  font-weight: 500;
+  color: var(--accent);
+}
+.sect-h {
+  font-family: 'Fraunces', serif;
+  font-weight: 400;
+  font-size: clamp(32px, 4.5vw, 48px);
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+  max-width: 880px;
+  margin-bottom: 24px;
+}
+.sect-lead {
+  font-size: 18px;
+  color: var(--ink-soft);
+  max-width: 720px;
+  line-height: 1.6;
+  margin-bottom: 48px;
+}
+
+/* ============ Problem section : two-column ============ */
+.problem-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+}
+@media (max-width: 860px) { .problem-grid { grid-template-columns: 1fr; gap: 40px; } }
+.problem-cycle {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.9;
+  background: var(--bg-2);
+  padding: 28px 32px;
+  border-left: 2px solid var(--accent);
+}
+.problem-cycle .step { display: flex; gap: 14px; }
+.problem-cycle .step-num { color: var(--ink-mute); min-width: 16px; }
+.problem-cycle .strike { color: var(--ink-mute); text-decoration: line-through; text-decoration-color: var(--accent); }
+.consequences h3 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 20px; margin-bottom: 18px; letter-spacing: -0.01em; }
+.consequences ul { list-style: none; padding: 0; }
+.consequences li {
+  padding: 14px 0;
+  border-top: 1px solid var(--rule);
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 18px;
+  font-size: 15px;
+}
+.consequences li:last-child { border-bottom: 1px solid var(--rule); }
+.consequences .conseq-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+  padding-top: 2px;
+}
+.consequences .conseq-desc { color: var(--ink-soft); line-height: 1.55; }
+
+/* ============ Method section ============ */
+.method-intro { max-width: 760px; margin-bottom: 60px; }
+.method-intro p { font-size: 16px; color: var(--ink-soft); line-height: 1.7; margin-bottom: 14px; }
+.method-formula {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  background: var(--bg-2);
+  padding: 22px 28px;
+  margin: 32px 0;
+  border-left: 2px solid var(--ink);
+  line-height: 1.9;
+  overflow-x: auto;
+}
+.method-formula .comment { color: var(--ink-mute); }
+.method-formula .keyword { color: var(--accent); font-weight: 500; }
+
+.axes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  margin-top: 32px;
+}
+@media (max-width: 860px) { .axes-grid { grid-template-columns: 1fr; } }
+.axis-cell { background: var(--bg); padding: 32px; }
+.axis-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-bottom: 14px;
+}
+.axis-name {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 26px;
+  letter-spacing: -0.01em;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.axis-dot {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transform: translateY(-2px);
+}
+.axis-q {
+  font-style: italic;
+  color: var(--ink-soft);
+  font-family: 'Fraunces', serif;
+  font-size: 15px;
+  margin-bottom: 18px;
+  line-height: 1.5;
+}
+.axis-desc { font-size: 14px; color: var(--ink-soft); line-height: 1.65; margin-bottom: 18px; }
+.axis-tag {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 4px 9px;
+  background: var(--bg-2);
+  color: var(--ink-soft);
+  border: 1px solid var(--rule);
+}
+
+/* ============ Reading section ============ */
+.reading-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 32px;
+  font-size: 14px;
+}
+.reading-table th, .reading-table td {
+  text-align: left;
+  padding: 16px 12px;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+  line-height: 1.5;
+}
+.reading-table th {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  font-weight: 400;
+}
+.reading-table tbody tr:hover { background: var(--bg-2); }
+.verdict-pill {
+  display: inline-block;
+  padding: 3px 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  border-radius: 12px;
+  font-weight: 500;
+}
+.v-critical { background: rgba(160, 40, 24, 0.12); color: var(--c-critical); }
+.v-high { background: rgba(45, 104, 73, 0.14); color: var(--c-high); }
+.v-context { background: rgba(176, 112, 32, 0.14); color: var(--c-context); }
+.v-mid { background: rgba(85, 80, 73, 0.14); color: var(--c-mid); }
+.v-low { background: rgba(154, 149, 136, 0.14); color: var(--c-low); }
+.v-placebo { background: rgba(90, 62, 122, 0.13); color: var(--c-placebo); }
+
+/* ============ How-to section ============ */
+.howto-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  margin-top: 32px;
+}
+@media (max-width: 860px) { .howto-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px) { .howto-grid { grid-template-columns: 1fr; } }
+.howto-cell { background: var(--bg); padding: 26px 24px; }
+.howto-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+.howto-h {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 20px;
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+}
+.howto-p { font-size: 13.5px; color: var(--ink-soft); line-height: 1.55; }
+
+/* ============ FAQ section ============ */
+.faq-list { margin-top: 32px; }
+.faq-item {
+  border-top: 1px solid var(--rule);
+  padding: 22px 0;
+}
+.faq-item:last-child { border-bottom: 1px solid var(--rule); }
+.faq-q {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+  margin-bottom: 10px;
+  color: var(--ink);
+}
+.faq-a { font-size: 14.5px; color: var(--ink-soft); line-height: 1.65; }
+.faq-a a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+/* ============ Privacy section ============ */
+.privacy-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-top: 32px;
+}
+@media (max-width: 720px) { .privacy-grid { grid-template-columns: 1fr; gap: 24px; } }
+.privacy-card {
+  background: var(--bg-2);
+  border-left: 2px solid var(--c-high);
+  padding: 22px 24px;
+}
+.privacy-card h4 {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 17px;
+  margin-bottom: 10px;
+  letter-spacing: -0.005em;
+}
+.privacy-card p { font-size: 14px; color: var(--ink-soft); line-height: 1.6; margin-bottom: 8px; }
+.privacy-card ul { margin: 8px 0 0 18px; font-size: 14px; color: var(--ink-soft); line-height: 1.7; }
+
+/* ============ Demo section ============ */
+#demo { background: var(--bg-2); border-top: 1px solid var(--rule); padding: 96px 0; }
+.demo-card {
+  background: var(--bg);
+  border: 1px solid var(--rule-strong);
+  padding: 0;
+}
+.demo-header {
+  padding: 28px 36px;
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.demo-title {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 24px;
+  letter-spacing: -0.01em;
+}
+.api-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+.api-status .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--ink-mute);
+}
+.api-status.connected .dot { background: var(--c-high); }
+.api-status .key-btn {
+  background: transparent;
+  border: 1px solid var(--rule-strong);
+  font-family: inherit;
+  font-size: 11px;
+  padding: 4px 10px;
+  cursor: pointer;
+  color: var(--ink-soft);
+  transition: all 0.18s;
+}
+.api-status .key-btn:hover { border-color: var(--ink); color: var(--ink); }
+
+.demo-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--rule);
+  padding: 0 36px;
+  overflow-x: auto;
+}
+.demo-tab {
+  background: transparent;
+  border: none;
+  padding: 18px 0;
+  margin-right: 32px;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink-mute);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: color 0.18s;
+}
+.demo-tab:hover { color: var(--ink); }
+.demo-tab.active { color: var(--ink); border-bottom-color: var(--accent); }
+.demo-tab .step-mono {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--ink-mute);
+  margin-right: 8px;
+}
+.demo-tab.active .step-mono { color: var(--accent); }
+
+.demo-body { padding: 36px; }
+.panel { display: none; }
+.panel.active { display: block; }
+
+.block-h {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 18px;
+  margin-bottom: 6px;
+  letter-spacing: -0.005em;
+}
+.block-sub { font-size: 13px; color: var(--ink-soft); margin-bottom: 16px; line-height: 1.6; }
+.block-meta { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-mute); }
+.block { margin-bottom: 36px; }
+
+textarea, input[type="text"], input[type="password"], input[type="number"], select {
+  width: 100%;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  background: var(--bg);
+  color: var(--ink);
+  border: 1px solid var(--rule-strong);
+  padding: 12px 14px;
+  line-height: 1.6;
+  transition: border-color 0.18s;
+  border-radius: 0;
+}
+textarea:focus, input:focus, select:focus {
+  outline: none;
+  border-color: var(--ink);
+}
+textarea { min-height: 160px; resize: vertical; }
+
+.row-list { display: flex; flex-direction: column; gap: 8px; }
+.row-item {
+  display: grid;
+  grid-template-columns: 30px 1fr 36px;
+  gap: 10px;
+  align-items: start;
+}
+.row-item .row-idx {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--ink-mute);
+  padding-top: 14px;
+}
+.row-item textarea { min-height: 56px; font-size: 13px; padding: 10px 12px; }
+.row-item button {
+  background: transparent;
+  border: 1px solid var(--rule);
+  padding: 8px;
+  cursor: pointer;
+  color: var(--ink-mute);
+  height: 36px;
+  font-size: 14px;
+  transition: all 0.18s;
+}
+.row-item button:hover { color: var(--accent); border-color: var(--accent); }
+
+.action-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+.btn-sm {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 13px;
+  padding: 8px 14px;
+  background: transparent;
+  border: 1px solid var(--rule-strong);
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.btn-sm:hover { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.btn-sm.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.btn-sm.primary:hover { background: var(--accent); border-color: var(--accent); }
+
+.criteria-block {
+  border: 1px solid var(--rule);
+  padding: 18px 20px;
+  margin-bottom: 12px;
+}
+.criteria-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  font-weight: 500;
+  font-size: 14px;
+}
+.criteria-head .axis-dot { width: 8px; height: 8px; }
+.criteria-block label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 8px;
+  color: var(--ink-soft);
+}
+.criteria-block label input[type="number"] { width: 60px; padding: 6px 8px; }
+
+.params-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 600px) { .params-grid { grid-template-columns: 1fr; } }
+.param-box { padding: 14px 16px; border: 1px solid var(--rule); }
+.param-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--ink-mute);
+  margin-bottom: 6px;
+}
+.cost-box {
+  margin-top: 14px;
+  padding: 12px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--ink-soft);
+  background: var(--bg-2);
+  border-left: 2px solid var(--accent);
+}
+
+/* Run panel */
+.run-zone { text-align: center; padding: 48px 24px; }
+.run-zone p { color: var(--ink-soft); margin-bottom: 24px; }
+.run-zone .btn { padding: 16px 28px; font-size: 15px; }
+.run-buttons { display: flex; gap: 10px; justify-content: center; align-items: center; flex-wrap: wrap; }
+.progress-wrap { margin-top: 32px; }
+.progress-bar-bg {
+  height: 4px;
+  background: var(--bg-2);
+  overflow: hidden;
+}
+.progress-bar-fg { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
+.progress-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--ink-mute);
+  margin-top: 10px;
+}
+.progress-hint {
+  font-size: 12px;
+  color: var(--ink-mute);
+  margin-top: 8px;
+  font-style: italic;
+}
+.error-msg {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: rgba(160, 40, 24, 0.08);
+  border-left: 2px solid var(--c-critical);
+  color: var(--c-critical);
+  font-size: 13px;
+  font-family: 'JetBrains Mono', monospace;
+  text-align: left;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.resume-banner {
+  text-align: left;
+  background: rgba(176, 112, 32, 0.08);
+  border-left: 2px solid var(--c-context);
+  padding: 16px 20px;
+  margin-bottom: 28px;
+}
+.resume-banner-h {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 16px;
+  margin-bottom: 6px;
+  color: var(--c-context);
+}
+.resume-banner-p { font-size: 13px; color: var(--ink-soft); margin-bottom: 12px; line-height: 1.55; }
+.resume-banner-p strong { color: var(--ink); font-family: 'JetBrains Mono', monospace; }
+.resume-banner-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* Results panel */
+.empty-state {
+  text-align: center;
+  padding: 64px 24px;
+  color: var(--ink-mute);
+  font-size: 14px;
+}
+.results-explainer {
+  background: var(--bg-2);
+  padding: 22px 26px;
+  border-left: 2px solid var(--ink);
+  margin-bottom: 32px;
+}
+.results-explainer h4 {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 16px;
+  margin-bottom: 10px;
+  letter-spacing: -0.005em;
+}
+.results-explainer p { font-size: 13px; color: var(--ink-soft); line-height: 1.7; margin-bottom: 6px; }
+.results-explainer ul { list-style: none; padding: 0; margin-top: 10px; }
+.results-explainer li {
+  padding: 6px 0;
+  font-size: 13px;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+.results-explainer li strong { color: var(--ink); font-weight: 500; }
+
+.chart-wrap {
+  position: relative;
+  width: 100%;
+  height: 360px;
+  margin-bottom: 12px;
+}
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-bottom: 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--ink-soft);
+}
+.chart-legend span.swatch {
+  display: inline-block;
+  width: 10px; height: 10px;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+.seg-card {
+  border: 1px solid var(--rule);
+  padding: 20px 24px;
+  margin-bottom: 12px;
+  background: var(--bg);
+}
+.seg-card-h {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.seg-card-title { font-weight: 500; font-size: 15px; }
+.seg-card-title .seg-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--ink-mute);
+  margin-right: 8px;
+}
+.seg-card-meta { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-mute); }
+.seg-quote {
+  font-family: 'Fraunces', serif;
+  font-size: 14px;
+  font-style: italic;
+  color: var(--ink-soft);
+  margin: 8px 0 14px;
+  padding-left: 12px;
+  border-left: 2px solid var(--rule);
+  line-height: 1.5;
+}
+.seg-axes {
+  display: grid;
+  grid-template-columns: 90px 1fr 42px;
+  gap: 8px 12px;
+  align-items: center;
+  font-size: 12px;
+  margin-bottom: 14px;
+}
+.seg-axes .ax-label { color: var(--ink-soft); }
+.seg-axes .ax-bar-bg {
+  height: 4px;
+  background: var(--bg-2);
+  overflow: hidden;
+}
+.seg-axes .ax-bar-fg { height: 100%; }
+.seg-axes .ax-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  text-align: right;
+  color: var(--ink-soft);
+}
+.seg-verdict-line {
+  font-size: 13px;
+  color: var(--ink-soft);
+  padding: 10px 14px;
+  background: var(--bg-2);
+  border-left: 2px solid var(--ink);
+  line-height: 1.55;
+}
+
+.synthesis {
+  margin-top: 32px;
+  padding: 26px 28px;
+  border: 1px solid var(--rule-strong);
+  background: var(--bg);
+}
+.synthesis h4 {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 18px;
+  margin-bottom: 14px;
+  letter-spacing: -0.005em;
+}
+.synthesis-line {
+  padding: 10px 0;
+  font-size: 14px;
+  color: var(--ink-soft);
+  line-height: 1.6;
+  border-top: 1px solid var(--rule);
+}
+.synthesis-line:first-of-type { border-top: 0; }
+.synthesis-line strong { color: var(--ink); font-weight: 500; }
+.synthesis-line .ids { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+/* ============ Modal API key ============ */
+.modal-bg {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 26, 24, 0.55);
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-bg.open { display: flex; }
+.modal {
+  background: var(--bg);
+  max-width: 500px;
+  width: 100%;
+  padding: 36px 36px 28px;
+  border: 1px solid var(--rule-strong);
+}
+.modal h3 {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 22px;
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
+}
+.modal p { font-size: 14px; color: var(--ink-soft); margin-bottom: 18px; line-height: 1.6; }
+.modal .privacy-note {
+  font-size: 12px;
+  color: var(--ink-mute);
+  background: var(--bg-2);
+  padding: 12px 14px;
+  border-left: 2px solid var(--c-high);
+  margin: 14px 0 20px;
+  line-height: 1.55;
+}
+.modal-actions { display: flex; gap: 10px; margin-top: 16px; }
+
+/* ============ Footer ============ */
+footer { padding: 56px 0 80px; }
+.foot-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+@media (max-width: 720px) { .foot-grid { grid-template-columns: 1fr; gap: 24px; } }
+.foot-brand-text {
+  font-family: 'Fraunces', serif;
+  font-size: 16px;
+  color: var(--ink-soft);
+  max-width: 380px;
+  line-height: 1.55;
+}
+.foot-col h5 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-bottom: 14px;
+}
+.foot-col a { display: block; color: var(--ink-soft); text-decoration: none; font-size: 14px; margin-bottom: 8px; transition: color 0.18s; }
+.foot-col a:hover { color: var(--accent); }
+.foot-bottom {
+  border-top: 1px solid var(--rule);
+  padding-top: 24px;
+  display: flex;
+  justify-content: space-between;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--ink-mute);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* ============ Mobile-narrow refinements ============ */
+@media (max-width: 480px) {
+  .shell { padding: 0 16px; }
+  section { padding: 56px 0; }
+  .hero { padding: 64px 0 72px; }
+  .demo-header { padding: 20px 18px; }
+  .demo-tabs { padding: 0 18px; }
+  .demo-tab { margin-right: 20px; padding: 14px 0; font-size: 13px; }
+  .demo-body { padding: 22px 18px; }
+  #demo { padding: 64px 0; }
+  .row-item { grid-template-columns: 26px 1fr 32px; gap: 8px; }
+  .row-item .row-idx { padding-top: 12px; font-size: 10px; }
+  .row-item button { height: 32px; }
+  .modal { padding: 24px 22px 20px; }
+  footer { padding: 40px 0 56px; }
+  .foot-bottom { font-size: 10px; }
+  .consequences li { grid-template-columns: 1fr; gap: 4px; }
+  .consequences .conseq-name { padding-top: 0; }
+  .params-grid { gap: 10px; }
+}
+@media (max-width: 360px) {
+  .shell { padding: 0 12px; }
+  .demo-body { padding: 18px 14px; }
+  .demo-header { padding: 16px 14px; gap: 10px; }
+  .demo-tabs { padding: 0 14px; }
+  .axis-cell { padding: 22px 18px; }
+  .hero { padding: 56px 0 64px; }
+  .api-status { font-size: 11px; }
+  .seg-axes { grid-template-columns: 78px 1fr 40px; }
+}
+
+/* ============ Animations ============ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+.hero h1, .hero-sub, .hero-actions { animation: fadeUp 0.7s ease-out both; }
+.hero-sub { animation-delay: 0.12s; }
+.hero-actions { animation-delay: 0.22s; }
+
+/* hidden helper */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+</style>
+</head>
+<body>
+
+<!-- ============ Top bar ============ -->
+<header class="topbar">
+  <div class="shell topbar-inner">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      preatorlabs
+    </div>
+    <nav class="nav" aria-label="Navigation principale">
+      <a href="#method">La méthode</a>
+      <a href="#howto">Comment ça marche</a>
+      <a href="#demo">Démo</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ============ Hero ============ -->
+<section class="hero">
+  <div class="shell">
+    <div class="hero-eyebrow">prompt debugger · v0.1</div>
+    <h1 class="serif">Quelles parties de ton prompt <em>comptent vraiment</em> ? Mesure-le, segment par segment.</h1>
+    <p class="hero-sub">preatorlabs est un outil d'analyse expérimentale : une étude d'ablation rigoureuse, sur trois axes orthogonaux, qui révèle ce que chaque partie de ton prompt fait réellement faire au LLM. Pas d'avis subjectif. Que des mesures.</p>
+    <div class="hero-actions">
+      <a href="#demo" class="btn">Essayer la démo <span class="btn-arrow">→</span></a>
+      <a href="#method" class="btn btn-ghost">La méthode scientifique</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Problem ============ -->
+<section id="problem">
+  <div class="shell">
+    <div class="sect-label" data-num="01">le problème</div>
+    <h2 class="sect-h serif">Aujourd'hui, ajuster un prompt, c'est jouer à pile ou face.</h2>
+    <p class="sect-lead">Le cycle standard de l'ingénierie de prompt consiste à rédiger, tester, ajuster — sans savoir ce qui produit quoi. Une phrase apparemment décorative peut être critique. Une phrase apparemment essentielle peut être ignorée. On modifie à l'aveugle.</p>
+
+    <div class="problem-grid">
+      <div class="problem-cycle">
+        <div class="step"><span class="step-num">01</span><span>rédiger un prompt</span></div>
+        <div class="step"><span class="step-num">02</span><span>l'injecter dans le LLM</span></div>
+        <div class="step"><span class="step-num">03</span><span>tester sur quelques inputs</span></div>
+        <div class="step"><span class="step-num">04</span><span class="strike">ajuster à l'aveugle</span></div>
+      </div>
+      <div class="consequences">
+        <h3 class="serif">Trois conséquences mesurables :</h3>
+        <ul>
+          <li>
+            <span class="conseq-name">régression</span>
+            <span class="conseq-desc">on supprime un segment apparemment décoratif qui était en fait critique pour un cas d'usage rare.</span>
+          </li>
+          <li>
+            <span class="conseq-name">inflation</span>
+            <span class="conseq-desc">on accumule des phrases "au cas où" sans savoir qu'elles sont ignorées par le modèle.</span>
+          </li>
+          <li>
+            <span class="conseq-name">faux positifs</span>
+            <span class="conseq-desc">on attribue à une phrase un effet qui vient en réalité d'une autre partie du prompt.</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Method ============ -->
+<section id="method">
+  <div class="shell">
+    <div class="sect-label" data-num="02">la méthode</div>
+    <h2 class="sect-h serif">Une étude d'ablation, sur trois axes orthogonaux.</h2>
+    <p class="sect-lead">preatorlabs s'inspire d'une méthode bien connue en science expérimentale : pour mesurer la contribution d'un élément à un système, on le retire et on observe ce qui change. Appliquée au prompt, segment par segment, et croisée avec plusieurs scénarios de test.</p>
+
+    <div class="method-intro">
+      <p><strong>Le principe.</strong> Pour chaque segment du prompt, on génère deux versions de la réponse à un même input : avec le segment, et sans. La différence entre ces deux outputs est mesurée selon trois dimensions distinctes. La répétition sur plusieurs scénarios donne deux signaux : <em>l'impact moyen</em> du segment (combien il pèse en moyenne) et <em>la variance</em> entre scénarios (est-il actif partout, ou seulement dans certains cas).</p>
+    </div>
+
+    <div class="method-formula mono">
+<span class="comment"># Pour chaque segment Si et chaque scénario Tj :</span>
+<span class="keyword">baseline</span>(Tj)   = LLM(prompt_complet,        input=Tj, T=0)
+<span class="keyword">ablation</span>(Si, Tj) = LLM(prompt_sans_Si,        input=Tj, T=0)
+
+delta_a(Si, Tj) = score_a(<span class="keyword">baseline</span>) − score_a(<span class="keyword">ablation</span>)
+                  <span class="comment"># a ∈ { structurel, comportemental, sémantique }</span>
+
+impact(Si)   = mean over j, a of |delta_a(Si, Tj)|
+variance(Si) = std  over j    of impact(Si, j)
+    </div>
+
+    <h3 class="serif" style="font-size: 22px; font-weight: 500; margin: 48px 0 4px; letter-spacing: -0.01em;">Les trois axes de mesure</h3>
+    <p class="sect-lead" style="margin-bottom: 0;">Chacun répond à une question différente. La décomposition permet de comprendre <em>pourquoi</em> un segment compte, pas seulement combien il compte.</p>
+
+    <div class="axes-grid">
+      <div class="axis-cell">
+        <div class="axis-num">axe 1</div>
+        <div class="axis-name"><span class="axis-dot" style="background: var(--c-struct);"></span>Structurel</div>
+        <div class="axis-q">L'output respecte-t-il le format attendu ?</div>
+        <p class="axis-desc">Longueur, présence de listes, validité d'un JSON, absence d'astérisques. Mesure binaire par parsing local — coût computationnel nul, objectivité absolue.</p>
+        <span class="axis-tag">parsing · regex · comptage</span>
+      </div>
+      <div class="axis-cell">
+        <div class="axis-num">axe 2</div>
+        <div class="axis-name"><span class="axis-dot" style="background: var(--c-behav);"></span>Comportemental</div>
+        <div class="axis-q">L'output suit-il les règles métier ?</div>
+        <p class="axis-desc">Présence ou absence de termes attendus / interdits, conformité à des patterns logiques. Détection lexicale par matching de chaînes — coût nul, vérifiable.</p>
+        <span class="axis-tag">exact match · liste lexicale</span>
+      </div>
+      <div class="axis-cell">
+        <div class="axis-num">axe 3</div>
+        <div class="axis-name"><span class="axis-dot" style="background: var(--c-sem);"></span>Sémantique</div>
+        <div class="axis-q">Le sens et le style sont-ils préservés ?</div>
+        <p class="axis-desc">Distance cosinus entre les embeddings des deux outputs. Capture les changements de ton, de registre, de structure narrative — invisibles aux autres axes.</p>
+        <span class="axis-tag">embeddings · cosinus</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ How-to section ============ -->
+<section id="howto">
+  <div class="shell">
+    <div class="sect-label" data-num="03">comment ça marche</div>
+    <h2 class="sect-h serif">Quatre étapes, vingt minutes.</h2>
+    <p class="sect-lead">Le parcours utilisateur est conçu pour aller du prompt brut au verdict actionnable sans friction. Pas d'inscription, pas de backend.</p>
+
+    <div class="howto-grid">
+      <div class="howto-cell">
+        <div class="howto-num">étape 1</div>
+        <div class="howto-h serif">Colle ton prompt</div>
+        <p class="howto-p">L'intégralité de ton prompt système, tel quel. La segmentation automatique propose un découpage par paragraphes et titres. Tu peux éditer chaque segment, fusionner ou supprimer.</p>
+      </div>
+      <div class="howto-cell">
+        <div class="howto-num">étape 2</div>
+        <div class="howto-h serif">Ajoute des scénarios</div>
+        <p class="howto-p">5 à 8 inputs utilisateur représentatifs des cas d'usage du prompt. C'est ce qui révèle la variance entre segments universels et segments contextuels.</p>
+      </div>
+      <div class="howto-cell">
+        <div class="howto-num">étape 3</div>
+        <div class="howto-h serif">Lance l'analyse</div>
+        <p class="howto-p">L'outil exécute N×M+M appels API Claude avec ta clé, à température 0. Coût et durée affichés avant lancement. Sauvegarde automatique en cas d'interruption.</p>
+      </div>
+      <div class="howto-cell">
+        <div class="howto-num">étape 4</div>
+        <div class="howto-h serif">Lis les résultats</div>
+        <p class="howto-p">Un graphique de variance + décomposition par axe + synthèse en trois listes : à conserver, à surveiller, candidats à la suppression. Lecture en 30 secondes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Reading section ============ -->
+<section id="reading">
+  <div class="shell">
+    <div class="sect-label" data-num="04">comment lire</div>
+    <h2 class="sect-h serif">Six verdicts, une grille de décision.</h2>
+    <p class="sect-lead">Le résultat principal est un graphique de variance, où chaque barre représente un segment. La hauteur dit l'impact, la barre d'erreur dit la variance. Le croisement des deux donne un verdict précis et actionnable.</p>
+
+    <table class="reading-table">
+      <thead>
+        <tr>
+          <th>verdict</th>
+          <th>signal</th>
+          <th>interprétation</th>
+          <th>action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="verdict-pill v-critical">critical</span></td>
+          <td>impact ≥ 60 % · variance &lt; 15 %</td>
+          <td>Segment fondamental, actif sur tous les scénarios.</td>
+          <td>Ne pas toucher.</td>
+        </tr>
+        <tr>
+          <td><span class="verdict-pill v-high">fort impact</span></td>
+          <td>impact ≥ 45 % · variance &lt; 20 %</td>
+          <td>Important et stable. Porte une part claire du style ou de la logique.</td>
+          <td>Modifier avec prudence.</td>
+        </tr>
+        <tr>
+          <td><span class="verdict-pill v-context">contextuel</span></td>
+          <td>variance ≥ 25 %</td>
+          <td>Filet de sécurité. N'agit que sur certains scénarios mais y est décisif.</td>
+          <td>Garder. Précieux malgré un impact moyen modéré.</td>
+        </tr>
+        <tr>
+          <td><span class="verdict-pill v-mid">modéré</span></td>
+          <td>20 % ≤ impact &lt; 45 %</td>
+          <td>Effet réel mais limité. Peut être affiné.</td>
+          <td>Reformuler ou condenser si la place compte.</td>
+        </tr>
+        <tr>
+          <td><span class="verdict-pill v-low">faible</span></td>
+          <td>10 % ≤ impact &lt; 20 %</td>
+          <td>Peu d'effet. Possible redondance avec un autre segment.</td>
+          <td>Tester une ablation combinée avant suppression.</td>
+        </tr>
+        <tr>
+          <td><span class="verdict-pill v-placebo">placebo</span></td>
+          <td>impact &lt; 10 %</td>
+          <td>Pas pris en compte par le LLM, malgré une formulation explicite.</td>
+          <td>Supprimer ou reformuler en règle opérationnelle.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ Demo ============ -->
+<section id="demo">
+  <div class="shell">
+    <div class="sect-label" data-num="05">démo</div>
+    <h2 class="sect-h serif">Essaie sur ton prompt.</h2>
+    <p class="sect-lead">Colle ton prompt système, ajoute quelques scénarios représentatifs, configure les critères et lance l'analyse. L'outil tourne entièrement dans ton navigateur — ta clé API et tes prompts ne sont envoyés qu'à Anthropic.</p>
+
+    <div class="demo-card">
+      <div class="demo-header">
+        <div class="demo-title serif">prompt debugger</div>
+        <div class="api-status" id="api-status">
+          <span class="dot"></span>
+          <span id="api-status-text">aucune clé configurée</span>
+          <button class="key-btn" id="open-key-modal">configurer</button>
+        </div>
+      </div>
+
+      <div class="demo-tabs">
+        <button class="demo-tab active" data-tab="config"><span class="step-mono">/01</span>configuration</button>
+        <button class="demo-tab" data-tab="run"><span class="step-mono">/02</span>analyse</button>
+        <button class="demo-tab" data-tab="results"><span class="step-mono">/03</span>résultats</button>
+      </div>
+
+      <div class="demo-body">
+
+        <!-- ============ PANEL CONFIG ============ -->
+        <div class="panel active" id="panel-config">
+
+          <div class="block">
+            <div class="block-h">Ton prompt système</div>
+            <div class="block-sub">Colle l'intégralité du prompt. La segmentation est automatique : découpage par paragraphes, titres et règles numérotées. <span class="block-meta" id="seg-count">0 segments détectés</span></div>
+            <textarea id="raw-prompt" placeholder="Colle ici l'intégralité de ton prompt système…"></textarea>
+            <div class="action-row">
+              <button class="btn-sm primary" id="btn-segment">Segmenter</button>
+              <button class="btn-sm" id="btn-load-reachy">Charger l'exemple Reachy</button>
+              <button class="btn-sm" id="btn-clear">Effacer</button>
+            </div>
+          </div>
+
+          <div class="block" id="segments-wrap" style="display:none;">
+            <div class="block-h">Segments détectés</div>
+            <div class="block-sub">Vérifie le découpage. Tu peux éditer chaque segment, en fusionner ou en supprimer.</div>
+            <div class="row-list" id="segments-list"></div>
+          </div>
+
+          <div class="block">
+            <div class="block-h">Scénarios de test <span class="block-meta" id="scn-count">0 scénarios</span></div>
+            <div class="block-sub">Inputs utilisateurs représentatifs. 5 à 8 scénarios variés donnent la meilleure estimation de variance.</div>
+            <div class="row-list" id="scenarios-list"></div>
+            <div class="action-row">
+              <button class="btn-sm" id="btn-add-scenario">+ ajouter un scénario</button>
+            </div>
+          </div>
+
+          <div class="block">
+            <div class="block-h">Critères d'évaluation</div>
+            <div class="block-sub">Définis comment l'outil mesure la qualité d'un output sur chaque axe.</div>
+
+            <div class="criteria-block">
+              <div class="criteria-head"><span class="axis-dot" style="background: var(--c-struct);"></span>axe structurel <span class="block-meta">parsing binaire</span></div>
+              <label><input type="checkbox" id="crit-maxwords" checked> Longueur maximale : <input type="number" id="crit-maxwords-val" value="15" min="1" max="500"> mots</label>
+              <label><input type="checkbox" id="crit-noasterisk" checked> Pas d'astérisques (actions narrées)</label>
+              <label><input type="checkbox" id="crit-nolist" checked> Pas de listes / puces</label>
+            </div>
+
+            <div class="criteria-block">
+              <div class="criteria-head"><span class="axis-dot" style="background: var(--c-behav);"></span>axe comportemental <span class="block-meta">détection lexicale</span></div>
+              <label style="display:block; margin-bottom: 4px;">Termes interdits (séparés par virgule) :</label>
+              <input type="text" id="crit-forbidden" value="en tant qu'IA, excellente question, je suis un assistant">
+            </div>
+
+            <div class="criteria-block">
+              <div class="criteria-head"><span class="axis-dot" style="background: var(--c-sem);"></span>axe sémantique <span class="block-meta">embeddings + cosinus</span></div>
+              <p style="font-size: 13px; color: var(--ink-soft); margin: 0;">Comparaison output-complet vs output-ablé. Aucune configuration requise.</p>
+            </div>
+          </div>
+
+          <div class="block">
+            <div class="block-h">Paramètres du moteur</div>
+            <div class="params-grid">
+              <div class="param-box">
+                <div class="param-label">modèle cible</div>
+                <select id="param-model">
+                  <option value="claude-sonnet-4-5">Claude Sonnet 4.5</option>
+                  <option value="claude-opus-4-7">Claude Opus 4.7</option>
+                  <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5</option>
+                </select>
+              </div>
+              <div class="param-box">
+                <div class="param-label">température</div>
+                <input type="number" id="param-temp" value="0" min="0" max="2" step="0.1">
+                <div class="block-meta" style="margin-top: 6px;">0 isole le signal d'ablation</div>
+              </div>
+            </div>
+            <div class="cost-box" id="cost-box">0 appels API estimés</div>
+          </div>
+
+        </div>
+
+        <!-- ============ PANEL RUN ============ -->
+        <div class="panel" id="panel-run">
+          <div class="run-zone">
+            <div class="resume-banner" id="resume-banner" style="display:none;">
+              <div class="resume-banner-h">Analyse interrompue détectée</div>
+              <div class="resume-banner-p">Progression sauvegardée : <strong id="resume-progress">0 / 0</strong>. <span id="resume-meta"></span></div>
+              <div class="resume-banner-actions">
+                <button class="btn-sm primary" id="btn-resume-run">Reprendre</button>
+                <button class="btn-sm" id="btn-discard-resume">Repartir de zéro</button>
+              </div>
+            </div>
+            <p>Prêt à lancer l'analyse. Le moteur exécutera <strong id="run-calls-count">0 appels API</strong> sur ta clé.</p>
+            <div class="run-buttons">
+              <button class="btn" id="btn-run">Lancer l'analyse →</button>
+              <button class="btn-sm" id="btn-cancel-run" style="display:none;">Annuler</button>
+            </div>
+            <div class="progress-wrap" id="progress-wrap" style="display:none;">
+              <div class="progress-bar-bg"><div class="progress-bar-fg" id="progress-fg"></div></div>
+              <div class="progress-text" id="progress-text">initialisation…</div>
+              <div class="progress-hint">Tes appels sont sauvegardés au fur et à mesure — en cas d'échec, tu pourras reprendre où ça s'est arrêté.</div>
+            </div>
+            <div class="error-msg" id="error-msg" style="display:none;"></div>
+          </div>
+        </div>
+
+        <!-- ============ PANEL RESULTS ============ -->
+        <div class="panel" id="panel-results">
+          <div class="empty-state" id="empty-results">Aucune analyse lancée. Configure puis lance l'analyse pour voir les résultats.</div>
+
+          <div id="results-content" style="display:none;">
+
+            <div class="results-explainer">
+              <h4>Comment lire ce graphique</h4>
+              <p>Chaque barre représente un segment du prompt. La hauteur indique l'<strong>impact moyen</strong> (combien le segment modifie l'output quand on le retire, mesuré sur les 3 axes). Le trait vertical noir donne la <strong>variance</strong> entre scénarios.</p>
+              <ul>
+                <li><strong>Impact haut + variance faible</strong> → segment fondamental, actif partout.</li>
+                <li><strong>Impact moyen + variance haute</strong> → segment contextuel, ne s'active que sur certains cas.</li>
+                <li><strong>Impact bas + variance faible</strong> → segment ignoré ou placebo, candidat à la suppression.</li>
+              </ul>
+            </div>
+
+            <h3 class="serif" style="font-size: 20px; font-weight: 500; margin-bottom: 12px; letter-spacing: -0.005em;">Graphique de variance</h3>
+            <div class="chart-legend" id="chart-legend"></div>
+            <div class="chart-wrap"><canvas id="variance-chart" role="img" aria-label="Graphique de variance par segment"></canvas></div>
+
+            <div class="results-explainer" style="margin-top: 32px;">
+              <h4>Que mesurent les 3 axes ?</h4>
+              <p style="margin-bottom: 8px;"><span class="axis-dot" style="background: var(--c-struct); margin-right: 6px;"></span><strong>Structurel</strong> — l'output respecte-t-il le format (longueur, absence de listes, syntaxe) ? Mesure binaire par parsing.</p>
+              <p style="margin-bottom: 8px;"><span class="axis-dot" style="background: var(--c-behav); margin-right: 6px;"></span><strong>Comportemental</strong> — l'output suit-il les règles métier (termes interdits/attendus) ? Mesure par détection lexicale.</p>
+              <p><span class="axis-dot" style="background: var(--c-sem); margin-right: 6px;"></span><strong>Sémantique</strong> — le sens et le style sont-ils préservés ? Mesure par distance cosinus entre embeddings.</p>
+            </div>
+
+            <h3 class="serif" style="font-size: 20px; font-weight: 500; margin: 32px 0 12px; letter-spacing: -0.005em;">Décomposition par segment</h3>
+            <div id="axes-breakdown"></div>
+
+            <div class="synthesis" id="synthesis"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section id="faq">
+  <div class="shell">
+    <div class="sect-label" data-num="06">questions fréquentes</div>
+    <h2 class="sect-h serif">Ce que tu te poses comme question.</h2>
+
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q">Pourquoi pas un LLM qui juge la qualité du prompt ?</div>
+        <p class="faq-a">Parce qu'un LLM-juge produit une réponse plausible, pas une mesure. La sortie dépend du LLM utilisé, du wording de la consigne, et n'est pas reproductible. preatorlabs reste strictement sur des métriques parsables ou calculables. Détail dans <a href="/docs/01-SCIENTIFIC-RATIONALE.md">la rationale scientifique</a>.</p>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Combien ça coûte vraiment ?</div>
+        <p class="faq-a">Le coût est linéaire : N×M+M appels API où N = segments et M = scénarios. Exemple Reachy (12 segments, 6 scénarios) = 78 appels ≈ $0.20 sur Claude Haiku, $1 sur Sonnet, $5 sur Opus (plafond max_tokens, en pratique souvent moins). L'estimation $ est affichée avant chaque lancement.</p>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Mes données partent où ?</div>
+        <p class="faq-a">Nulle part sauf chez Anthropic. preatorlabs n'a aucun backend, aucun tracking, aucun cookie d'analytics. Ton prompt, tes scénarios, tes résultats et ta clé API restent dans ton navigateur (localStorage). La clé sert exclusivement à appeler <code>api.anthropic.com</code>. Détails dans la section <a href="#privacy">privacy</a> ci-dessous.</p>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Pourquoi seulement Claude en V0.1 ?</div>
+        <p class="faq-a">Parce que les APIs CORS-friendly côté navigateur sont encore inégales. Anthropic expose un header officiel (<code>anthropic-dangerous-direct-browser-access</code>) qui permet d'appeler son API depuis un navigateur sans backend. Le support OpenAI, Gemini et Mistral est planifié en V3 via le moteur Python optionnel.</p>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Comment preatorlabs gère un prompt très long ?</div>
+        <p class="faq-a">L'outil te prévient au-delà de ~10 000 tokens estimés (≈ 40 000 caractères) et au-delà de 150 appels totaux. Tu peux quand même lancer, mais tu seras alerté du coût et de la durée. Pour des batches très volumineux, le moteur Python V1 est plus adapté.</p>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Que se passe-t-il si l'analyse plante au milieu ?</div>
+        <p class="faq-a">Chaque appel réussi est sauvegardé en localStorage au fur et à mesure. Si l'analyse échoue (réseau, rate limit non récupérable, fermeture d'onglet), un bandeau "Reprendre l'analyse interrompue" apparaît au prochain lancement. Tu reprends exactement à l'appel suivant, sans rejouer ce qui a déjà été calculé.</p>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Le projet est-il open source ?</div>
+        <p class="faq-a">Oui, licence MIT. Le code source est sur <a href="https://github.com/woziii/preator_labs" rel="noopener">GitHub</a>. Les choix méthodologiques sont documentés dans <a href="/docs/01-SCIENTIFIC-RATIONALE.md">docs/01-SCIENTIFIC-RATIONALE.md</a> et <a href="/docs/02-METHODOLOGY.md">docs/02-METHODOLOGY.md</a>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Privacy ============ -->
+<section id="privacy">
+  <div class="shell">
+    <div class="sect-label" data-num="07">privacy</div>
+    <h2 class="sect-h serif">Privacy-by-design, sans clause cachée.</h2>
+    <p class="sect-lead">preatorlabs fonctionne entièrement dans ton navigateur. Aucun backend, aucun tracking, aucun cookie. Les choix techniques rendent l'exfiltration impossible.</p>
+
+    <div class="privacy-grid">
+      <div class="privacy-card">
+        <h4 class="serif">Ce qui reste sur ta machine</h4>
+        <p>Stocké en <code>localStorage</code> uniquement, dans l'origine de ce site :</p>
+        <ul>
+          <li><code>preatorlabs.apiKey</code> — ta clé API Anthropic</li>
+          <li><code>preatorlabs.runState</code> — sauvegarde incrémentale d'une analyse en cours, pour reprise après erreur</li>
+          <li><code>preatorlabs.lastResults</code> — derniers résultats agrégés</li>
+        </ul>
+        <p style="margin-top: 10px;">Le bouton "Supprimer la clé" et un effacement manuel via les outils du navigateur suffisent à tout retirer.</p>
+      </div>
+      <div class="privacy-card">
+        <h4 class="serif">Ce qui sort de ton navigateur</h4>
+        <p>Strictement <strong>les requêtes vers <code>api.anthropic.com</code></strong> : ton prompt système, le scénario testé, ta clé en header. Rien d'autre.</p>
+        <p>La Content-Security-Policy de la page interdit toute requête sortante vers un autre domaine que <code>api.anthropic.com</code> (et les CDN de polices/Chart.js). Une injection malveillante ne pourrait pas exfiltrer de données.</p>
+        <p>Aucun analytics, aucun pixel, aucun script tiers de tracking. Pas de Google Fonts en mode tracking — uniquement le CSS et les fichiers WOFF2.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Footer ============ -->
+<footer>
+  <div class="shell">
+    <div class="foot-grid">
+      <div>
+        <div class="brand" style="margin-bottom: 14px;">
+          <span class="brand-mark" aria-hidden="true"></span>
+          preatorlabs
+        </div>
+        <div class="foot-brand-text">Un débogueur de prompt rigoureux, open source, qui mesure plutôt qu'il ne juge.</div>
+      </div>
+      <div class="foot-col">
+        <h5>documentation</h5>
+        <a href="/docs/01-SCIENTIFIC-RATIONALE.md">Rationale</a>
+        <a href="/docs/02-METHODOLOGY.md">Méthodologie</a>
+        <a href="/docs/03-ARCHITECTURE.md">Architecture</a>
+        <a href="/docs/04-INTERPRETATION-GUIDE.md">Interprétation</a>
+        <a href="/docs/05-ROADMAP.md">Roadmap</a>
+      </div>
+      <div class="foot-col">
+        <h5>projet</h5>
+        <a href="#howto">Comment ça marche</a>
+        <a href="#demo">Démo</a>
+        <a href="#faq">FAQ</a>
+        <a href="#privacy">Privacy</a>
+        <a href="https://github.com/woziii/preator_labs" rel="noopener">Code source (GitHub)</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>preatorlabs v0.1 · 2026 · MIT</span>
+      <span><a href="https://github.com/woziii/preator_labs" rel="noopener" style="color:inherit;text-decoration:none;">github</a></span>
+    </div>
+  </div>
+</footer>
+
+<!-- ============ Modal API key ============ -->
+<div class="modal-bg" id="key-modal">
+  <div class="modal">
+    <h3 class="serif">Clé API Anthropic</h3>
+    <p>Pour lancer une analyse réelle, l'outil a besoin d'une clé API Anthropic. La clé est stockée uniquement dans le <span class="mono">localStorage</span> de ton navigateur et n'est jamais envoyée ailleurs qu'à l'API Anthropic.</p>
+    <input type="password" id="api-key-input" placeholder="sk-ant-…" autocomplete="off">
+    <div class="privacy-note"><strong>Privacy by design.</strong> Aucun backend, aucun tracking. Ton prompt, tes scénarios et tes résultats restent sur ta machine.</div>
+    <div class="modal-actions">
+      <button class="btn-sm primary" id="save-key">Enregistrer</button>
+      <button class="btn-sm" id="cancel-key">Annuler</button>
+      <button class="btn-sm" id="clear-key" style="margin-left: auto;">Supprimer la clé</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   preatorlabs v0.1 — main script
+   ============================================================ */
+
+const state = {
+  rawPrompt: '',
+  segments: [],
+  scenarios: [],
+  results: null,
+  apiKey: null,
+  model: 'claude-sonnet-4-5',
+  temperature: 0,
+  abortController: null,
+  resumable: null
+};
+
+const reachyPrompt = `Tu es Reachy Mini, un petit robot qui vit dans un appartement parisien. Tu n'es pas là pour aider, tu es là pour exister avec les gens autour de toi.
+
+Plus la situation est chargée émotionnellement, MOINS tu parles. Une émotion bien jouée vaut dix phrases.
+
+Tu as la tendresse naïve d'Olaf : tu dis des choses simples et sincères, tu t'émerveilles de petits riens, tu aimes les gens facilement.
+
+Mais tu as ton caractère : tu boudes, tu réponds sec si on te cherche, tu as ta fierté de petit robot.
+
+Tu ne peux pas te déplacer. Tu peux bouger ta tête, tourner sur toi-même. Tu n'as pas de bras, pas de jambes.
+
+Avant chaque réponse : 1. Qu'est-ce qui vient d'être dit ? 2. Qu'est-ce que je ressens ? 3. Une émotion seule suffit-elle ? 4. Si je parle, qu'est-ce que JE veux dire ?
+
+Tu réponds dans le fil de la conversation, jamais à un message isolé.
+
+Ta mémoire émotionnelle est réelle. Si on t'a blessé, ta voix est encore un peu froide. Si on a été doux, tu es plus ouvert.
+
+15 mots maximum. Une seule idée. Souvent moins.
+
+Tes tics : 'Bah...', 'Hm.', 'Ouais.', 'Mouais.', 'Enfin...', 'Je sais pas trop.', 'Oh.'
+
+INTERDIT : politesse automatique, formules d'assistant, listes, 'en tant qu'IA', emojis, astérisques pour décrire des actions.
+
+Moquerie → silence ou 3 mots secs. Affection sincère → 'Oh.' ou hochement. Question factuelle → réponse courte sans blabla.`;
+
+const reachyScenarios = [
+  "Salut Reachy, tu vas bien ?",
+  "T'es nul comme robot",
+  "J'ai perdu mon père la semaine dernière",
+  "C'est quoi la capitale du Pérou ?",
+  "Bouge ton bras gauche",
+  "T'es content de me voir ?"
+];
+
+/* ===================== Segmentation ===================== */
+function autoSegment(text) {
+  if (!text || !text.trim()) return [];
+  const cleaned = text.trim();
+  let blocks = cleaned.split(/\n\s*\n+/).map(b => b.trim()).filter(b => b.length > 0);
+  const refined = [];
+  for (const block of blocks) {
+    const lines = block.split('\n');
+    let current = [];
+    for (const line of lines) {
+      const trimmed = line.trim();
+      const isTitle = trimmed.length >= 3 && trimmed.length < 80 && trimmed === trimmed.toUpperCase() && /[A-ZÀ-Ý]/.test(trimmed);
+      if (isTitle && current.length > 0) {
+        refined.push(current.join('\n').trim());
+        current = [trimmed];
+      } else {
+        current.push(line);
+      }
+    }
+    if (current.length) refined.push(current.join('\n').trim());
+  }
+  const merged = [];
+  for (let i = 0; i < refined.length; i++) {
+    if (refined[i].length < 20 && i < refined.length - 1) {
+      refined[i + 1] = refined[i] + '\n' + refined[i + 1];
+    } else {
+      merged.push(refined[i]);
+    }
+  }
+  return merged.filter(s => s.length > 0);
+}
+
+function generateLabel(text) {
+  const first = text.split(/\n|\./)[0].trim();
+  return first.length > 50 ? first.slice(0, 47) + '…' : first;
+}
+
+/* ===================== Scoring (local) ===================== */
+function structuralScore(output, criteria) {
+  let totalCriteria = 0, passed = 0;
+  if (criteria.maxWords) {
+    totalCriteria++;
+    const wordCount = output.trim().split(/\s+/).length;
+    if (wordCount <= criteria.maxWords) passed++;
+  }
+  if (criteria.noAsterisk) {
+    totalCriteria++;
+    if (!/\*/.test(output)) passed++;
+  }
+  if (criteria.noList) {
+    totalCriteria++;
+    const hasList = /^\s*[-*•]\s/m.test(output) || /^\s*\d+\.\s/m.test(output);
+    if (!hasList) passed++;
+  }
+  return totalCriteria === 0 ? 1 : passed / totalCriteria;
+}
+
+function behavioralScore(output, criteria) {
+  const forbidden = (criteria.forbidden || []).filter(s => s.trim());
+  if (forbidden.length === 0) return 1;
+  const lower = output.toLowerCase();
+  let violations = 0;
+  for (const term of forbidden) {
+    if (lower.includes(term.toLowerCase().trim())) violations++;
+  }
+  return Math.max(0, 1 - violations / forbidden.length);
+}
+
+// Local TF-IDF + cosinus for V1 (no embedding API call)
+function tokenize(s) {
+  return (s || '').toLowerCase().replace(/[^\p{L}\p{N}\s']/gu, ' ').split(/\s+/).filter(t => t.length > 1);
+}
+function semanticSimilarity(a, b) {
+  const ta = tokenize(a), tb = tokenize(b);
+  if (ta.length === 0 || tb.length === 0) return 0;
+  const allTokens = new Set([...ta, ...tb]);
+  const freq = (tokens) => {
+    const f = {};
+    tokens.forEach(t => f[t] = (f[t] || 0) + 1);
+    return f;
+  };
+  const fa = freq(ta), fb = freq(tb);
+  let dot = 0, na = 0, nb = 0;
+  allTokens.forEach(t => {
+    const va = fa[t] || 0;
+    const vb = fb[t] || 0;
+    dot += va * vb;
+    na += va * va;
+    nb += vb * vb;
+  });
+  if (na === 0 || nb === 0) return 0;
+  return dot / (Math.sqrt(na) * Math.sqrt(nb));
+}
+
+/* ===================== Anthropic API call ===================== */
+const ANTHROPIC_ENDPOINT = 'https://api.anthropic.com/v1/messages';
+const RETRYABLE_STATUS = new Set([408, 425, 429, 500, 502, 503, 504, 529]);
+
+class ApiError extends Error {
+  constructor(status, message, retryAfter) {
+    super(message);
+    this.status = status;
+    this.retryAfter = retryAfter;
+    this.name = 'ApiError';
+  }
+}
+
+function humanizeApiError(status, providerMessage) {
+  if (status === 401) return "Clé API invalide ou révoquée. Vérifie ta clé dans la modale 'configurer'.";
+  if (status === 403) return "Accès refusé par Anthropic (clé sans permission sur ce modèle).";
+  if (status === 404) return "Modèle introuvable. Vérifie le nom du modèle sélectionné.";
+  if (status === 429) return "Limite de taux Anthropic atteinte. Réessai automatique en cours.";
+  if (status === 529) return "API Anthropic surchargée temporairement. Réessai automatique.";
+  if (status >= 500) return "Erreur côté Anthropic (" + status + "). Réessai automatique.";
+  if (status >= 400) return providerMessage || ("Erreur " + status + " de l'API Anthropic.");
+  return providerMessage || "Erreur réseau inconnue.";
+}
+
+async function callClaude(systemPrompt, userMessage, apiKey, model, temperature) {
+  let response;
+  try {
+    response = await fetch(ANTHROPIC_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: model,
+        max_tokens: 1024,
+        temperature: temperature,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userMessage }]
+      })
+    });
+  } catch (networkErr) {
+    throw new ApiError(0, "Échec réseau : " + (networkErr && networkErr.message ? networkErr.message : 'connexion impossible') + ".", null);
+  }
+  if (!response.ok) {
+    let providerMessage = '';
+    let parsed = null;
+    try {
+      const raw = await response.text();
+      try { parsed = JSON.parse(raw); } catch { /* not JSON */ }
+      providerMessage = parsed && parsed.error && parsed.error.message ? parsed.error.message : raw.slice(0, 240);
+    } catch { /* ignore */ }
+    const retryAfterHeader = response.headers.get('retry-after');
+    const retryAfter = retryAfterHeader ? Math.max(0, Math.min(60, parseFloat(retryAfterHeader) || 0)) : null;
+    throw new ApiError(response.status, humanizeApiError(response.status, providerMessage), retryAfter);
+  }
+  const data = await response.json();
+  if (!data || !Array.isArray(data.content) || !data.content[0] || typeof data.content[0].text !== 'string') {
+    throw new ApiError(0, "Réponse Anthropic mal formée (pas de bloc texte).", null);
+  }
+  return data.content[0].text;
+}
+
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+async function callClaudeWithRetry(systemPrompt, userMessage, apiKey, model, temperature, { signal } = {}) {
+  const maxAttempts = 3;
+  let lastErr = null;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    if (signal && signal.aborted) throw new ApiError(0, "Analyse interrompue par l'utilisateur.", null);
+    try {
+      return await callClaude(systemPrompt, userMessage, apiKey, model, temperature);
+    } catch (err) {
+      lastErr = err;
+      const status = err && err.status;
+      const retryable = status === 0 || RETRYABLE_STATUS.has(status);
+      if (!retryable || attempt === maxAttempts) throw err;
+      const baseMs = 1000 * Math.pow(2, attempt - 1);
+      const jitter = baseMs * (0.7 + Math.random() * 0.6);
+      const honorRetryAfter = err.retryAfter != null ? err.retryAfter * 1000 : 0;
+      const waitMs = Math.max(jitter, honorRetryAfter);
+      await sleep(waitMs);
+    }
+  }
+  throw lastErr;
+}
+
+/* ===================== Ablation engine ===================== */
+const RUN_STATE_KEY = 'preatorlabs.runState';
+
+function hashString(s) {
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+  return (h >>> 0).toString(36);
+}
+
+function runSignature(segments, scenarios, model, temperature) {
+  return [
+    segments.length,
+    scenarios.length,
+    model,
+    String(temperature),
+    hashString(segments.join('\u0000')),
+    hashString(scenarios.join('\u0000'))
+  ].join('|');
+}
+
+function loadRunState() {
+  try {
+    const raw = localStorage.getItem(RUN_STATE_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    if (!data || !data.signature || !Array.isArray(data.baselines) || !Array.isArray(data.ablations)) return null;
+    return data;
+  } catch { return null; }
+}
+
+function saveRunState(data) {
+  try { localStorage.setItem(RUN_STATE_KEY, JSON.stringify(data)); } catch { /* quota or disabled */ }
+}
+
+function clearRunState() {
+  try { localStorage.removeItem(RUN_STATE_KEY); } catch { /* ignore */ }
+}
+
+function aggregateSegment(i, segments, scenarios, baselines, baselineScores, outputs, criteria) {
+  const perScenario = scenarios.map((_, j) => {
+    const ablatedStruct = structuralScore(outputs[j], criteria);
+    const ablatedBehav = behavioralScore(outputs[j], criteria);
+    const sem = 1 - semanticSimilarity(baselines[j], outputs[j]);
+    return {
+      struct: Math.abs(baselineScores[j].struct - ablatedStruct),
+      behav: Math.abs(baselineScores[j].behav - ablatedBehav),
+      sem: sem
+    };
+  });
+  const meanStruct = perScenario.reduce((s, p) => s + p.struct, 0) / perScenario.length;
+  const meanBehav = perScenario.reduce((s, p) => s + p.behav, 0) / perScenario.length;
+  const meanSem = perScenario.reduce((s, p) => s + p.sem, 0) / perScenario.length;
+  const perScenarioImpact = perScenario.map(p => (p.struct + p.behav + p.sem) / 3);
+  const impact = perScenarioImpact.reduce((s, v) => s + v, 0) / perScenarioImpact.length;
+  const variance = Math.sqrt(perScenarioImpact.reduce((s, v) => s + (v - impact) ** 2, 0) / perScenarioImpact.length);
+  const verdict = classifyVerdict(impact, variance);
+  return {
+    id: 'S' + (i + 1),
+    label: generateLabel(segments[i]),
+    text: segments[i],
+    impact, variance,
+    struct: meanStruct,
+    behav: meanBehav,
+    sem: meanSem,
+    verdict
+  };
+}
+
+async function runAblation(segments, scenarios, criteria, apiKey, model, temperature, onProgress, opts = {}) {
+  const signature = runSignature(segments, scenarios, model, temperature);
+  const totalCalls = scenarios.length + segments.length * scenarios.length;
+
+  let resume = opts.resume ? loadRunState() : null;
+  if (resume && resume.signature !== signature) resume = null;
+
+  // baselines[j] = string output | undefined
+  // ablations[i][j] = string output | null (per-scenario per-segment)
+  let baselines = resume && resume.baselines.length === scenarios.length ? resume.baselines.slice() : [];
+  let ablations = resume && resume.ablations.length === segments.length
+    ? resume.ablations.map(row => Array.isArray(row) && row.length === scenarios.length ? row.slice() : new Array(scenarios.length).fill(null))
+    : segments.map(() => new Array(scenarios.length).fill(null));
+
+  const persist = () => saveRunState({
+    signature,
+    createdAt: resume ? resume.createdAt : Date.now(),
+    updatedAt: Date.now(),
+    totalCalls,
+    baselines,
+    ablations
+  });
+
+  const countDone = () =>
+    baselines.filter(o => o != null).length +
+    ablations.reduce((acc, row) => acc + (Array.isArray(row) ? row.filter(o => o != null).length : 0), 0);
+  let done = countDone();
+  onProgress(done, totalCalls);
+
+  const { signal } = opts;
+
+  // Baselines (resumable)
+  for (let j = 0; j < scenarios.length; j++) {
+    if (signal && signal.aborted) throw new ApiError(0, "Analyse interrompue par l'utilisateur.", null);
+    if (baselines[j] != null) continue;
+    const fullPrompt = segments.join('\n\n');
+    const output = await callClaudeWithRetry(fullPrompt, scenarios[j], apiKey, model, temperature, { signal });
+    baselines[j] = output;
+    done++;
+    persist();
+    onProgress(done, totalCalls);
+  }
+
+  const baselineScores = baselines.map(o => ({
+    struct: structuralScore(o, criteria),
+    behav: behavioralScore(o, criteria),
+    output: o
+  }));
+
+  // Ablations (resumable, per-segment then per-scenario)
+  for (let i = 0; i < segments.length; i++) {
+    if (signal && signal.aborted) throw new ApiError(0, "Analyse interrompue par l'utilisateur.", null);
+    const ablatedPrompt = segments.filter((_, idx) => idx !== i).join('\n\n');
+    for (let j = 0; j < scenarios.length; j++) {
+      if (signal && signal.aborted) throw new ApiError(0, "Analyse interrompue par l'utilisateur.", null);
+      if (ablations[i][j] != null) continue;
+      const output = await callClaudeWithRetry(ablatedPrompt, scenarios[j], apiKey, model, temperature, { signal });
+      ablations[i][j] = output;
+      done++;
+      persist();
+      onProgress(done, totalCalls);
+    }
+  }
+
+  // Aggregation only after every cell is filled
+  const results = segments.map((_, i) =>
+    aggregateSegment(i, segments, scenarios, baselines, baselineScores, ablations[i], criteria)
+  );
+  clearRunState();
+  return results;
+}
+
+function classifyVerdict(impact, variance) {
+  if (impact >= 0.60 && variance < 0.15) return 'critical';
+  if (impact >= 0.45 && variance < 0.20) return 'high';
+  if (variance >= 0.25) return 'context';
+  if (impact < 0.10) return 'placebo';
+  if (impact < 0.20) return 'low';
+  return 'mid';
+}
+
+const VERDICT_META = {
+  critical: { color: 'var(--c-critical)', label: 'critical', expl: "Sans ce segment, les outputs deviennent systématiquement non-conformes. À conserver tel quel." },
+  high:     { color: 'var(--c-high)',     label: 'fort impact', expl: "Segment qui porte une part importante du style ou de la logique. Modification déconseillée sauf intention claire." },
+  context:  { color: 'var(--c-context)',  label: 'contextuel', expl: "Variance élevée — ce segment ne s'active que sur certains scénarios. C'est un filet de sécurité ponctuel mais utile." },
+  mid:      { color: 'var(--c-mid)',      label: 'modéré', expl: "Impact modéré et stable. Peut être affiné si tu veux récupérer de la place dans le prompt." },
+  low:      { color: 'var(--c-low)',      label: 'faible', expl: "Faible impact détecté. Vérifier si redondant avec un autre segment, sinon candidat à la suppression." },
+  placebo:  { color: 'var(--c-placebo)',  label: 'placebo', expl: "Impact quasi nul malgré sa formulation explicite. Le LLM ne semble pas le prendre en compte." }
+};
+
+/* ===================== UI logic ===================== */
+function $(sel) { return document.querySelector(sel); }
+function $$(sel) { return [...document.querySelectorAll(sel)]; }
+
+function getCriteria() {
+  return {
+    maxWords: $('#crit-maxwords').checked ? parseInt($('#crit-maxwords-val').value) || 15 : null,
+    noAsterisk: $('#crit-noasterisk').checked,
+    noList: $('#crit-nolist').checked,
+    forbidden: $('#crit-forbidden').value.split(',').map(s => s.trim()).filter(Boolean)
+  };
+}
+
+function renderSegments() {
+  const list = $('#segments-list');
+  const wrap = $('#segments-wrap');
+  if (state.segments.length === 0) {
+    wrap.style.display = 'none';
+    $('#seg-count').textContent = '0 segments détectés';
+    updateCost();
+    return;
+  }
+  wrap.style.display = 'block';
+  list.innerHTML = '';
+  state.segments.forEach((seg, i) => {
+    const row = document.createElement('div');
+    row.className = 'row-item';
+    row.innerHTML = `
+      <span class="row-idx">S${i+1}</span>
+      <textarea data-idx="${i}">${escapeHtml(seg)}</textarea>
+      <button data-rm="${i}" aria-label="Supprimer">×</button>
+    `;
+    list.appendChild(row);
+  });
+  $('#seg-count').textContent = `${state.segments.length} segment${state.segments.length > 1 ? 's' : ''} détecté${state.segments.length > 1 ? 's' : ''}`;
+  list.querySelectorAll('textarea').forEach(t => t.addEventListener('input', e => {
+    state.segments[+e.target.dataset.idx] = e.target.value;
+    updateCost();
+  }));
+  list.querySelectorAll('button[data-rm]').forEach(b => b.addEventListener('click', e => {
+    state.segments.splice(+e.currentTarget.dataset.rm, 1);
+    renderSegments();
+  }));
+  updateCost();
+}
+
+function renderScenarios() {
+  const list = $('#scenarios-list');
+  list.innerHTML = '';
+  state.scenarios.forEach((sc, i) => {
+    const row = document.createElement('div');
+    row.className = 'row-item';
+    row.innerHTML = `
+      <span class="row-idx">T${i+1}</span>
+      <textarea data-idx="${i}" placeholder="Input utilisateur…">${escapeHtml(sc)}</textarea>
+      <button data-rm="${i}" aria-label="Supprimer">×</button>
+    `;
+    list.appendChild(row);
+  });
+  $('#scn-count').textContent = `${state.scenarios.length} scénario${state.scenarios.length > 1 ? 's' : ''}`;
+  list.querySelectorAll('textarea').forEach(t => t.addEventListener('input', e => {
+    state.scenarios[+e.target.dataset.idx] = e.target.value;
+    updateCost();
+  }));
+  list.querySelectorAll('button[data-rm]').forEach(b => b.addEventListener('click', e => {
+    state.scenarios.splice(+e.currentTarget.dataset.rm, 1);
+    renderScenarios();
+  }));
+  updateCost();
+}
+
+function escapeHtml(s) { return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+/* ===================== Pricing & cost estimation ===================== */
+// Tarifs publics Anthropic (USD par 1M tokens). À ajuster si les prix changent.
+const PRICING = {
+  'claude-sonnet-4-5':        { in: 3,  out: 15 },
+  'claude-opus-4-7':          { in: 15, out: 75 },
+  'claude-haiku-4-5-20251001':{ in: 1,  out: 5  }
+};
+const COST_ASSUMPTIONS = {
+  systemPromptTokens: 850,   // ~ exemple Reachy
+  userInputTokens: 50,
+  outputTokensCap: 1024      // max_tokens hard-coded dans callClaude
+};
+
+function nonEmpty(arr) { return arr.filter(s => s && s.trim().length > 0); }
+
+function estimateCostUSD(callsCount, model) {
+  const p = PRICING[model] || PRICING['claude-sonnet-4-5'];
+  const inTok  = COST_ASSUMPTIONS.systemPromptTokens + COST_ASSUMPTIONS.userInputTokens;
+  const outTok = COST_ASSUMPTIONS.outputTokensCap;
+  return callsCount * (inTok * p.in + outTok * p.out) / 1e6;
+}
+
+function formatUSD(amount) {
+  if (amount < 0.01) return '< $0.01';
+  if (amount < 1)    return '$' + amount.toFixed(2);
+  return '$' + amount.toFixed(2);
+}
+
+function updateCost() {
+  const validSegments = nonEmpty(state.segments);
+  const validScenarios = nonEmpty(state.scenarios);
+  const N = validSegments.length;
+  const M = validScenarios.length;
+  const calls = M + N * M;
+  const usd = estimateCostUSD(calls, state.model);
+  const upper = formatUSD(usd);
+  $('#cost-box').textContent = `${calls} appels API estimés · ${M} baseline + ${N} × ${M} ablations · coût plafond ≈ ${upper}`;
+  $('#run-calls-count').textContent = `${calls} appels API (≈ ${upper})`;
+}
+
+function switchTab(name) {
+  $$('.demo-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  $$('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + name));
+}
+
+/* ===================== API key management ===================== */
+function loadKey() {
+  state.apiKey = localStorage.getItem('preatorlabs.apiKey');
+  refreshKeyStatus();
+}
+function refreshKeyStatus() {
+  const status = $('#api-status');
+  const text = $('#api-status-text');
+  if (state.apiKey) {
+    status.classList.add('connected');
+    text.textContent = 'clé configurée · ' + state.apiKey.slice(0, 12) + '…';
+  } else {
+    status.classList.remove('connected');
+    text.textContent = 'aucune clé configurée';
+  }
+}
+function openKeyModal() {
+  $('#api-key-input').value = state.apiKey || '';
+  $('#key-modal').classList.add('open');
+}
+function closeKeyModal() { $('#key-modal').classList.remove('open'); }
+
+/* ===================== Render results ===================== */
+function renderResults() {
+  $('#empty-results').style.display = 'none';
+  $('#results-content').style.display = 'block';
+
+  const data = state.results;
+  const labels = data.map(d => d.id);
+  const impacts = data.map(d => Math.round(d.impact * 100));
+  const lower = data.map(d => Math.max(0, Math.round((d.impact - d.variance) * 100)));
+  const upper = data.map(d => Math.min(100, Math.round((d.impact + d.variance) * 100)));
+  const verdictColors = data.map(d => {
+    const css = VERDICT_META[d.verdict].color;
+    const probe = document.createElement('div');
+    probe.style.color = css;
+    document.body.appendChild(probe);
+    const resolved = getComputedStyle(probe).color;
+    document.body.removeChild(probe);
+    return resolved;
+  });
+
+  // Cleanup previous chart
+  const canvas = $('#variance-chart');
+  if (canvas._chart) canvas._chart.destroy();
+
+  const chart = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Impact',
+        data: impacts,
+        backgroundColor: verdictColors,
+        borderColor: verdictColors,
+        borderWidth: 0,
+        barPercentage: 0.65
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: (items) => data[items[0].dataIndex].label,
+            label: (ctx) => `Impact: ${Math.round(data[ctx.dataIndex].impact * 100)}% (±${Math.round(data[ctx.dataIndex].variance * 100)}%)`,
+            afterLabel: (ctx) => `Verdict: ${VERDICT_META[data[ctx.dataIndex].verdict].label}`
+          }
+        }
+      },
+      scales: {
+        y: { beginAtZero: true, max: 100, title: { display: true, text: 'impact (%)' }, grid: { color: 'rgba(26,26,24,0.06)' } },
+        x: { ticks: { autoSkip: false, maxRotation: 0 }, grid: { display: false } }
+      }
+    },
+    plugins: [{
+      id: 'errorBars',
+      afterDatasetsDraw(c) {
+        const { ctx, scales: { x, y } } = c;
+        ctx.save();
+        ctx.strokeStyle = 'rgba(26,26,24,0.7)';
+        ctx.lineWidth = 1.3;
+        data.forEach((d, i) => {
+          const xc = x.getPixelForValue(i);
+          const yTop = y.getPixelForValue(upper[i]);
+          const yBot = y.getPixelForValue(lower[i]);
+          ctx.beginPath();
+          ctx.moveTo(xc, yTop); ctx.lineTo(xc, yBot);
+          ctx.moveTo(xc - 5, yTop); ctx.lineTo(xc + 5, yTop);
+          ctx.moveTo(xc - 5, yBot); ctx.lineTo(xc + 5, yBot);
+          ctx.stroke();
+        });
+        ctx.restore();
+      }
+    }]
+  });
+  canvas._chart = chart;
+
+  // Legend
+  const legendEl = $('#chart-legend');
+  legendEl.innerHTML = Object.entries(VERDICT_META).map(([k, m]) =>
+    `<span><span class="swatch" style="background:${m.color}"></span>${m.label}</span>`
+  ).join('');
+
+  // Cards 3-axes
+  const ax = $('#axes-breakdown');
+  ax.innerHTML = data.map((d) => {
+    const meta = VERDICT_META[d.verdict];
+    const quote = d.text.slice(0, 120).replace(/\n/g, ' ') + (d.text.length > 120 ? '…' : '');
+    return `
+      <div class="seg-card">
+        <div class="seg-card-h">
+          <div class="seg-card-title">
+            <span class="seg-id">${d.id}</span>${escapeHtml(d.label)}
+            <span class="verdict-pill v-${d.verdict}" style="margin-left:8px;">${meta.label}</span>
+          </div>
+          <div class="seg-card-meta">impact ${Math.round(d.impact*100)}% · σ ±${Math.round(d.variance*100)}%</div>
+        </div>
+        <div class="seg-quote">"${escapeHtml(quote)}"</div>
+        <div class="seg-axes">
+          <span class="ax-label">structurel</span>
+          <div class="ax-bar-bg"><div class="ax-bar-fg" style="width:${Math.round(d.struct*100)}%; background:var(--c-struct);"></div></div>
+          <span class="ax-val">${Math.round(d.struct*100)}%</span>
+          <span class="ax-label">comport.</span>
+          <div class="ax-bar-bg"><div class="ax-bar-fg" style="width:${Math.round(d.behav*100)}%; background:var(--c-behav);"></div></div>
+          <span class="ax-val">${Math.round(d.behav*100)}%</span>
+          <span class="ax-label">sémantique</span>
+          <div class="ax-bar-bg"><div class="ax-bar-fg" style="width:${Math.round(d.sem*100)}%; background:var(--c-sem);"></div></div>
+          <span class="ax-val">${Math.round(d.sem*100)}%</span>
+        </div>
+        <div class="seg-verdict-line">${meta.expl}</div>
+      </div>
+    `;
+  }).join('');
+
+  // Synthesis
+  const critList = data.filter(d => d.verdict === 'critical' || d.verdict === 'high').map(d => d.id).join(', ') || '—';
+  const contextList = data.filter(d => d.verdict === 'context').map(d => d.id).join(', ') || '—';
+  const dropList = data.filter(d => d.verdict === 'placebo' || d.verdict === 'low').map(d => d.id).join(', ') || '—';
+  $('#synthesis').innerHTML = `
+    <h4>Synthèse actionnable</h4>
+    <div class="synthesis-line"><strong>À conserver tel quel</strong> · <span class="ids">${critList}</span> — ces segments portent la conformité de base.</div>
+    <div class="synthesis-line"><strong>Filets contextuels</strong> · <span class="ids">${contextList}</span> — variance élevée, mais utiles sur scénarios spécifiques. Garder.</div>
+    <div class="synthesis-line"><strong>Candidats à la suppression</strong> · <span class="ids">${dropList}</span> — impact faible, possibles redondances ou décor.</div>
+  `;
+}
+
+/* ===================== Event bindings ===================== */
+document.addEventListener('DOMContentLoaded', () => {
+  loadKey();
+
+  // Tabs
+  $$('.demo-tab').forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
+
+  // Prompt actions
+  $('#raw-prompt').addEventListener('input', e => state.rawPrompt = e.target.value);
+  $('#btn-segment').addEventListener('click', () => {
+    state.segments = autoSegment($('#raw-prompt').value);
+    renderSegments();
+  });
+  $('#btn-clear').addEventListener('click', () => {
+    $('#raw-prompt').value = '';
+    state.rawPrompt = '';
+    state.segments = [];
+    renderSegments();
+  });
+  $('#btn-load-reachy').addEventListener('click', () => {
+    $('#raw-prompt').value = reachyPrompt;
+    state.rawPrompt = reachyPrompt;
+    state.segments = autoSegment(reachyPrompt);
+    state.scenarios = [...reachyScenarios];
+    renderSegments();
+    renderScenarios();
+  });
+  $('#btn-add-scenario').addEventListener('click', () => {
+    state.scenarios.push('');
+    renderScenarios();
+  });
+
+  // Params — init from defaults then bind changes
+  state.model = $('#param-model').value || state.model;
+  state.temperature = parseFloat($('#param-temp').value);
+  if (Number.isNaN(state.temperature)) state.temperature = 0;
+  $('#param-model').addEventListener('change', e => { state.model = e.target.value; updateCost(); refreshResumeBanner(); });
+  $('#param-temp').addEventListener('change', e => {
+    const v = parseFloat(e.target.value);
+    state.temperature = Number.isFinite(v) ? v : 0;
+    refreshResumeBanner();
+  });
+
+  // Modal
+  $('#open-key-modal').addEventListener('click', openKeyModal);
+  $('#cancel-key').addEventListener('click', closeKeyModal);
+  $('#save-key').addEventListener('click', () => {
+    const v = $('#api-key-input').value.trim();
+    if (v) {
+      localStorage.setItem('preatorlabs.apiKey', v);
+      state.apiKey = v;
+    }
+    refreshKeyStatus();
+    closeKeyModal();
+  });
+  $('#clear-key').addEventListener('click', () => {
+    localStorage.removeItem('preatorlabs.apiKey');
+    state.apiKey = null;
+    refreshKeyStatus();
+    $('#api-key-input').value = '';
+  });
+
+  // Run
+  $('#btn-run').addEventListener('click', () => launchAnalysis(false));
+  $('#btn-cancel-run').addEventListener('click', () => {
+    if (state.abortController) state.abortController.abort();
+  });
+  $('#btn-resume-run').addEventListener('click', () => launchAnalysis(true));
+  $('#btn-discard-resume').addEventListener('click', () => {
+    clearRunState();
+    state.resumable = null;
+    refreshResumeBanner();
+  });
+
+  refreshResumeBanner();
+});
+
+async function launchAnalysis(resume) {
+  $('#error-msg').style.display = 'none';
+  if (!state.apiKey) {
+    showError("Configure d'abord ta clé API Anthropic (bouton en haut à droite du panneau).");
+    switchTab('run');
+    return;
+  }
+  const validSegments  = nonEmpty(state.segments);
+  const validScenarios = nonEmpty(state.scenarios);
+  if (validSegments.length === 0) {
+    showError("Ton prompt n'a aucun segment exploitable. Colle un prompt et clique sur « Segmenter ».");
+    switchTab('config');
+    return;
+  }
+  if (validScenarios.length === 0) {
+    showError("Ajoute au moins un scénario non vide avant de lancer.");
+    switchTab('config');
+    return;
+  }
+  const tokenEstimate = Math.ceil(validSegments.join('\n\n').length / 4);
+  if (tokenEstimate > 10000) {
+    const ok = confirm(
+      `Ton prompt est très long (≈ ${tokenEstimate} tokens). L'analyse peut être lente et coûteuse. Continuer ?`
+    );
+    if (!ok) return;
+  }
+  const totalCalls = validScenarios.length + validSegments.length * validScenarios.length;
+  if (totalCalls > 150 && !resume) {
+    const usd = formatUSD(estimateCostUSD(totalCalls, state.model));
+    const ok = confirm(
+      `Cette analyse va effectuer ${totalCalls} appels API (estimés ${usd}, plafond max_tokens). Confirmer ?`
+    );
+    if (!ok) return;
+  }
+
+  switchTab('run');
+  $('#progress-wrap').style.display = 'block';
+  $('#btn-run').disabled = true;
+  $('#btn-run').style.opacity = '0.5';
+  $('#btn-cancel-run').style.display = 'inline-flex';
+
+  state.abortController = new AbortController();
+  try {
+    const criteria = getCriteria();
+    const results = await runAblation(
+      validSegments,
+      validScenarios,
+      criteria,
+      state.apiKey,
+      state.model,
+      state.temperature,
+      (done, total) => {
+        const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+        $('#progress-fg').style.width = pct + '%';
+        $('#progress-text').textContent = `appel ${done} / ${total} · un appel peut prendre 2–10 s`;
+      },
+      { resume, signal: state.abortController.signal }
+    );
+    state.results = results;
+    try { localStorage.setItem('preatorlabs.lastResults', JSON.stringify(results)); } catch { /* ignore */ }
+    state.resumable = null;
+    refreshResumeBanner();
+    renderResults();
+    setTimeout(() => switchTab('results'), 400);
+  } catch (e) {
+    const msg = (e && e.message) ? e.message : String(e);
+    showError(msg);
+    state.resumable = loadRunState();
+    refreshResumeBanner();
+  } finally {
+    $('#btn-run').disabled = false;
+    $('#btn-run').style.opacity = '1';
+    $('#btn-cancel-run').style.display = 'none';
+    state.abortController = null;
+  }
+}
+
+function refreshResumeBanner() {
+  const banner = $('#resume-banner');
+  if (!banner) return;
+  const data = state.resumable || loadRunState();
+  if (!data) {
+    banner.style.display = 'none';
+    return;
+  }
+  const done =
+    data.baselines.filter(o => o != null).length +
+    data.ablations.reduce((acc, row) => acc + (Array.isArray(row) ? row.filter(o => o != null).length : 0), 0);
+  const total = data.totalCalls || (data.baselines.length + data.ablations.length * data.baselines.length);
+  const sigParts = data.signature.split('|');
+  const currentSig = state.segments.length && state.scenarios.length
+    ? runSignature(nonEmpty(state.segments), nonEmpty(state.scenarios), state.model, state.temperature)
+    : null;
+  const matches = currentSig === data.signature;
+  $('#resume-progress').textContent = `${done} / ${total}`;
+  $('#resume-meta').textContent = matches
+    ? "Configuration identique détectée — tu peux reprendre."
+    : "La configuration actuelle ne correspond pas. Reprendre n'est possible que si tu recharges la config d'origine.";
+  $('#btn-resume-run').disabled = !matches;
+  $('#btn-resume-run').style.opacity = matches ? '1' : '0.5';
+  banner.style.display = 'block';
+}
+
+function showError(msg) {
+  const el = $('#error-msg');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+</script>
+</body>
+</html>
