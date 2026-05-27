@@ -176,6 +176,7 @@ Pour publier une nouvelle version :
    cp web/favicon.svg dist/favicon.svg
    cp web/og-image.png dist/og-image.png
    cp docs/*.md dist/docs/
+   cp docs/view.html dist/docs/view.html
    ```
 3. Re-déployer (commande de la plateforme).
 
