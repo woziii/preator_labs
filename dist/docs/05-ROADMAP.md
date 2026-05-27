@@ -36,7 +36,7 @@ Améliorations incrémentales sans changement d'architecture.
 
 - [ ] Export JSON des résultats (pour archivage et comparaison)
 - [ ] Import d'une analyse précédente
-- [ ] Drill-down par scénario au survol d'un segment (montre l'impact scénario par scénario)
+- [x] Drill-down outputs inline par scénario dans les cartes segment (comparatif baseline vs ablation, panneau repliable, mobile-first)
 - [ ] Calibration affinée des seuils de verdict sur un corpus plus large que Reachy (observation 2026-05-26 : sur Haiku 4.5, 11 segments Reachy sur 12 sont classés "faible" car les outputs sont déjà très convergents ; normalisation par modèle ou par variance globale du run à envisager — cf. `00-AGENT-SMOKE-TEST.md` §B.2)
 - [ ] Mode "ablation combinée" : retirer 2 segments à la fois pour détecter les coalitions
 - [ ] Détection de contre-productivité (delta signé, pas absolu)

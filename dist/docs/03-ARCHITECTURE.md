@@ -173,7 +173,17 @@ type SegmentResult = {
   behav: number;        // [0, 1]
   sem: number;          // [0, 1]
   verdict: 'critical' | 'high' | 'context' | 'mid' | 'low' | 'placebo';
-  perScenario: { scenarioId: string; impact: number }[];
+  perScenario: {
+    scenarioId: string;       // "T1", "T2", ...
+    input: string;            // scénario utilisateur
+    baselineOutput: string;   // output prompt complet
+    ablatedOutput: string;    // output prompt sans segment courant
+    axisDelta: {              // deltas absolus pour ce scénario
+      struct: number;
+      behav: number;
+      sem: number;
+    };
+  }[];
 }
 ```
 

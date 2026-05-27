@@ -175,6 +175,7 @@ Trois éléments :
 1. **Graphique de variance** : barres par segment, hauteur = impact moyen, trait vertical = ±variance, couleur = verdict.
 2. **Cartes 3-axes** : pour chaque segment, décomposition impact structurel / comportemental / sémantique + verdict + phrase explicative.
 3. **Synthèse globale** : trois listes — à conserver, à surveiller, candidats à la suppression.
+4. **Drill-down outputs (V0.2)** : dans chaque carte segment, panneau repliable affichant, scénario par scénario, le comparatif `baseline` vs `output ablé` (segment retiré) avec rappel des deltas d'axes. Le panneau est masqué par défaut et rendu à la demande (lazy render) pour préserver les performances et la lisibilité mobile.
 
 ## Reproductibilité
 

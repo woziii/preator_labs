@@ -941,6 +941,102 @@ textarea { min-height: 160px; resize: vertical; }
   border-left: 2px solid var(--ink);
   line-height: 1.55;
 }
+.seg-drill { margin-top: 12px; }
+.seg-drill-toggle {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid var(--rule-strong);
+  background: var(--bg);
+  color: var(--ink-soft);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: left;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: border-color 0.18s, color 0.18s, background 0.18s;
+}
+.seg-drill-toggle:hover {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+.seg-drill-toggle[aria-expanded="true"] {
+  color: var(--ink);
+  background: var(--bg-2);
+}
+.seg-drill-toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.seg-drill-panel {
+  border: 1px solid var(--rule);
+  border-top: none;
+  padding: 12px;
+  background: var(--bg);
+}
+.scenario-card {
+  border: 1px solid var(--rule);
+  background: var(--bg);
+  padding: 12px;
+  margin-bottom: 10px;
+}
+.scenario-card:last-child { margin-bottom: 0; }
+.scenario-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.scenario-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--ink);
+}
+.scenario-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--ink-mute);
+}
+.scenario-input {
+  font-size: 12px;
+  color: var(--ink-soft);
+  line-height: 1.5;
+  margin-bottom: 10px;
+  padding: 8px 10px;
+  border-left: 2px solid var(--rule);
+  background: var(--bg-2);
+}
+.output-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.output-block {
+  border: 1px solid var(--rule);
+  background: var(--bg-2);
+  padding: 8px;
+}
+.output-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-bottom: 6px;
+}
+.output-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--ink-soft);
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 180px;
+  overflow: auto;
+}
 
 .synthesis {
   margin-top: 32px;
@@ -1067,6 +1163,8 @@ footer { padding: 56px 0 80px; }
   .consequences li { grid-template-columns: 1fr; gap: 4px; }
   .consequences .conseq-name { padding-top: 0; }
   .params-grid { gap: 10px; }
+  .scenario-card { padding: 10px; }
+  .output-text { font-size: 11px; }
 }
 @media (max-width: 360px) {
   .shell { padding: 0 12px; }
@@ -1077,6 +1175,9 @@ footer { padding: 56px 0 80px; }
   .hero { padding: 56px 0 64px; }
   .api-status { font-size: 11px; }
   .seg-axes { grid-template-columns: 78px 1fr 40px; }
+}
+@media (max-width: 860px) {
+  .output-grid { grid-template-columns: 1fr; }
 }
 
 /* ============ Animations ============ */
@@ -1951,7 +2052,18 @@ function aggregateSegment(i, segments, scenarios, baselines, baselineScores, out
     struct: meanStruct,
     behav: meanBehav,
     sem: meanSem,
-    verdict
+    verdict,
+    perScenario: scenarios.map((input, j) => ({
+      scenarioId: 'T' + (j + 1),
+      input: input,
+      baselineOutput: baselines[j],
+      ablatedOutput: outputs[j],
+      axisDelta: {
+        struct: perScenario[j].struct,
+        behav: perScenario[j].behav,
+        sem: perScenario[j].sem
+      }
+    }))
   };
 }
 
@@ -2190,7 +2302,7 @@ function renderResults() {
   $('#empty-results').style.display = 'none';
   $('#results-content').style.display = 'block';
 
-  const data = state.results;
+  const data = normalizeResultsData(state.results);
   const labels = data.map(d => d.id);
   const impacts = data.map(d => Math.round(d.impact * 100));
   const lower = data.map(d => Math.max(0, Math.round((d.impact - d.variance) * 100)));
@@ -2274,6 +2386,7 @@ function renderResults() {
   ax.innerHTML = data.map((d) => {
     const meta = VERDICT_META[d.verdict];
     const quote = d.text.slice(0, 120).replace(/\n/g, ' ') + (d.text.length > 120 ? '…' : '');
+    const hasScenarioDetails = Array.isArray(d.perScenario) && d.perScenario.length > 0;
     return `
       <div class="seg-card">
         <div class="seg-card-h">
@@ -2296,9 +2409,19 @@ function renderResults() {
           <span class="ax-val">${Math.round(d.sem*100)}%</span>
         </div>
         <div class="seg-verdict-line">${meta.expl}</div>
+        <div class="seg-drill">
+          <button
+            class="seg-drill-toggle"
+            data-seg-id="${d.id}"
+            aria-expanded="false"
+            ${hasScenarioDetails ? '' : 'disabled'}
+          >${hasScenarioDetails ? `Voir outputs (${d.perScenario.length} scénarios)` : 'Outputs non disponibles'}</button>
+          <div class="seg-drill-panel" id="drill-${d.id}" hidden></div>
+        </div>
       </div>
     `;
   }).join('');
+  bindDrilldownToggles(data);
 
   // Synthesis
   const critList = data.filter(d => d.verdict === 'critical' || d.verdict === 'high').map(d => d.id).join(', ') || '—';
@@ -2310,6 +2433,59 @@ function renderResults() {
     <div class="synthesis-line"><strong>Filets contextuels</strong> · <span class="ids">${contextList}</span> — variance élevée, mais utiles sur scénarios spécifiques. Garder.</div>
     <div class="synthesis-line"><strong>Candidats à la suppression</strong> · <span class="ids">${dropList}</span> — impact faible, possibles redondances ou décor.</div>
   `;
+}
+
+function normalizeResultsData(results) {
+  if (!Array.isArray(results)) return [];
+  return results.map(r => {
+    if (Array.isArray(r.perScenario)) return r;
+    return { ...r, perScenario: [] };
+  });
+}
+
+function bindDrilldownToggles(data) {
+  const map = new Map(data.map(d => [d.id, d]));
+  $$('.seg-drill-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const segId = btn.dataset.segId;
+      const seg = map.get(segId);
+      if (!seg) return;
+      const panel = $('#drill-' + segId);
+      if (!panel) return;
+      const opening = panel.hidden;
+      btn.setAttribute('aria-expanded', String(opening));
+      panel.hidden = !opening;
+      if (opening && !panel.dataset.loaded) {
+        panel.innerHTML = renderScenarioOutputs(seg);
+        panel.dataset.loaded = '1';
+      }
+    });
+  });
+}
+
+function renderScenarioOutputs(segment) {
+  if (!Array.isArray(segment.perScenario) || segment.perScenario.length === 0) {
+    return `<div class="scenario-card"><div class="scenario-meta">Aucun détail output disponible pour ce run.</div></div>`;
+  }
+  return segment.perScenario.map((s, idx) => `
+    <div class="scenario-card">
+      <div class="scenario-head">
+        <div class="scenario-id">${escapeHtml(s.scenarioId || ('T' + (idx + 1)))}</div>
+        <div class="scenario-meta">Δ struct ${Math.round((s.axisDelta?.struct || 0) * 100)}% · Δ comport ${Math.round((s.axisDelta?.behav || 0) * 100)}% · Δ sém ${Math.round((s.axisDelta?.sem || 0) * 100)}%</div>
+      </div>
+      <div class="scenario-input"><strong>Input:</strong> ${escapeHtml(s.input || '')}</div>
+      <div class="output-grid">
+        <div class="output-block">
+          <div class="output-label">baseline (prompt complet)</div>
+          <div class="output-text">${escapeHtml(s.baselineOutput || '')}</div>
+        </div>
+        <div class="output-block">
+          <div class="output-label">sans ${escapeHtml(segment.id)}</div>
+          <div class="output-text">${escapeHtml(s.ablatedOutput || '')}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
 }
 
 /* ===================== Event bindings ===================== */
