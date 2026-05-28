@@ -30,16 +30,15 @@ Légende :
 - `semanticSimilarity` : retourne `dot / (||a|| · ||b||)` ∈ [-1, 1] en théorie, mais avec TF-IDF (fréquences ≥ 0) toujours ∈ [0, 1]. **L'impact sémantique** est `1 - similarity`, donc ∈ [0, 1].
 
 ### A4 — Seuils de verdict sur cas Reachy [OK]
-Seuils dans `classifyVerdict` (web/index.html) :
+Seuils dans `classifyVerdict` (web/index.html, 5 verdicts V0.3) :
 ```
-impact >= 0.60 && variance < 0.15 → critical
-impact >= 0.45 && variance < 0.20 → high
-variance >= 0.25 → context
 impact < 0.10 → placebo
-impact < 0.20 → low
-else → mid
+impact/activation forts + variance faible → critical
+impact solide + activation suffisante → high
+impact >= 0.15 && (variance >= 0.25 || activation < 0.50) → context
+impact < 0.20 stable → low
 ```
-Conformes à `docs/02-METHODOLOGY.md` §7. Calibrés sur Reachy. Reproduits manuellement par revue. Validation par exécution API réelle prévue en smoke test (`docs/00-AGENT-SMOKE-TEST.md`).
+Conformes à `docs/02-METHODOLOGY.md` §7. Le verdict `mid` a été retiré. Validation offline : `scripts/quality_eval_v03.mjs` (test classification).
 
 ### A5 — Calcul de coût exact [OK]
 `updateCost()` calcule `M + N*M`. Cohérent avec la formule `N×M+M` de `02-METHODOLOGY.md` §4.

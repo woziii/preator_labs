@@ -11,7 +11,7 @@ Prompt brut
 [1] Segmentation automatique
     │
     ▼
-[2] Configuration des scénarios + critères 3 axes
+[2] Configuration des scénarios + règles (manual + auto)
     │
     ▼
 [3] Génération baseline (T=0)
@@ -23,7 +23,7 @@ Prompt brut
 [5] Calcul des deltas par axe
     │
     ▼
-[6] Agrégation : impact moyen + variance
+[6] Agrégation : axes actifs + impact + variance + activation
     │
     ▼
 [7] Classification : verdict par segment
@@ -74,21 +74,24 @@ La segmentation automatique est **proposée, pas imposée**. L'utilisateur voit 
 
 Inputs utilisateur typiques. Recommandation : **5 à 8 scénarios** couvrant les principaux cas d'usage du prompt. Trop peu → la variance est mal estimée. Trop → coût qui explose sans gain proportionnel.
 
-### Critères des 3 axes
+### Règles des 3 axes
 
-**Structurel** — formules de parsing booléennes :
+**Structurel** — règles vérifiables et traçables :
 - longueur ≤ N mots
 - absence de caractère/pattern (ex. `*`, listes Markdown)
 - présence de structure attendue (JSON valide, clés requises)
+- présence d'une phrase imposée (`termine par "..."`)
+- seuil numérique extrait du prompt (`pas plus de 20€`)
 
 **Comportemental** — détection lexicale :
 - termes interdits (liste de strings)
 - termes attendus (liste de strings)
 - patterns regex métier
+- tutoiement/vouvoiement explicitement demandé
 
 **Sémantique** — distance cosinus :
-- mode B (V1) : comparaison directe output-complet vs output-ablé
-- mode A (V2) : comparaison à un corpus de référence fourni par l'utilisateur
+- mode `tfidf_local` (gratuit) : comparaison directe output-complet vs output-ablé
+- mode `voyage_api` (payant, optionnel) : embeddings Voyage + cosinus
 
 ## [3] Génération baseline
 
@@ -118,10 +121,10 @@ Exemple : 12 segments × 6 scénarios = 78 appels.
 Pour chaque triplet (segment Si, scénario Tj, axe a ∈ {struct, behav, sem}) :
 
 ```
-delta(i, j, a) = score_a(O(complet, Tj)) - score_a(O(¬Si, Tj))
+delta(i, j, a) = |score_a(O(complet, Tj)) - score_a(O(¬Si, Tj))|
 ```
 
-Un delta positif signifie que le segment **contribuait** au score sur cet axe. Un delta nul signifie qu'il n'avait pas d'effet. Un delta négatif (rare) signifie que le segment **dégradait** le score — c'est un parasite.
+Un delta nul signifie qu'il n'avait pas d'effet. Quand un axe n'est pas calculable sur un scénario, il est marqué **non applicable** (et exclu de l'agrégation de ce scénario).
 
 ### Détail par axe
 
@@ -130,9 +133,10 @@ Un delta positif signifie que le segment **contribuait** au score sur cet axe. U
 score_struct(output) = sum(criterion(output) for criterion in struct_criteria) / num_criteria
 ```
 
-**Axe comportemental — lexical diff :**
+**Axe comportemental — proportion de règles respectées :**
 ```
-score_behav(output) = (1 - presence_of_forbidden) * presence_of_required
+score_behav(output) = matched_behav(output) / total_behav(output)
+# si total_behav = 0 → non applicable
 ```
 
 **Axe sémantique — cosinus :**
@@ -146,27 +150,40 @@ En mode B : `score_sem` est calculé sur la *différence* entre output complet e
 Pour chaque segment Si :
 
 ```
-impact_total(i) = mean over j and a of |delta(i, j, a)|
-                  weighted by axis_weights
-variance(i) = std over j of impact_total(i, j)
+impact(i, j) = moyenne des deltas sur axes applicables uniquement
+impact_total(i) = mean_j(impact(i, j))
+variance(i) = std_j(impact(i, j))
+activation(i) = ratio_j(impact(i, j) >= seuil)
 ```
 
-Les `axis_weights` sont par défaut `[1/3, 1/3, 1/3]` mais peuvent être ajustés (V2) si l'utilisateur veut sur-pondérer un axe.
+La V0.3 évite la dilution par axes dormants : pas de moyenne fixe sur 3 axes quand un axe est non applicable.
 
-## [7] Classification : verdict par segment
+## [7] Classification : verdict par segment (5 niveaux, V0.3)
 
-Le verdict est attribué selon les seuils suivants :
+Ordre d'évaluation dans `classifyVerdict(impact, variance, activationRate)` :
 
-| Verdict | Condition | Interprétation |
+| Verdict | Condition (résumé) | Interprétation |
 |---|---|---|
-| **critical** | impact ≥ 0.60 et variance < 0.15 | À conserver sans modification |
-| **high** | impact ≥ 0.45 et variance < 0.20 | Important, modifier avec prudence |
-| **context** | variance ≥ 0.25 | Filet de sécurité ponctuel |
-| **mid** | 0.20 ≤ impact < 0.45 | Effet modéré, à affiner |
-| **low** | 0.10 ≤ impact < 0.20 | Faible impact, vérifier redondances |
-| **placebo** | impact < 0.10 | Pas pris en compte par le LLM |
+| **placebo** | impact &lt; 0.10 | Pas pris en compte par le LLM |
+| **critical** | impact/activation forts + variance faible | Fondamental, actif partout |
+| **high** | impact solide + activation suffisante + variance contenue | Important, modifier avec prudence |
+| **context** | impact ≥ 0.15 **et** (variance ≥ 0.25 **ou** activation &lt; 0.50) | Filet ponctuel ou activation partielle |
+| **low** | impact &lt; 0.20, stable | Faible impact, vérifier redondances |
 
-Ces seuils sont les **valeurs par défaut V1**. Ils ont été calibrés empiriquement sur le prompt Reachy (12 segments, 6 scénarios). Ils devront être réévalués sur un corpus de prompts plus large en V2.
+Le verdict **modéré** (`mid`) a été retiré : les cas à impact modéré mais variance haute ou activation partielle sont classés **contextuel**.
+
+Constante alignée code : `AXIS_ACTIVE_THRESHOLD = 0.30` pour le calcul d'activation.
+
+### Protocole d'interprétation
+
+1. **Impact moyen fiable** quand variance basse et activation ≥ 50 % → `critical` / `high` / `low` selon l'amplitude.
+2. **Variance ou activation prioritaires** quand l'impact moyen est trompeur :
+   - *Disclaimer médical* : fin imposée → axe structurel actif sur peu de scénarios → `context` malgré impact moyen modeste.
+   - *Segment prix* : règle seuil € → activation partielle selon scénarios → `context`.
+   - *Segment public jeune* : sans marqueurs manuels, axes souvent non applicables ; ajouter termes attendus/interdits pour mesurer.
+3. **Ne pas supprimer** un segment `context` sur la seule base d'un impact moyen bas.
+
+Ces seuils sont des **heuristiques par défaut**, calibrées empiriquement (prompt Reachy). Réévaluation cross-modèles prévue en V0.4.
 
 ## [8] Restitution visuelle
 

@@ -53,7 +53,7 @@ $ curl -sI http://localhost:8765/inexistant   → 404
 URL : `http://localhost:8765/`
 - ✅ `<title>` : "preatorlabs — débogueur de prompt LLM par ablation multi-axes"
 - ✅ Hero affiché avec H1, sous-titre, deux CTA
-- ✅ Sections présentes et navigables : Hero · Problème · Méthode (3 axes) · Comment ça marche (4 étapes) · Comment lire (6 verdicts) · Démo · FAQ (7 questions) · Privacy (2 cartes) · Footer
+- ✅ Sections présentes et navigables : Hero · Problème · Méthode (3 axes) · Comment ça marche (4 étapes) · Comment lire (5 verdicts) · Démo · FAQ (7 questions) · Privacy (2 cartes) · Footer
 - ✅ Nav top : "La méthode · Comment ça marche · Démo · FAQ" — toutes les ancres résolvent
 - ✅ Footer : 5 liens docs, 5 liens projet (dont 2 vers GitHub placeholder), mention licence MIT
 - ✅ **Aucune erreur JavaScript dans la console** (vérifié via `browser_console_messages`)
@@ -138,7 +138,7 @@ $ node -e "<extract <script>, new Function(body)>" → "JS syntax OK"
 - ✅ Cadence stable : ~1.08 appels/seconde, sans saturation visible du rate-limit Anthropic.
 - ✅ **Aucune erreur ni warning** dans la console (vérifié via `browser_console_messages`, seules les notes neutres du tooling MCP apparaissent).
 - ✅ À la fin du run, le chargement automatique de la font JetBrains Mono confirme que Chart.js a démarré le rendu du graphique.
-- ✅ Onglet "/03 résultats" : le graphique de variance s'affiche correctement avec 12 barres, barres d'erreur visibles, légende des 6 verdicts (critical / fort impact / contextuel / modéré / faible / placebo) présente.
+- ✅ Onglet "/03 résultats" : le graphique de variance s'affiche correctement avec 12 barres, barres d'erreur visibles, légende des 5 verdicts (critical / fort impact / contextuel / faible / placebo) présente.
 - ✅ Décomposition par segment rendue avec les 12 cartes (S1..S12) : titre + extrait du segment, 3 barres horizontales (structurel / comportemental / sémantique) avec pourcentages numériques, badge de verdict, note interprétative.
 - ✅ Carte "Synthèse actionnable" rendue avec les 3 catégories (À conserver tel quel · Filets contextuels · Candidats à la suppression).
 

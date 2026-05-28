@@ -9,7 +9,7 @@ Source primaire de chaque réponse : `01-SCIENTIFIC-RATIONALE.md`, `02-METHODOLO
 
 ## 1. Quel problème preatorlabs résout-il ? (3 lignes)
 
-L'ingénierie de prompt repose aujourd'hui sur des ajustements à l'aveugle : on modifie une phrase sans savoir si elle contribue réellement au comportement du LLM. preatorlabs mesure objectivement, segment par segment, l'impact réel de chaque partie d'un prompt système. Le résultat est un graphique de variance qui distingue les segments critiques, contextuels, modérés et placebo — pour décider quoi conserver, modifier ou supprimer avec fondement, plutôt que par intuition.
+L'ingénierie de prompt repose aujourd'hui sur des ajustements à l'aveugle : on modifie une phrase sans savoir si elle contribue réellement au comportement du LLM. preatorlabs mesure objectivement, segment par segment, l'impact réel de chaque partie d'un prompt système. Le résultat est un graphique de variance qui distingue les segments critiques, contextuels, faibles et placebo — pour décider quoi conserver, modifier ou supprimer avec fondement, plutôt que par intuition.
 
 ## 2. Pourquoi "ablation multi-axes multi-scénarios" plutôt que Shapley, logprobs ou LLM-as-judge ?
 
@@ -71,20 +71,19 @@ variance(Si)    = écart-type sur j de impact_total(Si, j)
 
 Poids des axes : `[1/3, 1/3, 1/3]` en V0.1 (configurable en V2).
 
-## 4. Les 6 verdicts et leurs seuils
+## 4. Les 5 verdicts et leurs seuils (V0.3)
 
 Source de vérité : `web/index.html`, fonction `classifyVerdict`. L'ordre de test détermine la priorité.
 
-| # | Verdict | Condition | Interprétation | Action |
+| # | Verdict | Condition (résumé) | Interprétation | Action |
 |---|---|---|---|---|
-| 1 | **critical** | `impact ≥ 0.60` ET `variance < 0.15` | Fondamental, actif partout. | Ne pas toucher. |
-| 2 | **high** | `impact ≥ 0.45` ET `variance < 0.20` | Important et stable. | Modifier avec prudence. |
-| 3 | **context** | `variance ≥ 0.25` | Filet de sécurité ponctuel. | Garder, malgré impact moyen. |
-| 4 | **placebo** | `impact < 0.10` | Ignoré par le LLM. | Supprimer ou reformuler. |
-| 5 | **low** | `impact < 0.20` | Faible. Redondance possible. | Tester ablation combinée. |
-| 6 | **mid** | `0.20 ≤ impact < 0.45` (fallback) | Modéré et stable. | Affiner si gain de place utile. |
+| 1 | **placebo** | `impact < 0.10` | Ignoré par le LLM. | Supprimer ou reformuler. |
+| 2 | **critical** | impact/activation forts + variance faible | Fondamental. | Ne pas toucher. |
+| 3 | **high** | impact solide + activation suffisante | Important et stable. | Modifier avec prudence. |
+| 4 | **context** | `impact ≥ 0.15` ET (`variance ≥ 0.25` OU `activation < 0.50`) | Filet ou activation partielle. | Garder. |
+| 5 | **low** | impact faible, stable | Redondance possible. | Tester ablation combinée. |
 
-Ces seuils ont été calibrés sur le prompt Reachy (12 segments × 6 scénarios) et seront recalibrés en V2 sur un corpus plus large (`02-METHODOLOGY.md` §7).
+Le verdict **modéré** (`mid`) a été fusionné vers **contextuel**. Voir `02-METHODOLOGY.md` §7 pour le protocole d'interprétation.
 
 ## 5. Limites explicitement assumées (hors-scope documenté)
 

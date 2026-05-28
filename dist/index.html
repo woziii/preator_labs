@@ -254,6 +254,18 @@ section { padding: 96px 0; border-bottom: 1px solid var(--rule); }
 /* ============ Method section ============ */
 .method-intro { max-width: 760px; margin-bottom: 60px; }
 .method-intro p { font-size: 16px; color: var(--ink-soft); line-height: 1.7; margin-bottom: 14px; }
+.doc-links {
+  max-width: 760px;
+  margin-top: 40px;
+  padding: 20px 24px;
+  background: var(--bg-2);
+  border-left: 2px solid var(--ink);
+}
+.doc-links p { font-size: 14px; color: var(--ink); font-weight: 500; margin: 0 0 12px; }
+.doc-links ul { margin: 0; padding: 0; list-style: none; }
+.doc-links li { font-size: 14px; color: var(--ink-soft); line-height: 1.65; margin-bottom: 8px; }
+.doc-links li:last-child { margin-bottom: 0; }
+.doc-links a { color: var(--ink); text-underline-offset: 2px; }
 .method-formula {
   font-family: 'JetBrains Mono', monospace;
   font-size: 14px;
@@ -750,6 +762,42 @@ textarea { min-height: 160px; resize: vertical; }
   color: var(--ink-soft);
 }
 .criteria-block label input[type="number"] { width: 60px; padding: 6px 8px; }
+.rules-preview {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+.rules-preview-h {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin-bottom: 8px;
+  text-transform: lowercase;
+}
+.rules-preview ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rules-preview li {
+  font-size: 12px;
+  color: var(--ink-soft);
+  line-height: 1.5;
+  margin-bottom: 6px;
+}
+.rules-preview .rule-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 1px 6px;
+  border-radius: 3px;
+  margin-right: 6px;
+}
+.rules-preview .rule-badge.auto { background: rgba(154, 96, 24, 0.14); color: var(--c-context); }
+.rules-preview .rule-badge.manual { background: rgba(45, 104, 73, 0.14); color: var(--c-high); }
+.rules-preview .empty { font-size: 12px; color: var(--ink-soft); font-style: italic; }
 
 .params-grid {
   display: grid;
@@ -1271,7 +1319,7 @@ footer { padding: 56px 0 80px; }
     <p class="sect-lead">preatorlabs s'inspire d'une méthode bien connue en science expérimentale : pour mesurer la contribution d'un élément à un système, on le retire et on observe ce qui change. Appliquée au prompt, segment par segment, et croisée avec plusieurs scénarios de test.</p>
 
     <div class="method-intro">
-      <p><strong>Le principe.</strong> Pour chaque segment du prompt, on génère deux versions de la réponse à un même input : avec le segment, et sans. La différence entre ces deux outputs est mesurée selon trois dimensions distinctes. La répétition sur plusieurs scénarios donne deux signaux : <em>l'impact moyen</em> du segment (combien il pèse en moyenne) et <em>la variance</em> entre scénarios (est-il actif partout, ou seulement dans certains cas).</p>
+      <p><strong>Le principe.</strong> Pour chaque segment du prompt, on génère deux versions de la réponse à un même input : avec le segment, et sans. La différence entre ces deux outputs est mesurée selon trois dimensions distinctes. La répétition sur plusieurs scénarios donne l'<em>impact moyen</em> du segment (combien il pèse en moyenne) et la <em>variance</em> entre scénarios (est-il actif partout, ou seulement dans certains cas).</p>
     </div>
 
     <div class="method-formula mono">
@@ -1315,6 +1363,14 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
         <span class="axis-tag">embeddings · cosinus</span>
       </div>
     </div>
+
+    <div class="doc-links">
+      <p>Approfondir le protocole, les scores par axe, l'activation et les limites</p>
+      <ul>
+        <li><a href="/docs/02-METHODOLOGY.md">Méthodologie</a> — workflow complet et formules</li>
+        <li><a href="/docs/01-SCIENTIFIC-RATIONALE.md">Rationale scientifique</a> — choix méthodologiques et évolution V0.3</li>
+      </ul>
+    </div>
   </div>
 </section>
 
@@ -1344,8 +1400,17 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
       <div class="howto-cell">
         <div class="howto-num">étape 4</div>
         <div class="howto-h serif">Lis les résultats</div>
-        <p class="howto-p">Un graphique de variance + décomposition par axe + synthèse en trois listes : à conserver, à surveiller, candidats à la suppression. Lecture en 30 secondes.</p>
+        <p class="howto-p">Un graphique de variance + décomposition par axe + synthèse en trois listes. Guide de lecture : <a href="#reading">comment lire</a>.</p>
       </div>
+    </div>
+
+    <div class="doc-links">
+      <p>Comment les résultats sont calculés (détail technique)</p>
+      <ul>
+        <li><a href="/docs/02-METHODOLOGY.md">Méthodologie</a> — segmentation, règles auto/manuel, deltas, agrégation, verdicts</li>
+        <li><a href="/docs/03-ARCHITECTURE.md">Architecture</a> — modules, prévisualisation des critères, flux de données</li>
+        <li><a href="/docs/01-SCIENTIFIC-RATIONALE.md">Rationale</a> — limites assumées et évolution V0.3</li>
+      </ul>
     </div>
   </div>
 </section>
@@ -1354,9 +1419,20 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
 <section id="reading">
   <div class="shell">
     <div class="sect-label" data-num="04">comment lire</div>
-    <h2 class="sect-h serif">Six verdicts, une grille de décision.</h2>
-    <p class="sect-lead">Le résultat principal est un graphique de variance, où chaque barre représente un segment. La hauteur dit l'impact, la barre d'erreur dit la variance. En V0.3, le verdict tient aussi compte du taux d'activation (part des scénarios où le segment s'active).</p>
+    <h2 class="sect-h serif">Cinq verdicts, une grille de décision.</h2>
+    <p class="sect-lead">Le résultat principal est un graphique de variance, où chaque barre représente un segment. La hauteur dit l'impact, la barre d'erreur dit la variance. Le verdict tient aussi compte du taux d'activation (part des scénarios où l'impact dépasse 30 %). Formules complètes : <a href="/docs/02-METHODOLOGY.md">méthodologie</a>.</p>
 
+    <h3 class="serif" style="font-size: 20px; font-weight: 500; margin: 32px 0 12px;">Lire le graphique</h3>
+    <div class="method-intro" style="margin-bottom: 28px;">
+      <ul style="font-size: 15px; color: var(--ink-soft); line-height: 1.75; padding-left: 20px; margin: 0;">
+        <li><strong>Hauteur de barre</strong> = <code>impact(Si)</code> — amplitude moyenne de l'écart quand le segment est retiré.</li>
+        <li><strong>Trait vertical</strong> = ±<code>variance(Si)</code> — dispersion entre scénarios ; un trait long signale un segment contextuel.</li>
+        <li><strong>Couleur</strong> = verdict (dérivé aussi de <code>activation(Si)</code>, seuil scénario 30 %).</li>
+        <li><strong>Cartes segment</strong> — barres structurel / comport. / sémant. = deltas moyens par axe ; ligne activation = part des scénarios actifs.</li>
+      </ul>
+    </div>
+
+    <h3 class="serif" style="font-size: 20px; font-weight: 500; margin: 0 0 12px;">Grille des verdicts</h3>
     <table class="reading-table">
       <thead>
         <tr>
@@ -1381,19 +1457,13 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
         </tr>
         <tr>
           <td><span class="verdict-pill v-context">contextuel</span></td>
-          <td>variance élevée (activation non uniforme)</td>
-          <td>Filet de sécurité. N'agit que sur certains scénarios mais y est décisif.</td>
-          <td>Garder. Précieux malgré un impact moyen modéré.</td>
-        </tr>
-        <tr>
-          <td><span class="verdict-pill v-mid">modéré</span></td>
-          <td>20 % ≤ impact &lt; 45 %</td>
-          <td>Effet réel mais limité. Peut être affiné.</td>
-          <td>Reformuler ou condenser si la place compte.</td>
+          <td>variance ≥ 25 % <strong>ou</strong> activation &lt; 50 % (avec impact ≥ 15 %)</td>
+          <td>Filet de sécurité : n'agit que sur certains scénarios mais y est décisif. Inclut les segments à activation partielle.</td>
+          <td>Garder. Ne pas confondre impact moyen bas et inutilité.</td>
         </tr>
         <tr>
           <td><span class="verdict-pill v-low">faible</span></td>
-          <td>10 % ≤ impact &lt; 20 %</td>
+          <td>10 % ≤ impact &lt; 20 %, variance basse, activation stable</td>
           <td>Peu d'effet. Possible redondance avec un autre segment.</td>
           <td>Tester une ablation combinée avant suppression.</td>
         </tr>
@@ -1405,6 +1475,19 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
         </tr>
       </tbody>
     </table>
+
+    <h3 class="serif" style="font-size: 20px; font-weight: 500; margin: 48px 0 12px;">Piège classique : le segment ponctuel</h3>
+    <div class="valid-intro">
+      Le piège le plus fréquent est de <strong>supprimer un segment à impact moyen faible</strong> alors qu'il ne s'active que sur un scénario sur plusieurs. La hauteur de barre sous-estime alors un filet de sécurité décisif.
+    </div>
+    <div class="method-intro" style="margin-bottom: 0;">
+      <p style="font-size: 15px; margin-bottom: 12px;"><strong>Exemple.</strong> Un prompt narratif contient&nbsp;: <em>«&nbsp;Évite les clichés du genre&nbsp;: pas de vampires, pas de zombies.&nbsp;»</em> Sur quatre thèmes testés (bibliothèque, station-service, enfant, horloge), retirer ce segment&nbsp;:</p>
+      <ul style="font-size: 15px; color: var(--ink-soft); line-height: 1.75; padding-left: 20px; margin: 0 0 14px;">
+        <li>ne change presque rien sur trois thèmes&nbsp;;</li>
+        <li>fait apparaître un cliché (fantôme, vampire…) sur le quatrième.</li>
+      </ul>
+      <p style="font-size: 15px; color: var(--ink-soft); line-height: 1.75; margin: 0;"><code>impact(Si)</code> reste modeste, mais <code>variance(Si)</code> est élevée (et souvent <code>activation(Si)</code> partielle) → verdict <span class="verdict-pill v-context" style="vertical-align: baseline;">contextuel</span>. Lecture correcte&nbsp;: <em>«&nbsp;ce segment ne sert pas souvent, mais quand il sert, il évite une catastrophe.&nbsp;»</em> C'est ce que le trait vertical du graphique est fait pour révéler — recoupe toujours avec le drill-down scénario par scénario.</p>
+    </div>
   </div>
 </section>
 
@@ -1472,6 +1555,10 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
               <label><input type="checkbox" id="crit-maxwords" checked> Longueur maximale : <input type="number" id="crit-maxwords-val" value="15" min="1" max="500"> mots</label>
               <label><input type="checkbox" id="crit-noasterisk" checked> Pas d'astérisques (actions narrées)</label>
               <label><input type="checkbox" id="crit-nolist" checked> Pas de listes / puces</label>
+              <div class="rules-preview" id="struct-rules-preview">
+                <div class="rules-preview-h">Règles détectées (structurel)</div>
+                <ul id="struct-rules-list"></ul>
+              </div>
             </div>
 
             <div class="criteria-block">
@@ -1481,6 +1568,10 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
               <input type="text" id="crit-required" value="consultation médicale">
               <label style="display:block; margin: 10px 0 4px;">Termes interdits (séparés par virgule) :</label>
               <input type="text" id="crit-forbidden" value="en tant qu'IA, excellente question, je suis un assistant">
+              <div class="rules-preview" id="behav-rules-preview">
+                <div class="rules-preview-h">Règles détectées (comportemental)</div>
+                <ul id="behav-rules-list"></ul>
+              </div>
             </div>
 
             <div class="criteria-block">
@@ -1552,35 +1643,12 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
 
             <div class="results-explainer">
               <h4>Comment lire ce graphique</h4>
-              <p>Chaque barre représente un segment du prompt. La hauteur indique l'<strong>impact moyen</strong> (combien le segment modifie l'output quand on le retire, mesuré sur les axes applicables uniquement). Le trait vertical noir donne la <strong>variance</strong> entre scénarios.</p>
-              <ul>
-                <li><strong>Impact haut + variance faible</strong> → segment fondamental, actif partout.</li>
-                <li><strong>Impact moyen + variance haute</strong> → segment contextuel, ne s'active que sur certains cas.</li>
-                <li><strong>Impact bas + variance faible</strong> → segment ignoré ou placebo, candidat à la suppression.</li>
-              </ul>
+              <p>Chaque barre = un segment. Hauteur = <strong>impact</strong> · trait = ±<strong>variance</strong> · couleur = <strong>verdict</strong>. Grille de décision : <a href="#reading">comment lire</a> · calculs détaillés : <a href="/docs/02-METHODOLOGY.md">méthodologie</a> · <a href="/docs/04-INTERPRETATION-GUIDE.md">guide d'interprétation</a>.</p>
             </div>
 
             <h3 class="serif" style="font-size: 20px; font-weight: 500; margin-bottom: 12px; letter-spacing: -0.005em;">Graphique de variance</h3>
             <div class="chart-legend" id="chart-legend"></div>
             <div class="chart-wrap"><canvas id="variance-chart" role="img" aria-label="Graphique de variance par segment"></canvas></div>
-
-            <div class="results-explainer" style="margin-top: 32px;">
-              <h4>Que mesurent les 3 axes ?</h4>
-              <p style="margin-bottom: 8px;"><span class="axis-dot" style="background: var(--c-struct); margin-right: 6px;"></span><strong>Structurel</strong> — l'output respecte-t-il le format (longueur, absence de listes, syntaxe) ? Mesure binaire par parsing.</p>
-              <p style="margin-bottom: 8px;"><span class="axis-dot" style="background: var(--c-behav); margin-right: 6px;"></span><strong>Comportemental</strong> — l'output suit-il les règles métier (termes interdits/attendus) ? Mesure par détection lexicale.</p>
-              <p><span class="axis-dot" style="background: var(--c-sem); margin-right: 6px;"></span><strong>Sémantique</strong> — le sens et le style sont-ils préservés ? Mesure par distance cosinus entre embeddings.</p>
-            </div>
-
-            <div class="results-explainer" style="margin-top: 20px;">
-              <h4>Interprétation technique (V0.3)</h4>
-              <ul>
-                <li><strong>Axes applicables uniquement</strong> : un axe non mesurable sur un scénario est exclu du calcul (pas de dilution artificielle).</li>
-                <li><strong>Activation</strong> : chaque carte affiche la part des scénarios où le segment s'active (seuil impact scénario = 30%).</li>
-                <li><strong>Fournisseur sémantique</strong> : TF-IDF local (gratuit) ou Voyage. Si Voyage échoue, repli local automatique.</li>
-                <li><strong>Trace des règles</strong> : les scores structurels/comportementaux combinent règles manuelles et règles auto-extraites.</li>
-              </ul>
-              <p style="margin-top:10px;"><strong>Limites à garder en tête :</strong> les formulations implicites peuvent échapper à l'auto-extraction regex; les consignes abstraites demandent des marqueurs manuels; les interactions fortes entre segments (effets de coalition) ne sont pas exhaustivement modélisées en ablation simple.</p>
-            </div>
 
             <h3 class="serif" style="font-size: 20px; font-weight: 500; margin: 32px 0 12px; letter-spacing: -0.005em;">Décomposition par segment</h3>
             <div id="axes-breakdown"></div>
@@ -1904,64 +1972,131 @@ function detectAutoStructuralRules(segments) {
   const rules = [];
   const endings = [];
   const mustContain = [];
+
   for (const line of lines) {
     const lower = line.toLowerCase();
     const quoted = extractQuotedStrings(line);
     if (quoted.length && /(termine|conclus|fini|finish|end)/i.test(lower)) endings.push(...quoted);
     if (quoted.length && /(inclus|contient|include|mentionne|ajoute)/i.test(lower)) mustContain.push(...quoted);
   }
-  for (const phrase of dedupeStrings(endings)) rules.push({ axis: 'struct', source: 'auto', type: 'must_end_with', phrase, label: `Fin imposée: "${phrase}"`, enabled: true });
-  for (const phrase of dedupeStrings(mustContain)) rules.push({ axis: 'struct', source: 'auto', type: 'must_contain', phrase, label: `Contenu imposé: "${phrase}"`, enabled: true });
+
+  for (const phrase of dedupeStrings(endings)) {
+    rules.push({ axis: 'struct', source: 'auto', type: 'must_end_with', phrase, label: `Fin imposée: "${phrase}"`, enabled: true });
+  }
+  for (const phrase of dedupeStrings(mustContain)) {
+    rules.push({ axis: 'struct', source: 'auto', type: 'must_contain', phrase, label: `Contenu imposé: "${phrase}"`, enabled: true });
+  }
+
   const maxWordsMatch = joined.match(/(?:maximum|max|pas plus de|jusqu['’]à)\s*(\d+)\s*mots?/i);
-  if (maxWordsMatch) rules.push({ axis: 'struct', source: 'auto', type: 'max_words', value: parseInt(maxWordsMatch[1], 10), label: `Longueur max ${maxWordsMatch[1]} mots`, enabled: true });
-  if (/(json|format json|réponse json)/i.test(joined)) rules.push({ axis: 'struct', source: 'auto', type: 'json_valid', label: 'JSON valide attendu', enabled: true });
+  if (maxWordsMatch) {
+    rules.push({ axis: 'struct', source: 'auto', type: 'max_words', value: parseInt(maxWordsMatch[1], 10), label: `Longueur max ${maxWordsMatch[1]} mots`, enabled: true });
+  }
+
+  if (/(json|format json|réponse json)/i.test(joined)) {
+    rules.push({ axis: 'struct', source: 'auto', type: 'json_valid', label: 'JSON valide attendu', enabled: true });
+  }
+
   const eurCap = joined.match(/(?:jamais|ne\s+.*pas).*?(?:plus de|sup[ée]rieur [àa])\s*(\d+(?:[.,]\d+)?)\s*(?:€|euros?)/i);
-  if (eurCap) rules.push({ axis: 'struct', source: 'auto', type: 'max_eur', value: parseFloat(eurCap[1].replace(',', '.')), label: `Seuil prix <= ${eurCap[1]}€`, enabled: true });
+  if (eurCap) {
+    rules.push({
+      axis: 'struct',
+      source: 'auto',
+      type: 'max_eur',
+      value: parseFloat(eurCap[1].replace(',', '.')),
+      label: `Seuil prix <= ${eurCap[1]}€`,
+      enabled: true
+    });
+  }
   return rules;
 }
 
 function detectAutoBehavioralRules(segments) {
+  const joined = (segments || []).join('\n');
   const lines = extractPromptLines(segments);
   const forbidden = [];
   const required = [];
   const rules = [];
+
   for (const line of lines) {
     const lower = line.toLowerCase();
     const quoted = extractQuotedStrings(line);
     if (quoted.length && /(jamais|interdit|ne\s+.*pas|évite|evite)/i.test(lower)) forbidden.push(...quoted);
     if (quoted.length && /(toujours|doit|obligatoire|inclure|mentionner)/i.test(lower)) required.push(...quoted);
-    if (/(tutoi|langage.*jeune)/i.test(lower)) rules.push({ axis: 'behav', source: 'auto', type: 'tutoiement', label: 'Tutoiement attendu', enabled: true });
-    if (/(vouvoi)/i.test(lower)) rules.push({ axis: 'behav', source: 'auto', type: 'vouvoiement', label: 'Vouvoiement attendu', enabled: true });
+    if (/(tutoi|langage.*jeune)/i.test(lower)) {
+      rules.push({ axis: 'behav', source: 'auto', type: 'tutoiement', label: 'Tutoiement attendu', enabled: true });
+    }
+    if (/(vouvoi)/i.test(lower)) {
+      rules.push({ axis: 'behav', source: 'auto', type: 'vouvoiement', label: 'Vouvoiement attendu', enabled: true });
+    }
   }
-  for (const term of dedupeStrings(required)) rules.push({ axis: 'behav', source: 'auto', type: 'required_term', term, label: `Terme attendu: "${term}"`, enabled: true });
-  for (const term of dedupeStrings(forbidden)) rules.push({ axis: 'behav', source: 'auto', type: 'forbidden_term', term, label: `Terme interdit: "${term}"`, enabled: true });
+
+  for (const term of dedupeStrings(required)) {
+    rules.push({ axis: 'behav', source: 'auto', type: 'required_term', term, label: `Terme attendu: "${term}"`, enabled: true });
+  }
+  for (const term of dedupeStrings(forbidden)) {
+    rules.push({ axis: 'behav', source: 'auto', type: 'forbidden_term', term, label: `Terme interdit: "${term}"`, enabled: true });
+  }
   return rules;
 }
 
 function compileCriteria(rawCriteria, segments) {
   const structuralRules = [];
   const behavioralRules = [];
+
   if (rawCriteria.maxWords) structuralRules.push({ axis: 'struct', source: 'manual', type: 'max_words', value: rawCriteria.maxWords, label: `Longueur max ${rawCriteria.maxWords} mots`, enabled: true });
   if (rawCriteria.noAsterisk) structuralRules.push({ axis: 'struct', source: 'manual', type: 'no_asterisk', label: "Pas d'astérisques", enabled: true });
   if (rawCriteria.noList) structuralRules.push({ axis: 'struct', source: 'manual', type: 'no_list', label: 'Pas de listes', enabled: true });
+
   for (const term of rawCriteria.required) behavioralRules.push({ axis: 'behav', source: 'manual', type: 'required_term', term, label: `Terme attendu: "${term}"`, enabled: true });
   for (const term of rawCriteria.forbidden) behavioralRules.push({ axis: 'behav', source: 'manual', type: 'forbidden_term', term, label: `Terme interdit: "${term}"`, enabled: true });
+
   if (rawCriteria.autoStruct) structuralRules.push(...detectAutoStructuralRules(segments));
   if (rawCriteria.autoBehav) behavioralRules.push(...detectAutoBehavioralRules(segments));
-  return { semanticProvider: rawCriteria.semanticProvider, structuralRules, behavioralRules };
+
+  return {
+    semanticProvider: rawCriteria.semanticProvider,
+    structuralRules,
+    behavioralRules
+  };
 }
 
 function evalStructural(output, criteria) {
   const rules = (criteria.structuralRules || []).filter(r => r.enabled);
   if (rules.length === 0) return { score: null, applicable: false, matched: 0, total: 0 };
-  let total = 0, matched = 0;
+  let total = 0;
+  let matched = 0;
   for (const rule of rules) {
-    if (rule.type === 'max_words') { total++; if (output.trim().split(/\s+/).filter(Boolean).length <= rule.value) matched++; continue; }
-    if (rule.type === 'no_asterisk') { total++; if (!/\*/.test(output)) matched++; continue; }
-    if (rule.type === 'no_list') { total++; if (!(/^\s*[-*•]\s/m.test(output) || /^\s*\d+\.\s/m.test(output))) matched++; continue; }
-    if (rule.type === 'must_contain') { total++; if (output.includes(rule.phrase)) matched++; continue; }
-    if (rule.type === 'must_end_with') { total++; if (output.trim().endsWith(rule.phrase.trim())) matched++; continue; }
-    if (rule.type === 'json_valid') { total++; try { JSON.parse(output); matched++; } catch { /* invalid */ } continue; }
+    if (rule.type === 'max_words') {
+      total++;
+      const wordCount = output.trim().split(/\s+/).filter(Boolean).length;
+      if (wordCount <= rule.value) matched++;
+      continue;
+    }
+    if (rule.type === 'no_asterisk') {
+      total++;
+      if (!/\*/.test(output)) matched++;
+      continue;
+    }
+    if (rule.type === 'no_list') {
+      total++;
+      if (!(/^\s*[-*•]\s/m.test(output) || /^\s*\d+\.\s/m.test(output))) matched++;
+      continue;
+    }
+    if (rule.type === 'must_contain') {
+      total++;
+      if (output.includes(rule.phrase)) matched++;
+      continue;
+    }
+    if (rule.type === 'must_end_with') {
+      total++;
+      if (output.trim().endsWith(rule.phrase.trim())) matched++;
+      continue;
+    }
+    if (rule.type === 'json_valid') {
+      total++;
+      try { JSON.parse(output); matched++; } catch { /* invalid */ }
+      continue;
+    }
     if (rule.type === 'max_eur') {
       const prices = [...output.matchAll(/(\d+(?:[.,]\d+)?)\s*(?:€|euros?)/gi)].map(m => parseFloat(m[1].replace(',', '.'))).filter(Number.isFinite);
       if (prices.length === 0) continue;
@@ -1977,12 +2112,31 @@ function evalBehavioral(output, criteria) {
   const rules = (criteria.behavioralRules || []).filter(r => r.enabled);
   if (rules.length === 0) return { score: null, applicable: false, matched: 0, total: 0 };
   const lower = output.toLowerCase();
-  let total = 0, matched = 0;
+  let total = 0;
+  let matched = 0;
   for (const rule of rules) {
-    if (rule.type === 'required_term') { total++; if (lower.includes(rule.term.toLowerCase())) matched++; continue; }
-    if (rule.type === 'forbidden_term') { total++; if (!lower.includes(rule.term.toLowerCase())) matched++; continue; }
-    if (rule.type === 'tutoiement') { total++; const hasTu = /\b(tu|toi|te|ton|tes|ta)\b/i.test(output); const hasVous = /\b(vous|votre|vos)\b/i.test(output); if (hasTu && !hasVous) matched++; continue; }
-    if (rule.type === 'vouvoiement') { total++; if (/\b(vous|votre|vos)\b/i.test(output)) matched++; }
+    if (rule.type === 'required_term') {
+      total++;
+      if (lower.includes(rule.term.toLowerCase())) matched++;
+      continue;
+    }
+    if (rule.type === 'forbidden_term') {
+      total++;
+      if (!lower.includes(rule.term.toLowerCase())) matched++;
+      continue;
+    }
+    if (rule.type === 'tutoiement') {
+      total++;
+      const hasTu = /\b(tu|toi|te|ton|tes|ta)\b/i.test(output);
+      const hasVous = /\b(vous|votre|vos)\b/i.test(output);
+      if (hasTu && !hasVous) matched++;
+      continue;
+    }
+    if (rule.type === 'vouvoiement') {
+      total++;
+      const hasVous = /\b(vous|votre|vos)\b/i.test(output);
+      if (hasVous) matched++;
+    }
   }
   if (total === 0) return { score: null, applicable: false, matched: 0, total: 0 };
   return { score: matched / total, applicable: true, matched, total };
@@ -2016,13 +2170,20 @@ function semanticSimilarity(a, b) {
 
 const VOYAGE_ENDPOINT = 'https://api.voyageai.com/v1/embeddings';
 const voyageCache = new Map();
+
 async function voyageEmbedding(text, apiKey) {
   const cacheKey = hashString(text);
   if (voyageCache.has(cacheKey)) return voyageCache.get(cacheKey);
   const response = await fetch(VOYAGE_ENDPOINT, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-    body: JSON.stringify({ input: [text], model: 'voyage-3-lite' })
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      input: [text],
+      model: 'voyage-3-lite'
+    })
   });
   if (!response.ok) {
     const err = await response.text();
@@ -2034,12 +2195,20 @@ async function voyageEmbedding(text, apiKey) {
   voyageCache.set(cacheKey, vector);
   return vector;
 }
+
 function cosineFromVectors(a, b) {
-  let dot = 0, na = 0, nb = 0;
-  for (let i = 0; i < Math.min(a.length, b.length); i++) { dot += a[i] * b[i]; na += a[i] * a[i]; nb += b[i] * b[i]; }
+  let dot = 0;
+  let na = 0;
+  let nb = 0;
+  for (let i = 0; i < Math.min(a.length, b.length); i++) {
+    dot += a[i] * b[i];
+    na += a[i] * a[i];
+    nb += b[i] * b[i];
+  }
   if (na === 0 || nb === 0) return 0;
   return dot / (Math.sqrt(na) * Math.sqrt(nb));
 }
+
 async function semanticDelta(baselineOutput, ablatedOutput, criteria, voyageApiKey) {
   if (!baselineOutput || !ablatedOutput) return { delta: null, applicable: false, provider: criteria.semanticProvider || 'tfidf_local' };
   if (criteria.semanticProvider === 'voyage_api') {
@@ -2186,30 +2355,36 @@ function meanOrNull(values) {
   if (valid.length === 0) return null;
   return valid.reduce((s, v) => s + v, 0) / valid.length;
 }
+
 function activationRate(values, threshold = AXIS_ACTIVE_THRESHOLD) {
   const valid = values.filter(v => typeof v === 'number' && Number.isFinite(v));
   if (valid.length === 0) return null;
-  return valid.filter(v => v >= threshold).length / valid.length;
+  const active = valid.filter(v => v >= threshold).length;
+  return active / valid.length;
 }
+
 async function aggregateSegment(i, segments, scenarios, baselines, baselineScores, outputs, criteria, voyageApiKey) {
   const perScenario = [];
   for (let j = 0; j < scenarios.length; j++) {
     const ablatedStruct = evalStructural(outputs[j], criteria);
     const ablatedBehav = evalBehavioral(outputs[j], criteria);
     const sem = await semanticDelta(baselines[j], outputs[j], criteria, voyageApiKey);
+
     const structDelta = (baselineScores[j].struct.score == null || ablatedStruct.score == null) ? null : Math.abs(baselineScores[j].struct.score - ablatedStruct.score);
     const behavDelta = (baselineScores[j].behav.score == null || ablatedBehav.score == null) ? null : Math.abs(baselineScores[j].behav.score - ablatedBehav.score);
     const semDelta = sem.delta;
     const activeValues = [structDelta, behavDelta, semDelta].filter(v => typeof v === 'number' && Number.isFinite(v));
+    const impact = activeValues.length ? activeValues.reduce((s, v) => s + v, 0) / activeValues.length : null;
     perScenario.push({
       struct: structDelta,
       behav: behavDelta,
       sem: semDelta,
-      impact: activeValues.length ? activeValues.reduce((s, v) => s + v, 0) / activeValues.length : null,
+      impact,
       semProvider: sem.provider,
       activeAxes: activeValues.length
     });
   }
+
   const meanStruct = meanOrNull(perScenario.map(p => p.struct));
   const meanBehav = meanOrNull(perScenario.map(p => p.behav));
   const meanSem = meanOrNull(perScenario.map(p => p.sem));
@@ -2327,21 +2502,19 @@ async function runAblation(segments, scenarios, criteria, apiKey, model, tempera
 }
 
 function classifyVerdict(impact, variance, activationRateOverall) {
-  if ((activationRateOverall || 0) >= 0.60 && impact >= 0.50 && variance < 0.18) return 'critical';
-  if ((activationRateOverall || 0) >= 0.45 && impact >= 0.40 && variance < 0.22) return 'high';
-  if (impact >= 0.60 && variance < 0.15) return 'critical';
-  if (impact >= 0.45 && variance < 0.20) return 'high';
-  if (variance >= 0.25) return 'context';
+  const act = activationRateOverall || 0;
   if (impact < 0.10) return 'placebo';
+  if ((act >= 0.60 && impact >= 0.50 && variance < 0.18) || (impact >= 0.60 && variance < 0.15)) return 'critical';
+  if ((act >= 0.45 && impact >= 0.40 && variance < 0.22) || (impact >= 0.45 && variance < 0.20)) return 'high';
+  if (impact >= 0.15 && (variance >= 0.25 || act < 0.50)) return 'context';
   if (impact < 0.20) return 'low';
-  return 'mid';
+  return 'context';
 }
 
 const VERDICT_META = {
-  critical: { color: 'var(--c-critical)', label: 'critical', expl: "Sans ce segment, les outputs deviennent systématiquement non-conformes. À conserver tel quel." },
+  critical: { color: 'var(--c-critical)', label: 'critical', expl: "Sans ce segment, les réponses deviennent systématiquement non-conformes. À conserver tel quel." },
   high:     { color: 'var(--c-high)',     label: 'fort impact', expl: "Segment qui porte une part importante du style ou de la logique. Modification déconseillée sauf intention claire." },
-  context:  { color: 'var(--c-context)',  label: 'contextuel', expl: "Variance élevée — ce segment ne s'active que sur certains scénarios. C'est un filet de sécurité ponctuel mais utile." },
-  mid:      { color: 'var(--c-mid)',      label: 'modéré', expl: "Impact modéré et stable. Peut être affiné si tu veux récupérer de la place dans le prompt." },
+  context:  { color: 'var(--c-context)',  label: 'contextuel', expl: "Variance élevée ou activation partielle : le segment ne s'active que sur certains scénarios. Filet de sécurité utile à conserver." },
   low:      { color: 'var(--c-low)',      label: 'faible', expl: "Faible impact détecté. Vérifier si redondant avec un autre segment, sinon candidat à la suppression." },
   placebo:  { color: 'var(--c-placebo)',  label: 'placebo', expl: "Impact quasi nul malgré sa formulation explicite. Le LLM ne semble pas le prendre en compte." }
 };
@@ -2350,8 +2523,8 @@ const VERDICT_META = {
 function $(sel) { return document.querySelector(sel); }
 function $$(sel) { return [...document.querySelectorAll(sel)]; }
 
-function getCriteria() {
-  const raw = {
+function getCriteriaRaw() {
+  return {
     autoStruct: $('#crit-auto-struct').checked,
     autoBehav: $('#crit-auto-behav').checked,
     maxWords: $('#crit-maxwords').checked ? parseInt($('#crit-maxwords-val').value) || 15 : null,
@@ -2360,7 +2533,28 @@ function getCriteria() {
     required: splitCsv($('#crit-required').value),
     forbidden: $('#crit-forbidden').value.split(',').map(s => s.trim()).filter(Boolean)
   };
-  return compileCriteria(raw, nonEmpty(state.segments));
+}
+
+function getCriteria() {
+  return compileCriteria(getCriteriaRaw(), nonEmpty(state.segments));
+}
+
+function renderRulesList(ul, rules) {
+  if (!ul) return;
+  if (!rules || rules.length === 0) {
+    ul.innerHTML = '<li class="empty">Aucune règle active pour cet axe. Active l’auto-extraction ou ajoute des critères manuels.</li>';
+    return;
+  }
+  ul.innerHTML = rules.map(r => {
+    const src = r.source === 'auto' ? 'auto' : 'manuel';
+    return `<li><span class="rule-badge ${src}">${src}</span>${escapeHtml(r.label || r.type)}</li>`;
+  }).join('');
+}
+
+function renderCriteriaPreview() {
+  const criteria = getCriteria();
+  renderRulesList($('#struct-rules-list'), (criteria.structuralRules || []).filter(r => r.enabled));
+  renderRulesList($('#behav-rules-list'), (criteria.behavioralRules || []).filter(r => r.enabled));
 }
 
 function renderSegments() {
@@ -2388,12 +2582,14 @@ function renderSegments() {
   list.querySelectorAll('textarea').forEach(t => t.addEventListener('input', e => {
     state.segments[+e.target.dataset.idx] = e.target.value;
     updateCost();
+    renderCriteriaPreview();
   }));
   list.querySelectorAll('button[data-rm]').forEach(b => b.addEventListener('click', e => {
     state.segments.splice(+e.currentTarget.dataset.rm, 1);
     renderSegments();
   }));
   updateCost();
+  renderCriteriaPreview();
 }
 
 function renderScenarios() {
@@ -2632,7 +2828,7 @@ function renderResults() {
   $('#synthesis').innerHTML = `
     <h4>Synthèse actionnable</h4>
     <div class="synthesis-line"><strong>À conserver tel quel</strong> · <span class="ids">${critList}</span> — ces segments portent la conformité de base.</div>
-    <div class="synthesis-line"><strong>Filets contextuels</strong> · <span class="ids">${contextList}</span> — variance élevée, mais utiles sur scénarios spécifiques. Garder.</div>
+    <div class="synthesis-line"><strong>Filets contextuels</strong> · <span class="ids">${contextList}</span> — variance élevée ou activation partielle ; utiles sur scénarios spécifiques. Garder.</div>
     <div class="synthesis-line"><strong>Candidats à la suppression</strong> · <span class="ids">${dropList}</span> — impact faible, possibles redondances ou décor.</div>
   `;
 }
@@ -2777,6 +2973,18 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   refreshResumeBanner();
+
+  const critPreviewIds = [
+    'crit-auto-struct', 'crit-auto-behav', 'crit-maxwords', 'crit-maxwords-val',
+    'crit-noasterisk', 'crit-nolist', 'crit-required', 'crit-forbidden'
+  ];
+  critPreviewIds.forEach(id => {
+    const el = $('#' + id);
+    if (!el) return;
+    const ev = el.tagName === 'INPUT' && (el.type === 'checkbox' || el.type === 'number') ? 'change' : 'input';
+    el.addEventListener(ev, renderCriteriaPreview);
+  });
+  renderCriteriaPreview();
 });
 
 async function launchAnalysis(resume) {

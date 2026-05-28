@@ -61,6 +61,19 @@ const Segmenter = {
 
 Implémentation : algorithme décrit dans `02-METHODOLOGY.md` §1.
 
+#### 2a-bis. Prévisualisation des critères (`renderCriteriaPreview`)
+
+Avant lancement, le panneau configuration affiche les règles qui seront appliquées :
+
+```javascript
+function renderCriteriaPreview() {
+  const criteria = compileCriteria(getCriteriaRaw(), nonEmpty(state.segments));
+  // Liste structuralRules / behavioralRules avec badge auto | manuel
+}
+```
+
+Déclencheurs : segmentation, édition de segments, toggles auto-struct/auto-behav, champs manuels (longueur, termes, etc.). Objectif : traçabilité des règles actives sans lancer l'analyse.
+
 #### 2b. Module `Scorer`
 
 ```javascript
@@ -178,7 +191,7 @@ type SegmentResult = {
   struct: number;       // [0, 1]
   behav: number;        // [0, 1]
   sem: number;          // [0, 1]
-  verdict: 'critical' | 'high' | 'context' | 'mid' | 'low' | 'placebo';
+  verdict: 'critical' | 'high' | 'context' | 'low' | 'placebo';
   perScenario: {
     scenarioId: string;       // "T1", "T2", ...
     input: string;            // scénario utilisateur

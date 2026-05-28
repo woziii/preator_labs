@@ -2,16 +2,19 @@
 
 > Comment lire un rapport preatorlabs et en tirer des décisions d'édition de prompt.
 
+**Rappel :** ce guide ne redéfinit pas les calculs. Protocole et formules → `02-METHODOLOGY.md` §3–7 ; présentation site → sections `#method` (agrégation), `#howto` (opérations), `#reading` (décision).
+
 ## Le tableau de lecture en 30 secondes
 
 | Tu vois… | Le segment est… | Que faire |
 |---|---|---|
-| Impact haut + variance basse | **critique** | ne pas toucher |
-| Impact moyen-haut + variance basse | **fort impact** | modifier avec prudence |
-| Impact moyen + variance haute | **contextuel** (filet) | garder, ne pas paniquer si l'impact moyen est moyen |
-| Impact modéré + variance basse | **modéré** | candidat à l'affinage |
-| Impact bas + variance basse | **faible** | vérifier les redondances, peut-être supprimer |
+| Impact haut + variance basse + activation forte | **critique** | ne pas toucher |
+| Impact moyen-haut + variance basse + activation solide | **fort impact** | modifier avec prudence |
+| Variance haute **ou** activation &lt; 50 % (impact ≥ 15 %) | **contextuel** (filet) | garder — ne pas confondre impact moyen bas et inutilité |
+| Impact bas + variance basse + activation stable | **faible** | vérifier les redondances, peut-être supprimer |
 | Impact quasi nul | **placebo** | suppression sans risque, sauf décor volontaire |
+
+**Règles et activation :** voir prévisualisation config (règles `auto` / `manuel`) et métrique `activationRate` dans `02-METHODOLOGY.md` §6–7. Ne pas interpréter un impact moyen bas sans regarder variance et activation.
 
 ## Le piège classique : le segment ponctuel
 

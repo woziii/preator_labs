@@ -144,7 +144,19 @@ async function run() {
     results.push(['Active-axis aggregation', 'PASS']);
   }
 
-  // Test 6: provider sémantique en fallback local si Voyage indisponible
+  // Test 6: classification 5 verdicts (ex-ancien mid → context)
+  {
+    assert.strictEqual(ctx.classifyVerdict(0.05, 0.05, 0.9), 'placebo');
+    assert.strictEqual(ctx.classifyVerdict(0.65, 0.10, 0.7), 'critical');
+    assert.strictEqual(ctx.classifyVerdict(0.50, 0.15, 0.5), 'high');
+    assert.strictEqual(ctx.classifyVerdict(0.30, 0.10, 0.8), 'context', 'ancien mid stable → context');
+    assert.strictEqual(ctx.classifyVerdict(0.25, 0.30, 0.6), 'context', 'variance haute → context');
+    assert.strictEqual(ctx.classifyVerdict(0.20, 0.05, 0.4), 'context', 'activation partielle → context');
+    assert.strictEqual(ctx.classifyVerdict(0.15, 0.05, 0.8), 'low');
+    results.push(['Verdict classification (5 levels)', 'PASS']);
+  }
+
+  // Test 7: provider sémantique en fallback local si Voyage indisponible
   {
     const criteria = { structuralRules: [], behavioralRules: [], semanticProvider: 'voyage_api' };
     const res = await ctx.semanticDelta('a b c', 'a b d', criteria, 'fake-key');

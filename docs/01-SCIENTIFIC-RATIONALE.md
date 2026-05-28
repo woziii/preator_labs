@@ -133,6 +133,18 @@ La V0.3 ne change pas la philosophie du projet (ablation mesurable), mais corrig
 - **Moins de faux "impact faible"** : disparition de la division automatique par 3 quand 1-2 axes sont inactifs.
 - **Meilleure falsifiabilité locale** : une règle "fin imposée" est vérifiable par inspection directe de l'output.
 
+### 5.4 Où trouver le détail des calculs
+
+| Besoin | Où lire |
+|---|---|
+| Principe + formule d'agrégation (aperçu) | Site `#method` |
+| Parcours utilisateur (4 étapes) | Site `#howto` + liens doc |
+| Lecture des résultats et verdicts | Site `#reading` |
+| Workflow, scores, deltas, verdicts (complet) | `02-METHODOLOGY.md` |
+| Interprétation et pièges | `04-INTERPRETATION-GUIDE.md` |
+
+**Évolution V0.2 → V0.3 (résumé)** : règles auto/manuel + état non applicable ; agrégation sur axes actifs ; activation dans le verdict ; cinq niveaux (fusion `modéré` → `contextuel`) ; prévisualisation des règles avant run.
+
 ## 6. Limites assumées (V0.3)
 
 Toute méthode a un domaine de validité. Voici les limites explicites de preatorlabs :
