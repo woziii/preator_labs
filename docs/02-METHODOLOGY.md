@@ -11,7 +11,7 @@ Prompt brut
 [1] Segmentation automatique
     │
     ▼
-[2] Configuration des scénarios + critères 3 axes
+[2] Configuration des scénarios + règles (manual + auto)
     │
     ▼
 [3] Génération baseline (T=0)
@@ -23,7 +23,7 @@ Prompt brut
 [5] Calcul des deltas par axe
     │
     ▼
-[6] Agrégation : impact moyen + variance
+[6] Agrégation : axes actifs + impact + variance + activation
     │
     ▼
 [7] Classification : verdict par segment
@@ -74,21 +74,24 @@ La segmentation automatique est **proposée, pas imposée**. L'utilisateur voit 
 
 Inputs utilisateur typiques. Recommandation : **5 à 8 scénarios** couvrant les principaux cas d'usage du prompt. Trop peu → la variance est mal estimée. Trop → coût qui explose sans gain proportionnel.
 
-### Critères des 3 axes
+### Règles des 3 axes
 
-**Structurel** — formules de parsing booléennes :
+**Structurel** — règles vérifiables et traçables :
 - longueur ≤ N mots
 - absence de caractère/pattern (ex. `*`, listes Markdown)
 - présence de structure attendue (JSON valide, clés requises)
+- présence d'une phrase imposée (`termine par "..."`)
+- seuil numérique extrait du prompt (`pas plus de 20€`)
 
 **Comportemental** — détection lexicale :
 - termes interdits (liste de strings)
 - termes attendus (liste de strings)
 - patterns regex métier
+- tutoiement/vouvoiement explicitement demandé
 
 **Sémantique** — distance cosinus :
-- mode B (V1) : comparaison directe output-complet vs output-ablé
-- mode A (V2) : comparaison à un corpus de référence fourni par l'utilisateur
+- mode `tfidf_local` (gratuit) : comparaison directe output-complet vs output-ablé
+- mode `voyage_api` (payant, optionnel) : embeddings Voyage + cosinus
 
 ## [3] Génération baseline
 
@@ -118,10 +121,10 @@ Exemple : 12 segments × 6 scénarios = 78 appels.
 Pour chaque triplet (segment Si, scénario Tj, axe a ∈ {struct, behav, sem}) :
 
 ```
-delta(i, j, a) = score_a(O(complet, Tj)) - score_a(O(¬Si, Tj))
+delta(i, j, a) = |score_a(O(complet, Tj)) - score_a(O(¬Si, Tj))|
 ```
 
-Un delta positif signifie que le segment **contribuait** au score sur cet axe. Un delta nul signifie qu'il n'avait pas d'effet. Un delta négatif (rare) signifie que le segment **dégradait** le score — c'est un parasite.
+Un delta nul signifie qu'il n'avait pas d'effet. Quand un axe n'est pas calculable sur un scénario, il est marqué **non applicable** (et exclu de l'agrégation de ce scénario).
 
 ### Détail par axe
 
@@ -146,12 +149,13 @@ En mode B : `score_sem` est calculé sur la *différence* entre output complet e
 Pour chaque segment Si :
 
 ```
-impact_total(i) = mean over j and a of |delta(i, j, a)|
-                  weighted by axis_weights
-variance(i) = std over j of impact_total(i, j)
+impact(i, j) = moyenne des deltas sur axes applicables uniquement
+impact_total(i) = mean_j(impact(i, j))
+variance(i) = std_j(impact(i, j))
+activation(i) = ratio_j(impact(i, j) >= seuil)
 ```
 
-Les `axis_weights` sont par défaut `[1/3, 1/3, 1/3]` mais peuvent être ajustés (V2) si l'utilisateur veut sur-pondérer un axe.
+La V0.3 évite la dilution par axes dormants : pas de moyenne fixe sur 3 axes quand un axe est non applicable.
 
 ## [7] Classification : verdict par segment
 

@@ -96,11 +96,48 @@ Tous les appels sont passés à `temperature = 0`. Justification : sans ça, la 
 
 Fixer la température à zéro isole le signal. Pour les LLMs où T=0 reste légèrement stochastique (Claude notamment), on peut moyenner sur 2-3 runs par ablation en V2 si nécessaire.
 
-## 5. Limites assumées
+## 5. Ce qui change entre V0.2 et V0.3
+
+La V0.3 ne change pas la philosophie du projet (ablation mesurable), mais corrige des biais observés en pratique.
+
+### 5.1 Biais observés en V0.2
+
+1. **Axes dormants** : l'axe structurel/comportemental restait souvent neutre faute de critères activés.
+2. **Dilution artificielle** : moyenne fixe sur 3 axes, même quand certains axes n'étaient pas applicables.
+3. **Sous-détection des règles ponctuelles** : ex. "Termine toujours par ...", peu visible en sémantique seul.
+4. **Comportement abstrait non opérationnalisé** : ex. "public jeune" non mesurable sans marqueurs explicites.
+
+### 5.2 Correctifs V0.3
+
+1. **Auto-extraction déterministe des règles**
+   - Structurel : fin imposée, phrase requise, contraintes longueur, JSON, seuils numériques simples.
+   - Comportemental : termes attendus/interdits explicites, tutoiement/vouvoiement explicitement demandés.
+   - Les règles extraites sont traçables (`source: auto`), pas inférées par jugement.
+
+2. **État `non applicable` par axe**
+   - Un axe sans règle ou sans signal exploitable n'est plus artificiellement scoré.
+   - Il est exclu de l'agrégation de ce scénario.
+
+3. **Agrégation sur axes actifs**
+   - Impact scénario = moyenne des deltas sur axes applicables uniquement.
+   - Ajout d'un `activationRate` (global + par axe) pour distinguer signal stable vs contextuel.
+
+4. **Sémantique switchable**
+   - `TF-IDF local` (gratuit) ou `Voyage API` (payant).
+   - Même mécanique de mesure (cosinus), seule la qualité de l'embedding change.
+   - Fallback explicite vers TF-IDF si l'API externe échoue.
+
+### 5.3 Pourquoi c'est scientifiquement plus solide
+
+- **Même observables, meilleure instrumentation** : on n'ajoute pas de jugement subjectif, on améliore ce qui est mesuré.
+- **Moins de faux "impact faible"** : disparition de la division automatique par 3 quand 1-2 axes sont inactifs.
+- **Meilleure falsifiabilité locale** : une règle "fin imposée" est vérifiable par inspection directe de l'output.
+
+## 6. Limites assumées (V0.3)
 
 Toute méthode a un domaine de validité. Voici les limites explicites de preatorlabs :
 
-**Limite 1 — prompts sans critère définissable.** Si l'utilisateur ne peut formuler aucun critère structurel, aucun critère comportemental, et aucune référence stylistique, on retombe sur "le segment change-t-il l'output ?" — soit la méthode D seule, dont on a vu les limites. Un prompt sans critère de réussite définissable n'est pas analysable objectivement, peu importe la technique. Cette limite est inhérente, pas un défaut de l'outil.
+**Limite 1 — critères abstraits non opérationnalisés.** Une consigne comme "adapte-toi à un public jeune" reste partiellement abstraite tant qu'elle n'est pas traduite en marqueurs (`attendus/interdits`). V0.3 permet cette traduction mais ne l'invente pas automatiquement sans risque de subjectivité.
 
 **Limite 2 — interactions entre segments.** L'ablation simple ne capture pas les effets de coalition (deux segments inutiles isolément mais critiques ensemble). Pour les capturer, il faudrait Shapley. Le compromis assumé : on couvre 95 % des cas avec une fraction négligeable du coût.
 
@@ -108,12 +145,16 @@ Toute méthode a un domaine de validité. Voici les limites explicites de preato
 
 **Limite 4 — stochasticité résiduelle.** Même à T=0, certains modèles conservent une variabilité (sampling top-K, race conditions). Sur Claude, c'est marginal. Pour des résultats publication-grade, prévoir n=3 répétitions par ablation (V2+).
 
-## 6. Ce qui rend la méthode défendable scientifiquement
+**Limite 5 — extraction regex canoniques.** L'auto-extraction V0.3 couvre des formulations explicites. Une formulation implicite ou ambiguë peut ne pas être détectée. Le mode manuel reste nécessaire pour les cas non canoniques.
+
+**Limite 6 — coût/latence du provider sémantique externe.** Voyage améliore la précision sémantique, mais introduit coût API et dépendance réseau. Le mode local reste le baseline frugal.
+
+## 7. Ce qui rend la méthode défendable scientifiquement
 
 Trois propriétés en font une méthode de mesure et pas une heuristique :
 
 1. **Reproductibilité** : à prompt, scénarios et modèle fixés, le résultat est déterministe (T=0).
 2. **Falsifiabilité** : un verdict produit par preatorlabs peut être contredit par un test indépendant (manuel ou via un autre outil).
-3. **Décomposabilité** : un score d'impact n'est jamais opaque. Il se décompose toujours en trois axes, eux-mêmes décomposables par scénario. Aucune mesure n'est une boîte noire.
+3. **Décomposabilité** : un score d'impact n'est jamais opaque. Il se décompose en axes, scénarios, règles actives et provenance (`manual`/`auto`).
 
 C'est ce qui distingue preatorlabs d'un "score de qualité de prompt" produit par un LLM tiers.

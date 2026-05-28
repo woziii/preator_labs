@@ -65,16 +65,16 @@ Implémentation : algorithme décrit dans `02-METHODOLOGY.md` §1.
 
 ```javascript
 const Scorer = {
-  structural(output, criteria) -> number ∈ [0,1],
-  behavioral(output, criteria) -> number ∈ [0,1],
-  semantic(outputA, outputB) -> number ∈ [0,1]  // cosinus
+  structural(output, criteria) -> { score: number|null, applicable: boolean },
+  behavioral(output, criteria) -> { score: number|null, applicable: boolean },
+  semantic(outputA, outputB, provider) -> { delta: number|null, applicable: boolean, provider: string }
 }
 ```
 
 Notes :
 - `structural` : parsing local en JS, zéro coût.
 - `behavioral` : matching de chaînes / regex, zéro coût.
-- `semantic` : nécessite une fonction d'embedding. V1 utilise une approximation locale (TF-IDF + cosinus sur le bag-of-words) pour rester *gratuite*. V2 passera sur Voyage AI ou OpenAI embeddings pour la précision.
+- `semantic` : provider switchable. V0.3 garde TF-IDF local (gratuit) et ajoute Voyage AI (optionnel) avec fallback explicite vers TF-IDF si l'appel échoue.
 
 #### 2c. Module `AblationEngine`
 
@@ -102,9 +102,9 @@ async function run({ segments, scenarios, criteria, apiKey, model }) {
     );
     
     const deltas = scenarios.map((_, j) => ({
-      struct: Scorer.structural(baselines[j], criteria) - Scorer.structural(outputs[j], criteria),
-      behav: Scorer.behavioral(baselines[j], criteria) - Scorer.behavioral(outputs[j], criteria),
-      sem: 1 - Scorer.semantic(baselines[j], outputs[j])
+      struct: abs(Scorer.structural(baselines[j], criteria).score - Scorer.structural(outputs[j], criteria).score),
+      behav: abs(Scorer.behavioral(baselines[j], criteria).score - Scorer.behavioral(outputs[j], criteria).score),
+      sem: Scorer.semantic(baselines[j], outputs[j], provider).delta
     }));
     
     results.push(aggregateSegment(i, deltas));
@@ -169,6 +169,12 @@ type SegmentResult = {
   label: string;
   impact: number;       // [0, 1]
   variance: number;     // [0, 1]
+  activation?: {
+    overall: number | null;
+    struct: number | null;
+    behav: number | null;
+    sem: number | null;
+  };
   struct: number;       // [0, 1]
   behav: number;        // [0, 1]
   sem: number;          // [0, 1]
@@ -191,6 +197,7 @@ type SegmentResult = {
 
 `localStorage` est utilisé pour :
 - `preatorlabs.apiKey` — clé Anthropic de l'utilisateur (jamais envoyée à un serveur tiers)
+- `preatorlabs.voyageApiKey` — clé Voyage (si provider Voyage activé)
 - `preatorlabs.lastPrompt` — dernier prompt analysé (pour reprise)
 - `preatorlabs.lastResults` — derniers résultats
 
