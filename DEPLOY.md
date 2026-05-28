@@ -1,6 +1,6 @@
 # DEPLOY.md
 
-> Comment publier la V0.1 de preatorlabs.
+> Comment publier la V0.3 de preatorlabs.
 
 preatorlabs est une SPA statique. Le dossier [`dist/`](dist/) est **autonome** : copie-le tel quel sur n'importe quel hébergeur statique et ça marche. Pas de build, pas de variable d'environnement, pas de backend.
 
@@ -18,7 +18,7 @@ Si tu publies sur un autre domaine, une seule commande à exécuter :
 sed -i '' 's|preatorlabs.dev|ton-domaine.tld|g' dist/index.html dist/sitemap.xml dist/robots.txt
 ```
 
-Aucune variable d'environnement n'est requise : tout tourne côté client. L'utilisateur final fournit sa propre clé API Anthropic via l'UI.
+Aucune variable d'environnement n'est requise : tout tourne côté client. L'utilisateur final fournit sa clé API Anthropic via l'UI. En V0.3, il peut aussi fournir une clé Voyage AI optionnelle si le provider sémantique Voyage est activé.
 
 ---
 
@@ -52,7 +52,7 @@ curl -sI https://<ton-projet>.vercel.app/ | grep -i 'content-security-policy'
 curl -sI https://<ton-projet>.vercel.app/favicon.svg | grep -i 'cache-control'
 ```
 
-Tu dois voir la CSP avec `connect-src 'self' https://api.anthropic.com` et un `Cache-Control: public, max-age=31536000` sur le favicon.
+Tu dois voir la CSP avec `connect-src 'self' https://api.anthropic.com https://api.voyageai.com` et un `Cache-Control: public, max-age=31536000` sur le favicon.
 
 ---
 
@@ -151,7 +151,7 @@ Sur un poste avec accès Internet et une clé API Anthropic de test :
    - `fonts.googleapis.com` et `fonts.gstatic.com` (Fraunces / Inter Tight / JetBrains Mono)
    - `cdn.jsdelivr.net` (Chart.js)
 4. Cliquer "Charger l'exemple Reachy", configurer une clé API valide, lancer l'analyse.
-5. Vérifier que les appels sortants vont **uniquement** vers `api.anthropic.com`.
+5. Vérifier que les appels sortants vont **uniquement** vers `api.anthropic.com` (et `api.voyageai.com` si provider sémantique Voyage activé).
 6. Attendre la complétion (~1-3 minutes selon le modèle), vérifier le graphique de variance + cartes 3-axes.
 7. Recharger la page : clé conservée, derniers résultats restaurables, bandeau "reprendre" absent (puisque tout est terminé).
 8. Tester l'erreur : remplacer la clé par `sk-ant-FAKE`, relancer. Message attendu : "Clé API invalide ou révoquée. Vérifie ta clé dans la modale 'configurer'."
