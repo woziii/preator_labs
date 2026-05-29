@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>preatorlabs — débogueur de prompt LLM par ablation multi-axes</title>
+<title>preatorlabs · débogueur de prompt LLM par ablation multi-axes</title>
 <meta name="description" content="preatorlabs mesure objectivement, segment par segment, ce que chaque partie de ton prompt système fait réellement faire au LLM. Étude d'ablation sur 3 axes (structurel, comportemental, sémantique).">
 <meta name="theme-color" content="#1a1a18">
 <meta name="color-scheme" content="light">
@@ -12,8 +12,8 @@
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="preatorlabs">
-<meta property="og:title" content="preatorlabs — quelles parties de ton prompt comptent vraiment ?">
-<meta property="og:description" content="Une étude d'ablation rigoureuse, segment par segment, sur 3 axes orthogonaux. Pas d'avis subjectif — que des mesures.">
+<meta property="og:title" content="preatorlabs · quelles parties de ton prompt comptent vraiment ?">
+<meta property="og:description" content="Une étude d'ablation, segment par segment, sur 3 axes orthogonaux, pour mesurer ce que chaque partie d'un prompt fait réellement faire au LLM.">
 <meta property="og:url" content="https://preatorlabs.dev/">
 <meta property="og:image" content="/og-image.png">
 <meta property="og:image:width" content="1200">
@@ -21,7 +21,7 @@
 <meta property="og:locale" content="fr_FR">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="preatorlabs — débogueur de prompt LLM">
+<meta name="twitter:title" content="preatorlabs · débogueur de prompt LLM">
 <meta name="twitter:description" content="Mesure objective, segment par segment, du rôle effectif de chaque partie d'un prompt système.">
 <meta name="twitter:image" content="/og-image.png">
 
@@ -1086,6 +1086,11 @@ textarea { min-height: 160px; resize: vertical; }
   overflow: auto;
 }
 
+.results-export-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 18px;
+}
 .synthesis {
   margin-top: 32px;
   padding: 26px 28px;
@@ -1268,7 +1273,7 @@ footer { padding: 56px 0 80px; }
   <div class="shell">
     <div class="hero-eyebrow">débogueur de prompt · v0.3</div>
     <h1 class="serif">Quelles parties de ton prompt <em>comptent vraiment</em> ? Mesure-le, segment par segment.</h1>
-    <p class="hero-sub">preatorlabs est un outil d'analyse expérimentale : une étude d'ablation rigoureuse, sur trois axes orthogonaux, qui révèle ce que chaque partie de ton prompt fait réellement faire au LLM. Pas d'avis subjectif. Que des mesures.</p>
+    <p class="hero-sub">preatorlabs est un outil d'analyse expérimentale : une étude d'ablation, sur trois axes orthogonaux, qui révèle ce que chaque partie de ton prompt fait réellement faire au LLM.</p>
     <div class="hero-actions">
       <a href="#demo" class="btn">Essayer la démo <span class="btn-arrow">→</span></a>
       <a href="#method" class="btn btn-ghost">La méthode scientifique</a>
@@ -1281,7 +1286,7 @@ footer { padding: 56px 0 80px; }
   <div class="shell">
     <div class="sect-label" data-num="01">le problème</div>
     <h2 class="sect-h serif">Aujourd'hui, ajuster un prompt, c'est jouer à pile ou face.</h2>
-    <p class="sect-lead">Le cycle standard de l'ingénierie de prompt consiste à rédiger, tester, ajuster — sans savoir ce qui produit quoi. Une phrase apparemment décorative peut être critique. Une phrase apparemment essentielle peut être ignorée. On modifie à l'aveugle.</p>
+    <p class="sect-lead">Le cycle standard de l'ingénierie de prompt consiste à rédiger, tester, ajuster, sans savoir ce qui produit quoi. Une phrase apparemment décorative peut être critique ; une phrase apparemment essentielle peut être ignorée. preatorlabs assume cette part d'inconnu et la traite par l'expérimentation : plutôt que de raisonner sur le prompt, on mesure son comportement réel, segment par segment.</p>
 
     <div class="problem-grid">
       <div class="problem-cycle">
@@ -1316,7 +1321,7 @@ footer { padding: 56px 0 80px; }
   <div class="shell">
     <div class="sect-label" data-num="02">la méthode</div>
     <h2 class="sect-h serif">Une étude d'ablation, sur trois axes orthogonaux.</h2>
-    <p class="sect-lead">preatorlabs s'inspire d'une méthode bien connue en science expérimentale : pour mesurer la contribution d'un élément à un système, on le retire et on observe ce qui change. Appliquée au prompt, segment par segment, et croisée avec plusieurs scénarios de test.</p>
+    <p class="sect-lead">L'ablation mesure la contribution d'un élément en le retirant et en observant ce qui change. Appliquée au prompt, l'opération est répétée segment par segment et croisée avec plusieurs scénarios, afin d'isoler l'effet propre de chaque partie sur la réponse du LLM.</p>
 
     <div class="method-intro">
       <p><strong>Le principe.</strong> Pour chaque segment du prompt, on génère deux versions de la réponse à un même input : avec le segment, et sans. La différence entre ces deux outputs est mesurée selon trois dimensions distinctes. La répétition sur plusieurs scénarios donne l'<em>impact moyen</em> du segment (combien il pèse en moyenne) et la <em>variance</em> entre scénarios (est-il actif partout, ou seulement dans certains cas).</p>
@@ -1345,21 +1350,21 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
         <div class="axis-num">axe 1</div>
         <div class="axis-name"><span class="axis-dot" style="background: var(--c-struct);"></span>Structurel</div>
         <div class="axis-q">La réponse respecte-t-elle le format attendu ?</div>
-        <p class="axis-desc">Longueur, présence de listes, validité d'un JSON, absence d'astérisques. Mesure binaire par parsing local — coût computationnel nul, objectivité absolue.</p>
+        <p class="axis-desc">Longueur, présence de listes, validité d'un JSON, absence d'astérisques. Cet axe vérifie si la réponse garde la forme attendue : sa structure, son gabarit et les contraintes de format imposées par le prompt.</p>
         <span class="axis-tag">parsing · regex · comptage</span>
       </div>
       <div class="axis-cell">
         <div class="axis-num">axe 2</div>
         <div class="axis-name"><span class="axis-dot" style="background: var(--c-behav);"></span>Comportemental</div>
         <div class="axis-q">La réponse suit-elle les règles métier ?</div>
-        <p class="axis-desc">Présence ou absence de termes attendus / interdits, conformité à des patterns logiques. Détection lexicale par matching de chaînes — coût nul, vérifiable.</p>
+        <p class="axis-desc">Présence ou absence de termes attendus / interdits, conformité à des patterns logiques. Détection lexicale par matching de chaînes.</p>
         <span class="axis-tag">exact match · liste lexicale</span>
       </div>
       <div class="axis-cell">
         <div class="axis-num">axe 3</div>
         <div class="axis-name"><span class="axis-dot" style="background: var(--c-sem);"></span>Sémantique</div>
         <div class="axis-q">Le sens et le style sont-ils préservés ?</div>
-        <p class="axis-desc">Distance cosinus entre les embeddings des deux outputs. Capture les changements de ton, de registre, de structure narrative — invisibles aux autres axes.</p>
+        <p class="axis-desc">Chaque réponse est convertie en vecteur, puis on mesure la distance cosinus entre la version complète et la version ablée. Deux modes : TF-IDF local (pondération des mots, gratuit, sans réseau) ou embeddings Voyage AI (représentation contextuelle, plus fine). Cet axe capte les changements de ton, de registre et de structure que les autres n'attrapent pas.</p>
         <span class="axis-tag">embeddings · cosinus</span>
       </div>
     </div>
@@ -1367,8 +1372,8 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
     <div class="doc-links">
       <p>Approfondir le protocole, les scores par axe, l'activation et les limites</p>
       <ul>
-        <li><a href="/docs/02-METHODOLOGY.md">Méthodologie</a> — workflow complet et formules</li>
-        <li><a href="/docs/01-SCIENTIFIC-RATIONALE.md">Rationale scientifique</a> — choix méthodologiques et évolution V0.3</li>
+        <li><a href="/docs/02-METHODOLOGY.md">Méthodologie</a> : workflow complet et formules</li>
+        <li><a href="/docs/01-SCIENTIFIC-RATIONALE.md">Rationale scientifique</a> : choix méthodologiques et évolution V0.3</li>
       </ul>
     </div>
   </div>
@@ -1378,8 +1383,7 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
 <section id="howto">
   <div class="shell">
     <div class="sect-label" data-num="03">comment ça marche</div>
-    <h2 class="sect-h serif">Quatre étapes, vingt minutes.</h2>
-    <p class="sect-lead">Le parcours utilisateur est conçu pour aller du prompt brut au verdict actionnable sans friction. Pas d'inscription, pas de backend.</p>
+    <h2 class="sect-h serif">Quatre étapes.</h2>
 
     <div class="howto-grid">
       <div class="howto-cell">
@@ -1407,9 +1411,9 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
     <div class="doc-links">
       <p>Comment les résultats sont calculés (détail technique)</p>
       <ul>
-        <li><a href="/docs/02-METHODOLOGY.md">Méthodologie</a> — segmentation, règles auto/manuel, deltas, agrégation, verdicts</li>
-        <li><a href="/docs/03-ARCHITECTURE.md">Architecture</a> — modules, prévisualisation des critères, flux de données</li>
-        <li><a href="/docs/01-SCIENTIFIC-RATIONALE.md">Rationale</a> — limites assumées et évolution V0.3</li>
+        <li><a href="/docs/02-METHODOLOGY.md">Méthodologie</a> : segmentation, règles auto/manuel, deltas, agrégation, verdicts</li>
+        <li><a href="/docs/03-ARCHITECTURE.md">Architecture</a> : modules, prévisualisation des critères, flux de données</li>
+        <li><a href="/docs/01-SCIENTIFIC-RATIONALE.md">Rationale</a> : limites assumées et évolution V0.3</li>
       </ul>
     </div>
   </div>
@@ -1425,10 +1429,10 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
     <h3 class="serif" style="font-size: 20px; font-weight: 500; margin: 32px 0 12px;">Lire le graphique</h3>
     <div class="method-intro" style="margin-bottom: 28px;">
       <ul style="font-size: 15px; color: var(--ink-soft); line-height: 1.75; padding-left: 20px; margin: 0;">
-        <li><strong>Hauteur de barre</strong> = <code>impact(Si)</code> — amplitude moyenne de l'écart quand le segment est retiré.</li>
-        <li><strong>Trait vertical</strong> = ±<code>variance(Si)</code> — dispersion entre scénarios ; un trait long signale un segment contextuel.</li>
+        <li><strong>Hauteur de barre</strong> = <code>impact(Si)</code> : amplitude moyenne de l'écart quand le segment est retiré.</li>
+        <li><strong>Trait vertical</strong> = ±<code>variance(Si)</code> : dispersion entre scénarios ; un trait long signale un segment contextuel.</li>
         <li><strong>Couleur</strong> = verdict (dérivé aussi de <code>activation(Si)</code>, seuil scénario 30 %).</li>
-        <li><strong>Cartes segment</strong> — barres structurel / comport. / sémant. = deltas moyens par axe ; ligne activation = part des scénarios actifs.</li>
+        <li><strong>Cartes segment</strong> : barres structurel / comport. / sémant. = deltas moyens par axe ; ligne activation = part des scénarios actifs.</li>
       </ul>
     </div>
 
@@ -1476,17 +1480,17 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
       </tbody>
     </table>
 
-    <h3 class="serif" style="font-size: 20px; font-weight: 500; margin: 48px 0 12px;">Piège classique : le segment ponctuel</h3>
+    <h3 class="serif" style="font-size: 20px; font-weight: 500; margin: 48px 0 12px;">Piège d'interprétation : impact moyen et activation partielle</h3>
     <div class="valid-intro">
-      Le piège le plus fréquent est de <strong>supprimer un segment à impact moyen faible</strong> alors qu'il ne s'active que sur un scénario sur plusieurs. La hauteur de barre sous-estime alors un filet de sécurité décisif.
+      L'impact affiché est une moyenne sur l'ensemble des scénarios. Un segment qui n'intervient que sur une fraction des cas présente donc un impact moyen faible, alors qu'il peut y être déterminant. Conclure à son inutilité à partir de la seule hauteur de barre est une erreur de lecture fréquente.
     </div>
     <div class="method-intro" style="margin-bottom: 0;">
-      <p style="font-size: 15px; margin-bottom: 12px;"><strong>Exemple.</strong> Un prompt narratif contient&nbsp;: <em>«&nbsp;Évite les clichés du genre&nbsp;: pas de vampires, pas de zombies.&nbsp;»</em> Sur quatre thèmes testés (bibliothèque, station-service, enfant, horloge), retirer ce segment&nbsp;:</p>
+      <p style="font-size: 15px; margin: 0 0 12px;">La distinction se lit sur deux indicateurs complémentaires de l'impact moyen :</p>
       <ul style="font-size: 15px; color: var(--ink-soft); line-height: 1.75; padding-left: 20px; margin: 0 0 14px;">
-        <li>ne change presque rien sur trois thèmes&nbsp;;</li>
-        <li>fait apparaître un cliché (fantôme, vampire…) sur le quatrième.</li>
+        <li>une <code>variance</code> élevée signale un effet concentré sur certains scénarios plutôt que réparti uniformément ;</li>
+        <li>un <code>taux d'activation</code> partiel indique que le segment ne franchit le seuil d'effet que sur une partie des cas testés.</li>
       </ul>
-      <p style="font-size: 15px; color: var(--ink-soft); line-height: 1.75; margin: 0;"><code>impact(Si)</code> reste modeste, mais <code>variance(Si)</code> est élevée (et souvent <code>activation(Si)</code> partielle) → verdict <span class="verdict-pill v-context" style="vertical-align: baseline;">contextuel</span>. Lecture correcte&nbsp;: <em>«&nbsp;ce segment ne sert pas souvent, mais quand il sert, il évite une catastrophe.&nbsp;»</em> C'est ce que le trait vertical du graphique est fait pour révéler — recoupe toujours avec le drill-down scénario par scénario.</p>
+      <p style="font-size: 15px; color: var(--ink-soft); line-height: 1.75; margin: 0;">Lorsque l'un de ces signaux accompagne un impact moyen modeste, le segment est classé <span class="verdict-pill v-context" style="vertical-align: baseline;">contextuel</span> : il agit comme un filet de sécurité ponctuel, à conserver. Avant toute décision de suppression, vérifier le comportement scénario par scénario dans le détail des outputs.</p>
     </div>
   </div>
 </section>
@@ -1496,7 +1500,7 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
   <div class="shell">
     <div class="sect-label" data-num="05">démo</div>
     <h2 class="sect-h serif">Essaie sur ton prompt.</h2>
-    <p class="sect-lead">Colle ton prompt système, ajoute quelques scénarios représentatifs, configure les critères et lance l'analyse. L'outil tourne entièrement dans ton navigateur — tes prompts restent locaux et les requêtes partent uniquement vers les APIs que tu actives (Anthropic, et Voyage si choisi).</p>
+    <p class="sect-lead">Colle ton prompt système, ajoute quelques scénarios représentatifs, configure les critères et lance l'analyse. L'outil tourne entièrement dans ton navigateur.</p>
 
     <div class="demo-card">
       <div class="demo-header">
@@ -1552,9 +1556,9 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
             <div class="criteria-block">
               <div class="criteria-head"><span class="axis-dot" style="background: var(--c-struct);"></span>axe structurel <span class="block-meta">parsing binaire</span></div>
               <label><input type="checkbox" id="crit-auto-struct" checked> Auto-extraction des règles explicites (phrase imposée, seuils, JSON)</label>
-              <label><input type="checkbox" id="crit-maxwords" checked> Longueur maximale : <input type="number" id="crit-maxwords-val" value="15" min="1" max="500"> mots</label>
-              <label><input type="checkbox" id="crit-noasterisk" checked> Pas d'astérisques (actions narrées)</label>
-              <label><input type="checkbox" id="crit-nolist" checked> Pas de listes / puces</label>
+              <label><input type="checkbox" id="crit-maxwords"> Longueur maximale : <input type="number" id="crit-maxwords-val" value="15" min="1" max="500"> mots</label>
+              <label><input type="checkbox" id="crit-noasterisk"> Pas d'astérisques (actions narrées)</label>
+              <label><input type="checkbox" id="crit-nolist"> Pas de listes / puces</label>
               <div class="rules-preview" id="struct-rules-preview">
                 <div class="rules-preview-h">Règles détectées (structurel)</div>
                 <ul id="struct-rules-list"></ul>
@@ -1565,9 +1569,9 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
               <div class="criteria-head"><span class="axis-dot" style="background: var(--c-behav);"></span>axe comportemental <span class="block-meta">détection lexicale</span></div>
               <label><input type="checkbox" id="crit-auto-behav" checked> Auto-extraction des règles explicites (interdits, tutoiement/vouvoiement)</label>
               <label style="display:block; margin-bottom: 4px;">Termes attendus (séparés par virgule) :</label>
-              <input type="text" id="crit-required" value="consultation médicale">
+              <input type="text" id="crit-required" value="" placeholder="ex : consultation médicale, merci de votre patience">
               <label style="display:block; margin: 10px 0 4px;">Termes interdits (séparés par virgule) :</label>
-              <input type="text" id="crit-forbidden" value="en tant qu'IA, excellente question, je suis un assistant">
+              <input type="text" id="crit-forbidden" value="" placeholder="ex : en tant qu'IA, excellente question, je suis un assistant">
               <div class="rules-preview" id="behav-rules-preview">
                 <div class="rules-preview-h">Règles détectées (comportemental)</div>
                 <ul id="behav-rules-list"></ul>
@@ -1629,7 +1633,7 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
             <div class="progress-wrap" id="progress-wrap" style="display:none;">
               <div class="progress-bar-bg"><div class="progress-bar-fg" id="progress-fg"></div></div>
               <div class="progress-text" id="progress-text">initialisation…</div>
-              <div class="progress-hint">Tes appels sont sauvegardés au fur et à mesure — en cas d'échec, tu pourras reprendre où ça s'est arrêté.</div>
+              <div class="progress-hint">Tes appels sont sauvegardés au fur et à mesure ; en cas d'échec, tu pourras reprendre où ça s'est arrêté.</div>
             </div>
             <div class="error-msg" id="error-msg" style="display:none;"></div>
           </div>
@@ -1640,6 +1644,10 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
           <div class="empty-state" id="empty-results">Aucune analyse lancée. Configure puis lance l'analyse pour voir les résultats.</div>
 
           <div id="results-content" style="display:none;">
+
+            <div class="results-export-bar">
+              <button class="btn-sm" id="btn-export-json">Exporter l'analyse (JSON)</button>
+            </div>
 
             <div class="results-explainer">
               <h4>Comment lire ce graphique</h4>
@@ -1652,8 +1660,6 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
 
             <h3 class="serif" style="font-size: 20px; font-weight: 500; margin: 32px 0 12px; letter-spacing: -0.005em;">Décomposition par segment</h3>
             <div id="axes-breakdown"></div>
-
-            <div class="synthesis" id="synthesis"></div>
           </div>
         </div>
 
@@ -1692,7 +1698,7 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
         </div>
 
         <div class="valid-verdict">
-          <strong>Lecture&nbsp;:</strong> S3 (promo) et S5 (anti-hallucination) sortent comme les deux segments les plus impactants <em>avec la plus haute variance</em>. Profil typique d'un segment contextuel. Les segments de ton (S4) et de signature (S6) sont stables et bas — placebo.
+          <strong>Lecture&nbsp;:</strong> S3 (promo) et S5 (anti-hallucination) sortent comme les deux segments les plus impactants <em>avec la plus haute variance</em>. Profil typique d'un segment contextuel. Les segments de ton (S4) et de signature (S6) sont stables et bas : placebo.
         </div>
       </div>
 
@@ -1713,7 +1719,7 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
         </div>
 
         <div class="valid-verdict">
-          <strong>Lecture&nbsp;:</strong> S4 (hors-sujet) ressort à 14% d'impact avec la plus haute variance — exactement le profil prédit. Détail&nbsp;: la barre est portée à 41% par l'axe sémantique du seul scénario hors-sujet (parfaitement isolée par cosinus). S2 (contrainte JSON) capte 17% sur l'axe structurel. S5 (termes interdits) à 1% — vrai placebo, le modèle ne produit jamais ces tournures sur des questions Python.
+          <strong>Lecture&nbsp;:</strong> S4 (hors-sujet) ressort à 14% d'impact avec la plus haute variance, exactement le profil prédit. Détail&nbsp;: la barre est portée à 41% par l'axe sémantique du seul scénario hors-sujet (parfaitement isolée par cosinus). S2 (contrainte JSON) capte 17% sur l'axe structurel. S5 (termes interdits) à 1% : vrai placebo, le modèle ne produit jamais ces tournures sur des questions Python.
         </div>
       </div>
     </div>
@@ -1722,9 +1728,9 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
       <h4>Ce que ces deux runs valident</h4>
       <ul>
         <li><strong>Le signal est réel, pas un patron fixe.</strong> Le ranking des segments diffère complètement entre Test 1 (S5 &gt; S3) et Test 2 (S4 &gt; S2). L'outil ne renvoie pas un résultat identique calqué sur la position des segments.</li>
-        <li><strong>Le segment contextuel ressort systématiquement.</strong> Dans les deux tests, le segment dont l'activation dépend d'un seul scénario présente l'impact moyen <em>et</em> la variance les plus élevés du run — signature exacte d'un «&nbsp;filet contextuel&nbsp;».</li>
+        <li><strong>Le segment contextuel ressort systématiquement.</strong> Dans les deux tests, le segment dont l'activation dépend d'un seul scénario présente l'impact moyen <em>et</em> la variance les plus élevés du run : signature exacte d'un «&nbsp;filet contextuel&nbsp;».</li>
         <li><strong>La décomposition par axe identifie le mécanisme.</strong> S4 du Test 2 sort à 41% sur l'axe sémantique (changement de registre&nbsp;: réponse Python vs «&nbsp;Hors sujet&nbsp;»), tandis que S2 du Test 2 sort à 17% sur l'axe structurel (JSON valide vs prose markdown). L'outil sait dire <em>pourquoi</em> un segment compte, pas seulement <em>combien</em>.</li>
-        <li><strong>Les placebos sont des vrais placebos.</strong> S5 du Test 2 («&nbsp;ne jamais dire je suis une IA&nbsp;») est mesuré à 1% d'impact — le modèle ne produit pas ces tournures même sans la consigne. Confirmation comportementale.</li>
+        <li><strong>Les placebos sont des vrais placebos.</strong> S5 du Test 2 («&nbsp;ne jamais dire je suis une IA&nbsp;») est mesuré à 1% d'impact : le modèle ne produit pas ces tournures même sans la consigne. Confirmation comportementale.</li>
       </ul>
       <p><strong>Limite identifiée.</strong> Sur Claude Haiku, les seuils de verdict calibrés pour Sonnet peuvent rester trop stricts&nbsp;: la variance brute peut être plus informative que le label final. La V0.3 corrige déjà une partie du biais via l'activation et l'agrégation sur axes applicables, mais la calibration cross-modèles reste un chantier V0.4. Détail dans la <a href="/docs/05-ROADMAP.md">roadmap</a>.</p>
     </div>
@@ -1774,7 +1780,7 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
 <section id="privacy">
   <div class="shell">
     <div class="sect-label" data-num="08">confidentialité</div>
-    <h2 class="sect-h serif">Confidentialité by design, sans clause cachée.</h2>
+    <h2 class="sect-h serif">Tout reste sur votre navigateur</h2>
     <p class="sect-lead">preatorlabs fonctionne entièrement dans ton navigateur. Aucun backend, aucun tracking, aucun cookie. Les choix techniques rendent l'exfiltration impossible.</p>
 
     <div class="privacy-grid">
@@ -1782,10 +1788,10 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
         <h4 class="serif">Ce qui reste sur ta machine</h4>
         <p>Stocké en <code>localStorage</code> uniquement, dans l'origine de ce site :</p>
         <ul>
-          <li><code>preatorlabs.apiKey</code> — ta clé API Anthropic</li>
-          <li><code>preatorlabs.voyageApiKey</code> — ta clé API Voyage (si utilisée)</li>
-          <li><code>preatorlabs.runState</code> — sauvegarde incrémentale d'une analyse en cours, pour reprise après erreur</li>
-          <li><code>preatorlabs.lastResults</code> — derniers résultats agrégés</li>
+          <li><code>preatorlabs.apiKey</code> : ta clé API Anthropic</li>
+          <li><code>preatorlabs.voyageApiKey</code> : ta clé API Voyage (si utilisée)</li>
+          <li><code>preatorlabs.runState</code> : sauvegarde incrémentale d'une analyse en cours, pour reprise après erreur</li>
+          <li><code>preatorlabs.lastResults</code> : derniers résultats agrégés</li>
         </ul>
         <p style="margin-top: 10px;">Le bouton "Supprimer la clé" et un effacement manuel via les outils du navigateur suffisent à tout retirer.</p>
       </div>
@@ -1793,7 +1799,7 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
         <h4 class="serif">Ce qui sort de ton navigateur</h4>
         <p>Strictement <strong>les requêtes vers <code>api.anthropic.com</code></strong> pour la génération, et <code>api.voyageai.com</code> si tu actives le fournisseur sémantique Voyage.</p>
         <p>La Content-Security-Policy de la page interdit toute requête sortante en dehors des domaines explicitement autorisés (Anthropic/Voyage + CDN de polices/Chart.js). Une injection malveillante ne pourrait pas exfiltrer de données vers un domaine arbitraire.</p>
-        <p>Aucun analytics, aucun pixel, aucun script tiers de tracking. Pas de Google Fonts en mode tracking — uniquement le CSS et les fichiers WOFF2.</p>
+        <p>Aucun analytics, aucun pixel, aucun script tiers de tracking. Pas de Google Fonts en mode tracking, uniquement le CSS et les fichiers WOFF2.</p>
       </div>
     </div>
   </div>
@@ -1808,7 +1814,6 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
           <span class="brand-mark" aria-hidden="true"></span>
           preatorlabs
         </div>
-        <div class="foot-brand-text">Un débogueur de prompt rigoureux, open source, qui mesure plutôt qu'il ne juge.</div>
       </div>
       <div class="foot-col">
         <h5>documentation</h5>
@@ -2820,17 +2825,73 @@ function renderResults() {
     `;
   }).join('');
   bindDrilldownToggles(data);
+}
 
-  // Synthesis
-  const critList = data.filter(d => d.verdict === 'critical' || d.verdict === 'high').map(d => d.id).join(', ') || '—';
-  const contextList = data.filter(d => d.verdict === 'context').map(d => d.id).join(', ') || '—';
-  const dropList = data.filter(d => d.verdict === 'placebo' || d.verdict === 'low').map(d => d.id).join(', ') || '—';
-  $('#synthesis').innerHTML = `
-    <h4>Synthèse actionnable</h4>
-    <div class="synthesis-line"><strong>À conserver tel quel</strong> · <span class="ids">${critList}</span> — ces segments portent la conformité de base.</div>
-    <div class="synthesis-line"><strong>Filets contextuels</strong> · <span class="ids">${contextList}</span> — variance élevée ou activation partielle ; utiles sur scénarios spécifiques. Garder.</div>
-    <div class="synthesis-line"><strong>Candidats à la suppression</strong> · <span class="ids">${dropList}</span> — impact faible, possibles redondances ou décor.</div>
-  `;
+function buildExportPayload() {
+  const data = normalizeResultsData(state.results);
+  const validImpacts = data.map(d => d.impact).filter(v => typeof v === 'number' && Number.isFinite(v));
+  const meanImpact = validImpacts.length ? validImpacts.reduce((s, v) => s + v, 0) / validImpacts.length : 0;
+  const verdictCounts = data.reduce((acc, d) => {
+    acc[d.verdict] = (acc[d.verdict] || 0) + 1;
+    return acc;
+  }, {});
+  return {
+    meta: {
+      tool: 'preatorlabs',
+      version: 'v0.3',
+      exportedAt: new Date().toISOString(),
+      model: state.model,
+      temperature: state.temperature,
+      semanticProvider: state.semanticProvider
+    },
+    prompt: state.rawPrompt,
+    segments: nonEmpty(state.segments),
+    scenarios: nonEmpty(state.scenarios),
+    summary: {
+      segmentCount: data.length,
+      scenarioCount: nonEmpty(state.scenarios).length,
+      meanImpact,
+      verdictCounts
+    },
+    results: data.map(d => ({
+      id: d.id,
+      label: d.label,
+      text: d.text,
+      impact: d.impact,
+      variance: d.variance,
+      struct: d.struct,
+      behav: d.behav,
+      sem: d.sem,
+      activation: d.activation,
+      verdict: d.verdict,
+      perScenario: (Array.isArray(d.perScenario) ? d.perScenario : []).map(s => ({
+        scenarioId: s.scenarioId,
+        input: s.input,
+        baselineOutput: s.baselineOutput,
+        ablatedOutput: s.ablatedOutput,
+        axisDelta: s.axisDelta,
+        semanticProvider: s.semanticProvider
+      }))
+    }))
+  };
+}
+
+function exportAnalysis() {
+  if (!state.results) {
+    showError("Aucune analyse à exporter. Lance d'abord une analyse.");
+    return;
+  }
+  const payload = buildExportPayload();
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `preatorlabs-analyse-${stamp}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 function normalizeResultsData(results) {
@@ -2855,9 +2916,28 @@ function bindDrilldownToggles(data) {
       panel.hidden = !opening;
       if (opening && !panel.dataset.loaded) {
         panel.innerHTML = renderScenarioOutputs(seg);
+        wireScrollSync(panel);
         panel.dataset.loaded = '1';
       }
     });
+  });
+}
+
+function wireScrollSync(panel) {
+  panel.querySelectorAll('.output-grid').forEach(grid => {
+    const blocks = grid.querySelectorAll('.output-text');
+    if (blocks.length !== 2) return;
+    const [a, b] = blocks;
+    let syncing = false;
+    const sync = (src, dst) => {
+      if (syncing) return;
+      syncing = true;
+      const max = Math.max(0, dst.scrollHeight - dst.clientHeight);
+      dst.scrollTop = Math.min(src.scrollTop, max);
+      syncing = false;
+    };
+    a.addEventListener('scroll', () => sync(a, b));
+    b.addEventListener('scroll', () => sync(b, a));
   });
 }
 
@@ -2961,6 +3041,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Run
+  $('#btn-export-json').addEventListener('click', exportAnalysis);
   $('#btn-run').addEventListener('click', () => launchAnalysis(false));
   $('#btn-cancel-run').addEventListener('click', () => {
     if (state.abortController) state.abortController.abort();
@@ -3088,7 +3169,7 @@ function refreshResumeBanner() {
   const matches = currentSig === data.signature;
   $('#resume-progress').textContent = `${done} / ${total}`;
   $('#resume-meta').textContent = matches
-    ? "Configuration identique détectée — tu peux reprendre."
+    ? "Configuration identique détectée, tu peux reprendre."
     : "La configuration actuelle ne correspond pas. Reprendre n'est possible que si tu recharges la config d'origine.";
   $('#btn-resume-run').disabled = !matches;
   $('#btn-resume-run').style.opacity = matches ? '1' : '0.5';
