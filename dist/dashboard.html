@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>preatorlabs · tableau de bord d'analyse des exports</title>
+<meta name="description" content="Tableau de bord local pour analyser un dossier d'exports preatorlabs : corrélations, différences entre versions de prompt, profils d'axes et distribution des verdicts.">
+<meta name="theme-color" content="#1a1a18">
+<meta name="color-scheme" content="light">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=JetBrains+Mono:wght@400;500&family=Inter+Tight:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #f5f3ee;
+  --bg-2: #ebe7dd;
+  --ink: #1a1a18;
+  --ink-soft: #4a4842;
+  --ink-mute: #6e6c64;
+  --rule: rgba(26, 26, 24, 0.12);
+  --rule-strong: rgba(26, 26, 24, 0.25);
+  --accent: #c44322;
+  --accent-soft: #f4d9cf;
+  --c-critical: #962416;
+  --c-high: #275e41;
+  --c-context: #9a6018;
+  --c-low: #7c7868;
+  --c-placebo: #50356b;
+  --c-struct: #1e5a85;
+  --c-behav: #2d6849;
+  --c-sem: #5a3e7a;
+}
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Inter Tight', system-ui, sans-serif;
+  font-weight: 400;
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+}
+.serif { font-family: 'Fraunces', Georgia, serif; font-weight: 400; letter-spacing: -0.01em; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 0.92em; }
+code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.88em;
+  background: var(--bg-2);
+  padding: 1px 6px;
+  border-radius: 2px;
+}
+.shell { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
+@media (max-width: 720px) { .shell { padding: 0 20px; } }
+a { color: var(--ink); }
+
+/* Top bar */
+.topbar {
+  border-bottom: 1px solid var(--rule);
+  padding: 18px 0;
+  position: sticky;
+  top: 0;
+  background: rgba(245, 243, 238, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 100;
+}
+.topbar-inner { display: flex; justify-content: space-between; align-items: center; }
+.brand {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none; color: var(--ink);
+}
+.brand-mark {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ink);
+  position: relative; flex-shrink: 0;
+}
+.brand-mark::after {
+  content: ''; position: absolute; inset: 6px;
+  background: var(--accent); border-radius: 50%;
+}
+.topbar .nav { display: flex; gap: 24px; font-size: 14px; }
+.topbar .nav a { color: var(--ink-soft); text-decoration: none; transition: color 0.2s; }
+.topbar .nav a:hover { color: var(--ink); }
+
+/* Header */
+.dash-header { padding: 64px 0 32px; }
+.eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; color: var(--ink-mute);
+  letter-spacing: 0.08em; text-transform: uppercase;
+  margin-bottom: 24px; display: flex; align-items: center; gap: 12px;
+}
+.eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--ink-mute); }
+.dash-header h1 {
+  font-family: 'Fraunces', serif; font-weight: 400;
+  font-size: clamp(32px, 4.6vw, 52px); line-height: 1.04;
+  letter-spacing: -0.025em; max-width: 900px; margin-bottom: 20px;
+}
+.dash-header h1 em { font-style: italic; color: var(--accent); }
+.dash-lead { font-size: 17px; color: var(--ink-soft); max-width: 720px; line-height: 1.55; }
+
+/* Framing note */
+.notice {
+  border-left: 2px solid var(--accent);
+  background: var(--bg-2);
+  padding: 14px 18px; margin-top: 24px;
+  font-size: 13.5px; color: var(--ink-soft); line-height: 1.6;
+  max-width: 760px;
+}
+
+/* Buttons */
+.btn-sm {
+  font-family: 'Inter Tight', sans-serif; font-size: 13px;
+  padding: 9px 16px; background: transparent;
+  border: 1px solid var(--rule-strong); color: var(--ink);
+  cursor: pointer; transition: all 0.18s;
+}
+.btn-sm:hover { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.btn-sm.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.btn-sm.primary:hover { background: var(--accent); border-color: var(--accent); }
+
+/* Dropzone */
+.intake { padding: 8px 0 40px; }
+.dz {
+  border: 1.5px dashed var(--rule-strong);
+  background: var(--bg-2);
+  padding: 40px 28px; text-align: center;
+  transition: all 0.18s;
+}
+.dz.drag { border-color: var(--accent); background: var(--accent-soft); }
+.dz h3 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 20px; margin-bottom: 8px; }
+.dz p { font-size: 14px; color: var(--ink-soft); margin-bottom: 18px; }
+.dz-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.dz-hint { margin-top: 14px; font-size: 12px; color: var(--ink-mute); }
+input[type="file"] { display: none; }
+
+.errors {
+  margin-top: 16px; border: 1px solid var(--c-critical);
+  background: rgba(150, 36, 22, 0.06); padding: 12px 16px;
+  font-size: 13px; color: var(--c-critical);
+}
+.errors ul { margin: 6px 0 0 18px; }
+
+/* Analyses list */
+.analyses {
+  margin-top: 24px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+}
+.analyses .meta-line { font-size: 13px; color: var(--ink-mute); width: 100%; margin-bottom: 4px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid var(--rule-strong); padding: 6px 10px;
+  font-size: 13px; background: var(--bg);
+}
+.chip input { accent-color: var(--accent); }
+.chip .rm { cursor: pointer; color: var(--ink-mute); font-weight: 600; border: none; background: none; font-size: 14px; }
+.chip .rm:hover { color: var(--c-critical); }
+
+/* Sections */
+.dash-body { padding-bottom: 80px; }
+.dash-body[hidden] { display: none; }
+.block {
+  margin-top: 40px; padding-top: 32px; border-top: 1px solid var(--rule);
+}
+.block-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.block-head h2 {
+  font-family: 'Fraunces', serif; font-weight: 500; font-size: 24px;
+  letter-spacing: -0.01em;
+}
+.block-sub { font-size: 14px; color: var(--ink-soft); margin-bottom: 20px; max-width: 760px; }
+
+/* Info bubble */
+.info-bubble {
+  position: relative;
+  width: 18px; height: 18px; flex-shrink: 0;
+  border-radius: 50%;
+  border: 1px solid var(--rule-strong);
+  color: var(--ink-mute);
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; font-style: italic;
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: help; user-select: none;
+}
+.info-bubble:hover, .info-bubble:focus-visible { border-color: var(--ink); color: var(--ink); outline: none; }
+.info-pop {
+  position: absolute; top: 26px; left: 0;
+  width: 300px; max-width: 78vw;
+  background: var(--ink); color: var(--bg);
+  padding: 12px 14px; font-size: 12.5px; line-height: 1.55;
+  font-style: normal; letter-spacing: 0;
+  z-index: 50; box-shadow: 0 8px 28px rgba(0,0,0,0.22);
+  opacity: 0; visibility: hidden; transform: translateY(-4px);
+  transition: opacity 0.15s, transform 0.15s, visibility 0.15s;
+  text-align: left; font-family: 'Inter Tight', sans-serif;
+}
+.info-pop strong { color: #fff; }
+.info-bubble:hover .info-pop,
+.info-bubble:focus-within .info-pop,
+.info-bubble.open .info-pop { opacity: 1; visibility: visible; transform: translateY(0); }
+
+/* KPIs */
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1px; background: var(--rule); border: 1px solid var(--rule);
+}
+.kpi {
+  background: var(--bg); padding: 18px 20px;
+}
+.kpi .k-val { font-family: 'Fraunces', serif; font-size: 30px; font-weight: 500; line-height: 1; }
+.kpi .k-lab { font-size: 12px; color: var(--ink-mute); margin-top: 8px; text-transform: lowercase; }
+.kpi .k-sub { font-size: 11px; color: var(--ink-mute); margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+
+/* Chart boxes */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+@media (max-width: 860px) { .grid-2 { grid-template-columns: 1fr; } }
+.chart-box {
+  border: 1px solid var(--rule); background: var(--bg); padding: 18px;
+}
+.chart-wrap { position: relative; height: 320px; }
+.chart-wrap.tall { height: 420px; }
+
+/* Legend */
+.legend { display: flex; flex-wrap: wrap; gap: 14px; margin: 10px 0 4px; font-size: 12px; color: var(--ink-soft); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+
+/* Correlation heatmap */
+.corr-table, .fam-table, .data-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.corr-table th, .corr-table td, .fam-table th, .fam-table td {
+  border: 1px solid var(--rule); padding: 8px 10px; text-align: center;
+}
+.corr-table th { background: var(--bg-2); font-weight: 500; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+.corr-cell { font-family: 'JetBrains Mono', monospace; }
+
+/* Family heatmap */
+.fam { margin-bottom: 28px; }
+.fam h3 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 18px; margin-bottom: 4px; }
+.fam .fam-meta { font-size: 12px; color: var(--ink-mute); margin-bottom: 12px; font-family: 'JetBrains Mono', monospace; }
+.fam-scroll { overflow-x: auto; }
+.fam-table th { background: var(--bg-2); font-weight: 500; font-size: 11px; }
+.fam-table td.seg-name { text-align: left; max-width: 280px; }
+.fam-table td .seg-lab { font-weight: 500; }
+.fam-table td .seg-txt { font-size: 11px; color: var(--ink-mute); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px; }
+.cell-val { font-family: 'JetBrains Mono', monospace; font-size: 11px; display: block; }
+.cell-verdict { font-size: 9px; text-transform: uppercase; letter-spacing: 0.03em; }
+.cell-empty { color: var(--rule-strong); }
+
+/* Data table */
+.table-controls { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; align-items: center; }
+.table-controls select {
+  font-family: 'Inter Tight', sans-serif; font-size: 13px; padding: 7px 10px;
+  border: 1px solid var(--rule-strong); background: var(--bg); color: var(--ink);
+}
+.table-scroll { overflow-x: auto; }
+.data-table th {
+  background: var(--bg-2); font-weight: 500; font-size: 11px; cursor: pointer;
+  font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.04em;
+  white-space: nowrap; position: relative;
+}
+.data-table th:hover { background: var(--rule); }
+.data-table th.sorted::after { content: attr(data-dir); margin-left: 4px; color: var(--accent); }
+.data-table td { text-align: center; }
+.data-table td.left { text-align: left; }
+.data-table tbody tr:hover { background: var(--bg-2); }
+.data-table .num { font-family: 'JetBrains Mono', monospace; }
+
+/* Verdict pill */
+.verdict-pill {
+  display: inline-block; padding: 2px 8px;
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  letter-spacing: 0.04em; border-radius: 10px; font-weight: 500;
+}
+.v-critical { background: rgba(150, 36, 22, 0.12); color: var(--c-critical); }
+.v-high { background: rgba(45, 104, 73, 0.14); color: var(--c-high); }
+.v-context { background: rgba(154, 96, 24, 0.14); color: var(--c-context); }
+.v-low { background: rgba(124, 120, 104, 0.16); color: var(--c-low); }
+.v-placebo { background: rgba(80, 53, 107, 0.14); color: var(--c-placebo); }
+
+.empty-hint { color: var(--ink-mute); font-size: 14px; padding: 12px 0; }
+
+footer {
+  border-top: 1px solid var(--rule); padding: 32px 0;
+  font-size: 13px; color: var(--ink-mute);
+}
+footer a { color: var(--ink-soft); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="shell topbar-inner">
+    <a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span>preatorlabs</a>
+    <nav class="nav">
+      <a href="/">Accueil</a>
+      <a href="/#demo">Démo</a>
+      <a href="/docs/04-INTERPRETATION-GUIDE.md">Interprétation</a>
+    </nav>
+  </div>
+</div>
+
+<header class="dash-header">
+  <div class="shell">
+    <div class="eyebrow">tableau de bord · analyse de corpus</div>
+    <h1 class="serif">Analyse <em>transversale</em> de tes exports d'ablation.</h1>
+    <p class="dash-lead">Dépose un dossier contenant plusieurs exports JSON preatorlabs. Le tableau de bord met en regard tes analyses : distribution des verdicts, profils d'axes, corrélations entre métriques, et suivi des segments à travers les versions d'un même prompt.</p>
+    <div class="notice">
+      <strong>Lecture.</strong> Tout est calculé localement dans ton navigateur, rien n'est envoyé sur le réseau. Les seuils de verdict sont des heuristiques, les corrélations sont descriptives (pas causales), et les comparaisons entre analyses sont surtout fiables à modèle et scénarios comparables.
+    </div>
+  </div>
+</header>
+
+<section class="intake">
+  <div class="shell">
+    <div class="dz" id="dropzone">
+      <h3 class="serif">Dépose ton dossier d'exports</h3>
+      <p>Glisse un dossier (ou des fichiers) <code>.json</code> ici, ou sélectionne-les.</p>
+      <div class="dz-actions">
+        <button class="btn-sm primary" id="pick-folder">Choisir un dossier</button>
+        <button class="btn-sm" id="pick-files">Choisir des fichiers</button>
+        <button class="btn-sm" id="clear-all" hidden>Tout retirer</button>
+      </div>
+      <div class="dz-hint">Format attendu : exports générés par le bouton « Exporter l'analyse (JSON) » de la démo.</div>
+      <input type="file" id="folder-input" webkitdirectory directory multiple>
+      <input type="file" id="files-input" accept="application/json,.json" multiple>
+    </div>
+    <div class="errors" id="errors" hidden></div>
+    <div class="analyses" id="analyses" hidden></div>
+  </div>
+</section>
+
+<div class="dash-body" id="dash-body" hidden>
+  <div class="shell">
+
+    <!-- KPIs -->
+    <div class="block" style="border-top:none; margin-top:0; padding-top:0;">
+      <div class="block-head">
+        <h2 class="serif">Vue d'ensemble</h2>
+        <span class="info-bubble" tabindex="0" role="button" aria-label="Aide : vue d'ensemble">i<span class="info-pop"><strong>Vue d'ensemble.</strong> Synthèse du corpus chargé : nombre d'analyses, de segments et de scénarios, modèles et fournisseurs sémantiques utilisés, plus les moyennes d'impact, de variance et d'activation sur l'ensemble des segments.</span></span>
+      </div>
+      <div class="kpi-grid" id="kpi-grid"></div>
+    </div>
+
+    <!-- Verdict distribution -->
+    <div class="block">
+      <div class="block-head">
+        <h2 class="serif">Distribution des verdicts</h2>
+        <span class="info-bubble" tabindex="0" role="button" aria-label="Aide : verdicts">i<span class="info-pop"><strong>Cinq verdicts.</strong> <strong>critical</strong> et <strong>fort impact</strong> : segments porteurs, à conserver. <strong>contextuel</strong> : utile sur certains scénarios seulement (variance haute ou activation partielle). <strong>faible</strong> : effet limité, vérifier les redondances. <strong>placebo</strong> : ignoré par le modèle.</span></span>
+      </div>
+      <div class="block-sub">Répartition de tous les segments du corpus par verdict.</div>
+      <div class="grid-2">
+        <div class="chart-box"><div class="chart-wrap"><canvas id="chart-verdicts"></canvas></div></div>
+        <div class="chart-box">
+          <div class="legend" id="verdict-legend"></div>
+          <div id="corpus-means"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Composition per analysis -->
+    <div class="block">
+      <div class="block-head">
+        <h2 class="serif">Composition par analyse</h2>
+        <span class="info-bubble" tabindex="0" role="button" aria-label="Aide : composition par analyse">i<span class="info-pop"><strong>Une barre = une analyse.</strong> La longueur de chaque couleur indique le nombre de segments de ce verdict. Une analyse riche en <strong>critical</strong>/<strong>fort impact</strong> est dense en segments porteurs ; beaucoup de <strong>placebo</strong> suggère du texte décoratif ou ignoré.</span></span>
+      </div>
+      <div class="block-sub">Nombre de segments par verdict, pour chaque analyse incluse.</div>
+      <div class="chart-box"><div class="chart-wrap tall"><canvas id="chart-composition"></canvas></div></div>
+    </div>
+
+    <!-- Axis profile -->
+    <div class="block">
+      <div class="block-head">
+        <h2 class="serif">Profil d'axes par analyse</h2>
+        <span class="info-bubble" tabindex="0" role="button" aria-label="Aide : profil d'axes">i<span class="info-pop"><strong>Quel axe porte l'effet ?</strong> Impact moyen décomposé par axe : <strong>structurel</strong> (forme, format), <strong>comportemental</strong> (règles, termes), <strong>sémantique</strong> (sens, style). Un prompt orienté format ressort sur l'axe structurel ; un prompt de persona sur l'axe sémantique.</span></span>
+      </div>
+      <div class="block-sub">Moyenne des deltas par axe, pour chaque analyse incluse.</div>
+      <div class="chart-box"><div class="chart-wrap tall"><canvas id="chart-axes"></canvas></div></div>
+    </div>
+
+    <!-- Scatters -->
+    <div class="block">
+      <div class="block-head">
+        <h2 class="serif">Corrélations entre métriques</h2>
+        <span class="info-bubble" tabindex="0" role="button" aria-label="Aide : corrélations">i<span class="info-pop"><strong>Chaque point = un segment</strong> du corpus, coloré par verdict. À gauche, impact contre variance : haut et stable (à gauche) = critical ; variance élevée (à droite) = contextuel ; bas = faible/placebo. À droite, impact contre activation : un segment à activation faible mais impact non nul est <strong>ponctuel</strong>, pas inutile.</span></span>
+      </div>
+      <div class="block-sub">Nuages de points sur l'ensemble des segments inclus.</div>
+      <div class="grid-2">
+        <div class="chart-box">
+          <div class="legend" id="scatter-legend-1"></div>
+          <div class="chart-wrap"><canvas id="chart-iv"></canvas></div>
+        </div>
+        <div class="chart-box">
+          <div class="legend" id="scatter-legend-2"></div>
+          <div class="chart-wrap"><canvas id="chart-ia"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Correlation matrix -->
+    <div class="block">
+      <div class="block-head">
+        <h2 class="serif">Matrice de corrélation</h2>
+        <span class="info-bubble" tabindex="0" role="button" aria-label="Aide : matrice de corrélation">i<span class="info-pop"><strong>Coefficient de Pearson</strong> (r, entre -1 et 1) entre les métriques, calculé sur tous les segments inclus. Proche de +1 : varient ensemble ; proche de -1 : varient en sens inverse ; proche de 0 : pas de relation linéaire. Lecture <strong>descriptive</strong> du corpus chargé, pas une preuve de causalité.</span></span>
+      </div>
+      <div class="block-sub">r de Pearson entre impact, variance, activation et les trois axes.</div>
+      <div class="chart-box" style="overflow-x:auto;"><table class="corr-table" id="corr-table"></table></div>
+    </div>
+
+    <!-- Version families -->
+    <div class="block">
+      <div class="block-head">
+        <h2 class="serif">Suivi des segments par version</h2>
+        <span class="info-bubble" tabindex="0" role="button" aria-label="Aide : suivi par version">i<span class="info-pop"><strong>Versions d'un même prompt.</strong> Les analyses partageant des segments sont regroupées en familles. Chaque ligne est un segment, chaque colonne une version. Comparer une ligne entre colonnes montre comment l'impact d'un segment <strong>se redistribue</strong> quand d'autres segments sont retirés. Une cellule vide = segment absent de cette version.</span></span>
+      </div>
+      <div class="block-sub">Familles détectées par recouvrement de segments (similarité de Jaccard ≥ 0,5). Cellule = impact % et verdict.</div>
+      <div id="families"></div>
+    </div>
+
+    <!-- Detail table -->
+    <div class="block">
+      <div class="block-head">
+        <h2 class="serif">Table détaillée</h2>
+        <span class="info-bubble" tabindex="0" role="button" aria-label="Aide : table détaillée">i<span class="info-pop"><strong>Tous les segments</strong> du corpus, ligne par ligne. Clique sur un en-tête pour trier ; utilise les filtres pour isoler une analyse, un verdict ou un modèle. Les colonnes struct/comport./sém. sont les deltas moyens par axe.</span></span>
+      </div>
+      <div class="block-sub">Tri par colonne, filtres par analyse, verdict et modèle.</div>
+      <div class="table-controls">
+        <select id="filter-analysis"><option value="">Toutes les analyses</option></select>
+        <select id="filter-verdict"><option value="">Tous les verdicts</option></select>
+        <select id="filter-model"><option value="">Tous les modèles</option></select>
+      </div>
+      <div class="table-scroll"><table class="data-table" id="data-table"></table></div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <div class="shell">
+    <span>preatorlabs · tableau de bord local · les données restent sur ton navigateur · <a href="/">retour au site</a></span>
+  </div>
+</footer>
+
+<script>
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+
+const VERDICTS = ['critical', 'high', 'context', 'low', 'placebo'];
+const VERDICT_LABEL = { critical: 'critical', high: 'fort impact', context: 'contextuel', low: 'faible', placebo: 'placebo' };
+const VERDICT_VAR = { critical: '--c-critical', high: '--c-high', context: '--c-context', low: '--c-low', placebo: '--c-placebo' };
+const AXIS_VAR = { struct: '--c-struct', behav: '--c-behav', sem: '--c-sem' };
+
+function cssVar(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#888';
+}
+const verdictColor = v => cssVar(VERDICT_VAR[v] || '--ink-mute');
+
+const state = { analyses: [], charts: {}, sort: { key: 'impact', dir: 'desc' } };
+
+/* ---------- Helpers ---------- */
+function normText(s) {
+  return String(s || '').trim().toLowerCase().replace(/\s+/g, ' ');
+}
+function mean(arr) {
+  const v = arr.filter(x => typeof x === 'number' && Number.isFinite(x));
+  return v.length ? v.reduce((s, x) => s + x, 0) / v.length : 0;
+}
+function pearson(xs, ys) {
+  const n = xs.length;
+  if (n < 2) return NaN;
+  const mx = mean(xs), my = mean(ys);
+  let num = 0, dx = 0, dy = 0;
+  for (let i = 0; i < n; i++) {
+    const a = xs[i] - mx, b = ys[i] - my;
+    num += a * b; dx += a * a; dy += b * b;
+  }
+  if (dx === 0 || dy === 0) return NaN;
+  return num / Math.sqrt(dx * dy);
+}
+function jaccard(a, b) {
+  if (!a.size && !b.size) return 0;
+  let inter = 0;
+  a.forEach(x => { if (b.has(x)) inter++; });
+  return inter / (a.size + b.size - inter);
+}
+function fmtPct(x) { return Math.round((x || 0) * 100) + '%'; }
+
+/* ---------- Validation & ingestion ---------- */
+function isValidExport(obj) {
+  return obj && obj.meta && obj.meta.tool === 'preatorlabs' && Array.isArray(obj.results);
+}
+
+function buildAnalysis(obj, filename) {
+  const segTexts = (obj.results || []).map(r => normText(r.text)).filter(Boolean);
+  const fallback = (obj.segments || []).map(normText).filter(Boolean);
+  const normSegs = new Set(segTexts.length ? segTexts : fallback);
+  const byNorm = new Map();
+  (obj.results || []).forEach(r => byNorm.set(normText(r.text), r));
+  return {
+    id: 'a' + Math.random().toString(36).slice(2, 9),
+    name: filename.replace(/\.json$/i, ''),
+    meta: obj.meta || {},
+    prompt: obj.prompt || '',
+    segments: obj.segments || [],
+    scenarios: obj.scenarios || [],
+    summary: obj.summary || {},
+    results: obj.results || [],
+    normSegs, byNorm,
+    included: true
+  };
+}
+
+const pendingErrors = [];
+function readFile(file) {
+  return new Promise(resolve => {
+    if (!/\.json$/i.test(file.name)) { resolve(null); return; }
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const obj = JSON.parse(reader.result);
+        if (!isValidExport(obj)) { pendingErrors.push(`${file.name} : format non reconnu (pas un export preatorlabs).`); resolve(null); return; }
+        resolve(buildAnalysis(obj, file.name));
+      } catch (e) {
+        pendingErrors.push(`${file.name} : JSON invalide.`);
+        resolve(null);
+      }
+    };
+    reader.onerror = () => { pendingErrors.push(`${file.name} : lecture impossible.`); resolve(null); };
+    reader.readAsText(file);
+  });
+}
+
+async function ingestFiles(files) {
+  pendingErrors.length = 0;
+  const jsonFiles = Array.from(files).filter(f => /\.json$/i.test(f.name));
+  if (!jsonFiles.length) pendingErrors.push("Aucun fichier .json trouvé dans la sélection.");
+  const results = await Promise.all(jsonFiles.map(readFile));
+  results.filter(Boolean).forEach(a => state.analyses.push(a));
+  renderErrors();
+  renderAll();
+}
+
+function renderErrors() {
+  const el = $('#errors');
+  if (!pendingErrors.length) { el.hidden = true; el.innerHTML = ''; return; }
+  el.hidden = false;
+  el.innerHTML = `<strong>${pendingErrors.length} fichier(s) ignoré(s)</strong><ul>${pendingErrors.map(e => `<li>${escapeHtml(e)}</li>`).join('')}</ul>`;
+}
+
+/* Drag-drop folder support via webkitGetAsEntry */
+function traverseEntry(entry, out) {
+  return new Promise(resolve => {
+    if (entry.isFile) {
+      entry.file(f => { out.push(f); resolve(); }, () => resolve());
+    } else if (entry.isDirectory) {
+      const reader = entry.createReader();
+      const readBatch = () => reader.readEntries(async entries => {
+        if (!entries.length) { resolve(); return; }
+        await Promise.all(entries.map(e => traverseEntry(e, out)));
+        readBatch();
+      }, () => resolve());
+      readBatch();
+    } else resolve();
+  });
+}
+
+async function handleDrop(dt) {
+  const out = [];
+  const items = dt.items ? Array.from(dt.items) : [];
+  const entries = items.map(it => it.webkitGetAsEntry && it.webkitGetAsEntry()).filter(Boolean);
+  if (entries.length) {
+    await Promise.all(entries.map(e => traverseEntry(e, out)));
+    await ingestFiles(out);
+  } else if (dt.files && dt.files.length) {
+    await ingestFiles(dt.files);
+  }
+}
+
+/* ---------- Rendering ---------- */
+function included() { return state.analyses.filter(a => a.included); }
+function allSegments() {
+  const rows = [];
+  included().forEach(a => (a.results || []).forEach(r => rows.push({ a, r })));
+  return rows;
+}
+
+function escapeHtml(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+function renderAnalysesList() {
+  const el = $('#analyses');
+  if (!state.analyses.length) { el.hidden = true; el.innerHTML = ''; $('#clear-all').hidden = true; return; }
+  el.hidden = false;
+  $('#clear-all').hidden = false;
+  const chips = state.analyses.map(a => `
+    <span class="chip">
+      <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;">
+        <input type="checkbox" data-id="${a.id}" ${a.included ? 'checked' : ''}>
+        ${escapeHtml(a.name)}
+      </label>
+      <span class="mono" style="color:var(--ink-mute);">${(a.results || []).length} seg</span>
+      <button class="rm" data-rm="${a.id}" title="Retirer">×</button>
+    </span>`).join('');
+  el.innerHTML = `<div class="meta-line">${state.analyses.length} analyse(s) chargée(s) · décoche pour exclure d'une vue</div>${chips}`;
+  $$('input[type="checkbox"][data-id]', el).forEach(c => c.addEventListener('change', e => {
+    const a = state.analyses.find(x => x.id === e.target.dataset.id);
+    if (a) { a.included = e.target.checked; renderDashboard(); }
+  }));
+  $$('button[data-rm]', el).forEach(b => b.addEventListener('click', e => {
+    state.analyses = state.analyses.filter(x => x.id !== e.currentTarget.dataset.rm);
+    renderAll();
+  }));
+}
+
+function renderAll() {
+  renderAnalysesList();
+  renderDashboard();
+}
+
+function destroyCharts() {
+  Object.values(state.charts).forEach(c => { try { c.destroy(); } catch (e) {} });
+  state.charts = {};
+}
+
+function renderDashboard() {
+  const inc = included();
+  const body = $('#dash-body');
+  if (!inc.length) { body.hidden = true; destroyCharts(); return; }
+  body.hidden = false;
+  renderKpis();
+  renderVerdictDistribution();
+  renderComposition();
+  renderAxisProfile();
+  renderScatters();
+  renderCorrelation();
+  renderFamilies();
+  renderFilters();
+  renderTable();
+}
+
+function renderKpis() {
+  const inc = included();
+  const segs = allSegments();
+  const models = [...new Set(inc.map(a => a.meta.model).filter(Boolean))];
+  const providers = [...new Set(inc.map(a => a.meta.semanticProvider).filter(Boolean))];
+  const dates = inc.map(a => a.meta.exportedAt).filter(Boolean).sort();
+  const dateRange = dates.length ? `${dates[0].slice(0, 10)} → ${dates[dates.length - 1].slice(0, 10)}` : '—';
+  const scenarioTotal = inc.reduce((s, a) => s + (a.scenarios || []).length, 0);
+  const kpis = [
+    { val: inc.length, lab: 'analyses', sub: '' },
+    { val: segs.length, lab: 'segments', sub: '' },
+    { val: scenarioTotal, lab: 'scénarios (cumul)', sub: '' },
+    { val: models.length, lab: models.length > 1 ? 'modèles' : 'modèle', sub: models.join(', ') || '—' },
+    { val: providers.length, lab: 'fournisseurs sém.', sub: providers.join(', ') || '—' },
+    { val: fmtPct(mean(segs.map(s => s.r.impact))), lab: 'impact moyen', sub: '' },
+    { val: fmtPct(mean(segs.map(s => s.r.variance))), lab: 'variance moyenne', sub: '' },
+    { val: fmtPct(mean(segs.map(s => (s.r.activation && s.r.activation.overall) || 0))), lab: 'activation moyenne', sub: '' },
+    { val: dates.length ? dateRange : '—', lab: 'période', sub: '', wide: true }
+  ];
+  $('#kpi-grid').innerHTML = kpis.map(k => `
+    <div class="kpi">
+      <div class="k-val" style="${k.wide ? 'font-size:16px;' : ''}">${escapeHtml(String(k.val))}</div>
+      <div class="k-lab">${escapeHtml(k.lab)}</div>
+      ${k.sub ? `<div class="k-sub">${escapeHtml(k.sub)}</div>` : ''}
+    </div>`).join('');
+}
+
+function verdictCounts(segs) {
+  const c = {}; VERDICTS.forEach(v => c[v] = 0);
+  segs.forEach(s => { if (c[s.r.verdict] != null) c[s.r.verdict]++; });
+  return c;
+}
+
+function renderVerdictDistribution() {
+  const segs = allSegments();
+  const counts = verdictCounts(segs);
+  const labels = VERDICTS.map(v => VERDICT_LABEL[v]);
+  const data = VERDICTS.map(v => counts[v]);
+  const colors = VERDICTS.map(verdictColor);
+  if (state.charts.verdicts) state.charts.verdicts.destroy();
+  state.charts.verdicts = new Chart($('#chart-verdicts'), {
+    type: 'doughnut',
+    data: { labels, datasets: [{ data, backgroundColor: colors, borderColor: cssVar('--bg'), borderWidth: 2 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } } }
+  });
+  const total = segs.length || 1;
+  $('#verdict-legend').innerHTML = VERDICTS.map(v =>
+    `<span><span class="swatch" style="background:${verdictColor(v)}"></span>${VERDICT_LABEL[v]} · ${counts[v]} (${Math.round(counts[v] / total * 100)}%)</span>`
+  ).join('');
+  $('#corpus-means').innerHTML = `
+    <div style="margin-top:16px;font-size:13px;color:var(--ink-soft);line-height:1.9;">
+      <div><strong>${segs.length}</strong> segments sur <strong>${included().length}</strong> analyses</div>
+      <div>impact moyen : <strong>${fmtPct(mean(segs.map(s => s.r.impact)))}</strong></div>
+      <div>variance moyenne : <strong>${fmtPct(mean(segs.map(s => s.r.variance)))}</strong></div>
+      <div>activation moyenne : <strong>${fmtPct(mean(segs.map(s => (s.r.activation && s.r.activation.overall) || 0)))}</strong></div>
+    </div>`;
+}
+
+function renderComposition() {
+  const inc = included();
+  const labels = inc.map(a => a.name);
+  const datasets = VERDICTS.map(v => ({
+    label: VERDICT_LABEL[v],
+    data: inc.map(a => (a.results || []).filter(r => r.verdict === v).length),
+    backgroundColor: verdictColor(v)
+  }));
+  if (state.charts.composition) state.charts.composition.destroy();
+  state.charts.composition = new Chart($('#chart-composition'), {
+    type: 'bar',
+    data: { labels, datasets },
+    options: {
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+      scales: { x: { stacked: true, title: { display: true, text: 'segments' } }, y: { stacked: true } },
+      plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } }
+    }
+  });
+}
+
+function renderAxisProfile() {
+  const inc = included();
+  const labels = inc.map(a => a.name);
+  const axes = ['struct', 'behav', 'sem'];
+  const axisLabel = { struct: 'structurel', behav: 'comportemental', sem: 'sémantique' };
+  const datasets = axes.map(ax => ({
+    label: axisLabel[ax],
+    data: inc.map(a => Math.round(mean((a.results || []).map(r => r[ax])) * 100)),
+    backgroundColor: cssVar(AXIS_VAR[ax])
+  }));
+  if (state.charts.axes) state.charts.axes.destroy();
+  state.charts.axes = new Chart($('#chart-axes'), {
+    type: 'bar',
+    data: { labels, datasets },
+    options: {
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+      scales: { x: { title: { display: true, text: 'delta moyen (%)' }, beginAtZero: true } },
+      plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } }
+    }
+  });
+}
+
+function scatterDatasets(xKey, yKey) {
+  const byVerdict = {}; VERDICTS.forEach(v => byVerdict[v] = []);
+  allSegments().forEach(({ a, r }) => {
+    const x = (xKey === 'impact' ? r.impact : r[xKey]) * 100;
+    let y;
+    if (yKey === 'variance') y = r.variance * 100;
+    else if (yKey === 'activation') y = ((r.activation && r.activation.overall) || 0) * 100;
+    else y = r[yKey] * 100;
+    (byVerdict[r.verdict] || byVerdict.placebo).push({ x, y, seg: r.id, label: r.label, an: a.name, verdict: r.verdict });
+  });
+  return VERDICTS.map(v => ({
+    label: VERDICT_LABEL[v],
+    data: byVerdict[v],
+    backgroundColor: verdictColor(v),
+    borderColor: verdictColor(v),
+    pointRadius: 4, pointHoverRadius: 6
+  }));
+}
+
+function renderScatters() {
+  const tip = {
+    callbacks: {
+      label: ctx => {
+        const p = ctx.raw;
+        return `${p.an} · ${p.seg} (${VERDICT_LABEL[p.verdict]}) — ${Math.round(p.x)}% / ${Math.round(p.y)}%`;
+      }
+    }
+  };
+  if (state.charts.iv) state.charts.iv.destroy();
+  state.charts.iv = new Chart($('#chart-iv'), {
+    type: 'scatter',
+    data: { datasets: scatterDatasets('impact', 'variance') },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: { x: { title: { display: true, text: 'impact (%)' }, min: 0 }, y: { title: { display: true, text: 'variance (%)' }, min: 0 } },
+      plugins: { legend: { display: false }, tooltip: tip }
+    }
+  });
+  if (state.charts.ia) state.charts.ia.destroy();
+  state.charts.ia = new Chart($('#chart-ia'), {
+    type: 'scatter',
+    data: { datasets: scatterDatasets('impact', 'activation') },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: { x: { title: { display: true, text: 'impact (%)' }, min: 0 }, y: { title: { display: true, text: 'activation (%)' }, min: 0, max: 100 } },
+      plugins: { legend: { display: false }, tooltip: tip }
+    }
+  });
+  const legendHtml = VERDICTS.map(v => `<span><span class="swatch" style="background:${verdictColor(v)}"></span>${VERDICT_LABEL[v]}</span>`).join('');
+  $('#scatter-legend-1').innerHTML = legendHtml;
+  $('#scatter-legend-2').innerHTML = legendHtml;
+}
+
+function renderCorrelation() {
+  const feats = [
+    { key: 'impact', lab: 'impact' },
+    { key: 'variance', lab: 'variance' },
+    { key: 'activation', lab: 'activation' },
+    { key: 'struct', lab: 'struct' },
+    { key: 'behav', lab: 'comport.' },
+    { key: 'sem', lab: 'sém.' }
+  ];
+  const segs = allSegments();
+  const vals = feats.map(f => segs.map(({ r }) => {
+    if (f.key === 'activation') return (r.activation && r.activation.overall) || 0;
+    return r[f.key];
+  }));
+  let head = '<tr><th></th>' + feats.map(f => `<th>${f.lab}</th>`).join('') + '</tr>';
+  let rows = '';
+  for (let i = 0; i < feats.length; i++) {
+    let cells = `<th>${feats[i].lab}</th>`;
+    for (let j = 0; j < feats.length; j++) {
+      const r = i === j ? 1 : pearson(vals[i], vals[j]);
+      const txt = Number.isFinite(r) ? r.toFixed(2) : '—';
+      let bg = 'transparent';
+      if (Number.isFinite(r)) {
+        const col = r >= 0 ? cssVar('--c-high') : cssVar('--c-critical');
+        bg = hexToRgba(col, Math.min(0.85, Math.abs(r)));
+      }
+      const fg = Number.isFinite(r) && Math.abs(r) > 0.5 ? '#fff' : 'var(--ink)';
+      cells += `<td class="corr-cell" style="background:${bg};color:${fg};">${txt}</td>`;
+    }
+    rows += `<tr>${cells}</tr>`;
+  }
+  $('#corr-table').innerHTML = head + rows;
+}
+
+function hexToRgba(hex, a) {
+  const h = hex.replace('#', '');
+  const n = h.length === 3 ? h.split('').map(c => c + c).join('') : h;
+  const r = parseInt(n.slice(0, 2), 16), g = parseInt(n.slice(2, 4), 16), b = parseInt(n.slice(4, 6), 16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+/* ---------- Version families ---------- */
+function buildFamilies() {
+  const inc = included();
+  const n = inc.length;
+  const parent = inc.map((_, i) => i);
+  const find = x => { while (parent[x] !== x) { parent[x] = parent[parent[x]]; x = parent[x]; } return x; };
+  const union = (a, b) => { parent[find(a)] = find(b); };
+  for (let i = 0; i < n; i++) {
+    for (let j = i + 1; j < n; j++) {
+      if (jaccard(inc[i].normSegs, inc[j].normSegs) >= 0.5) union(i, j);
+    }
+  }
+  const groups = {};
+  for (let i = 0; i < n; i++) {
+    const root = find(i);
+    (groups[root] = groups[root] || []).push(inc[i]);
+  }
+  return Object.values(groups).filter(g => g.length >= 2);
+}
+
+function renderFamilies() {
+  const families = buildFamilies();
+  const el = $('#families');
+  if (!families.length) {
+    el.innerHTML = `<div class="empty-hint">Aucune famille de versions détectée (il faut au moins deux analyses partageant ≥ 50% de leurs segments). Charge plusieurs versions d'un même prompt pour activer cette vue.</div>`;
+    return;
+  }
+  el.innerHTML = families.map((fam, idx) => {
+    const unionMap = new Map();
+    fam.forEach(a => a.byNorm.forEach((r, norm) => {
+      if (!unionMap.has(norm)) unionMap.set(norm, { label: r.label, text: r.text });
+    }));
+    const segList = [...unionMap.entries()];
+    const head = `<tr><th class="seg-name">segment</th>${fam.map(a => `<th>${escapeHtml(a.name)}</th>`).join('')}</tr>`;
+    const rows = segList.map(([norm, info]) => {
+      const cells = fam.map(a => {
+        const r = a.byNorm.get(norm);
+        if (!r) return `<td class="cell-empty">·</td>`;
+        const bg = hexToRgba(verdictColor(r.verdict), Math.min(0.7, 0.15 + (r.impact || 0)));
+        return `<td style="background:${bg};"><span class="cell-val">${fmtPct(r.impact)}</span><span class="cell-verdict">${VERDICT_LABEL[r.verdict]}</span></td>`;
+      }).join('');
+      return `<tr><td class="seg-name"><span class="seg-lab">${escapeHtml(info.label || '—')}</span><span class="seg-txt">${escapeHtml((info.text || '').slice(0, 90))}</span></td>${cells}</tr>`;
+    }).join('');
+    return `
+      <div class="fam">
+        <h3 class="serif">Famille ${idx + 1}</h3>
+        <div class="fam-meta">${fam.length} versions · ${segList.length} segments distincts</div>
+        <div class="fam-scroll"><table class="fam-table">${head}${rows}</table></div>
+      </div>`;
+  }).join('');
+}
+
+/* ---------- Detail table ---------- */
+function renderFilters() {
+  const inc = included();
+  const fa = $('#filter-analysis'), fm = $('#filter-model');
+  const aSel = fa.value, mSel = fm.value;
+  fa.innerHTML = '<option value="">Toutes les analyses</option>' + inc.map(a => `<option value="${a.id}">${escapeHtml(a.name)}</option>`).join('');
+  const models = [...new Set(inc.map(a => a.meta.model).filter(Boolean))];
+  fm.innerHTML = '<option value="">Tous les modèles</option>' + models.map(m => `<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`).join('');
+  $('#filter-verdict').innerHTML = '<option value="">Tous les verdicts</option>' + VERDICTS.map(v => `<option value="${v}">${VERDICT_LABEL[v]}</option>`).join('');
+  if ([...fa.options].some(o => o.value === aSel)) fa.value = aSel;
+  if ([...fm.options].some(o => o.value === mSel)) fm.value = mSel;
+}
+
+function renderTable() {
+  const aF = $('#filter-analysis').value, vF = $('#filter-verdict').value, mF = $('#filter-model').value;
+  let rows = allSegments().filter(({ a, r }) =>
+    (!aF || a.id === aF) && (!vF || r.verdict === vF) && (!mF || a.meta.model === mF)
+  );
+  const { key, dir } = state.sort;
+  const getVal = ({ a, r }) => {
+    if (key === 'analysis') return a.name;
+    if (key === 'segment') return r.id;
+    if (key === 'verdict') return VERDICTS.indexOf(r.verdict);
+    if (key === 'activation') return (r.activation && r.activation.overall) || 0;
+    return r[key];
+  };
+  rows.sort((p, q) => {
+    const x = getVal(p), y = getVal(q);
+    let cmp = typeof x === 'string' ? x.localeCompare(y) : x - y;
+    return dir === 'asc' ? cmp : -cmp;
+  });
+  const cols = [
+    { key: 'analysis', lab: 'analyse', left: true },
+    { key: 'segment', lab: 'seg', left: true },
+    { key: 'impact', lab: 'impact' },
+    { key: 'variance', lab: 'variance' },
+    { key: 'activation', lab: 'activation' },
+    { key: 'struct', lab: 'struct' },
+    { key: 'behav', lab: 'comport.' },
+    { key: 'sem', lab: 'sém.' },
+    { key: 'verdict', lab: 'verdict' }
+  ];
+  const head = '<tr>' + cols.map(c => {
+    const sorted = c.key === key ? ' sorted' : '';
+    const dirAttr = c.key === key ? (dir === 'asc' ? '↑' : '↓') : '';
+    return `<th class="${sorted}" data-key="${c.key}" data-dir="${dirAttr}">${c.lab}</th>`;
+  }).join('') + '</tr>';
+  const body = rows.map(({ a, r }) => `
+    <tr>
+      <td class="left">${escapeHtml(a.name)}</td>
+      <td class="left" title="${escapeHtml(r.label || '')}">${escapeHtml(r.id)}</td>
+      <td class="num">${fmtPct(r.impact)}</td>
+      <td class="num">${fmtPct(r.variance)}</td>
+      <td class="num">${fmtPct((r.activation && r.activation.overall) || 0)}</td>
+      <td class="num">${fmtPct(r.struct)}</td>
+      <td class="num">${fmtPct(r.behav)}</td>
+      <td class="num">${fmtPct(r.sem)}</td>
+      <td><span class="verdict-pill v-${r.verdict}">${VERDICT_LABEL[r.verdict]}</span></td>
+    </tr>`).join('');
+  $('#data-table').innerHTML = head + (body || `<tr><td colspan="${cols.length}" class="empty-hint">Aucun segment pour ces filtres.</td></tr>`);
+  $$('#data-table th[data-key]').forEach(th => th.addEventListener('click', () => {
+    const k = th.dataset.key;
+    if (state.sort.key === k) state.sort.dir = state.sort.dir === 'asc' ? 'desc' : 'asc';
+    else { state.sort.key = k; state.sort.dir = (k === 'analysis' || k === 'segment') ? 'asc' : 'desc'; }
+    renderTable();
+  }));
+}
+
+/* ---------- Info bubbles ---------- */
+function initBubbles() {
+  $$('.info-bubble').forEach(b => {
+    b.addEventListener('click', e => { e.stopPropagation(); b.classList.toggle('open'); });
+    b.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); b.classList.toggle('open'); }
+      if (e.key === 'Escape') { b.classList.remove('open'); b.blur(); }
+    });
+  });
+  document.addEventListener('click', () => $$('.info-bubble.open').forEach(b => b.classList.remove('open')));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') $$('.info-bubble.open').forEach(b => b.classList.remove('open')); });
+}
+
+/* ---------- Events ---------- */
+function initEvents() {
+  $('#pick-folder').addEventListener('click', () => $('#folder-input').click());
+  $('#pick-files').addEventListener('click', () => $('#files-input').click());
+  $('#folder-input').addEventListener('change', e => { ingestFiles(e.target.files); e.target.value = ''; });
+  $('#files-input').addEventListener('change', e => { ingestFiles(e.target.files); e.target.value = ''; });
+  $('#clear-all').addEventListener('click', () => { state.analyses = []; pendingErrors.length = 0; renderErrors(); renderAll(); });
+
+  const dz = $('#dropzone');
+  ['dragenter', 'dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('drag'); }));
+  ['dragleave', 'drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); if (ev === 'drop' || e.target === dz) dz.classList.remove('drag'); }));
+  dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('drag'); handleDrop(e.dataTransfer); });
+
+  ['#filter-analysis', '#filter-verdict', '#filter-model'].forEach(s => $(s).addEventListener('change', renderTable));
+
+  initBubbles();
+}
+
+initEvents();
+</script>
+</body>
+</html>
