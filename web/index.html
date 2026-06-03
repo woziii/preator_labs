@@ -928,6 +928,50 @@ textarea { min-height: 160px; resize: vertical; }
   vertical-align: middle;
 }
 
+.adv-stats-bar { margin-bottom: 16px; }
+.adv-stats-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.adv-stats-toggle .adv-stats-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--ink-mute);
+}
+.adv-stats-help { margin-top: 8px; }
+.adv-stats-help summary {
+  font-size: 12px;
+  color: var(--accent);
+  cursor: pointer;
+}
+.adv-stats-help .adv-stats-frame {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin: 10px 0;
+  padding: 12px 16px;
+  background: var(--bg-2);
+  border-left: 2px solid var(--ink);
+}
+.adv-stats-help .adv-stats-list {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin: 0;
+  padding-left: 18px;
+}
+.adv-stats-help .adv-stats-list li { margin-bottom: 8px; }
+.seg-card-meta-adv {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--ink-soft);
+  margin-top: 4px;
+}
+
 .seg-card {
   border: 1px solid var(--rule);
   padding: 20px 24px;
@@ -1659,6 +1703,21 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
             <div class="chart-wrap"><canvas id="variance-chart" role="img" aria-label="Graphique de variance par segment"></canvas></div>
 
             <h3 class="serif" style="font-size: 20px; font-weight: 500; margin: 32px 0 12px; letter-spacing: -0.005em;">Décomposition par segment</h3>
+
+            <div class="adv-stats-bar">
+              <label class="adv-stats-toggle"><input type="checkbox" id="toggle-advanced-stats"> Afficher les statistiques avancées <span class="adv-stats-sub">(z, axe porteur, S/N, direction)</span></label>
+              <details class="adv-stats-help">
+                <summary>Comment lire ces chiffres (et ne pas les sur-interpréter)</summary>
+                <p class="adv-stats-frame">Ces indicateurs ne mesurent rien de nouveau : ils <strong>re-présentent</strong> les deltas déjà calculés pour aider à <strong>localiser</strong> quels segments regarder. Toute décision de suppression doit ensuite être <strong>confirmée par la lecture des outputs</strong> (panneau « Voir outputs » de chaque carte).</p>
+                <ul class="adv-stats-list">
+                  <li><strong>z</strong> — écart à la moyenne du run, en σ. <em>Lecture&nbsp;:</em> z ≥ +1 = nettement au-dessus des autres segments <strong>de ce prompt</strong>. <em>Piège&nbsp;:</em> c'est <strong>relatif au run</strong>, pas une vérité absolue — non comparable entre deux prompts différents.</li>
+                  <li><strong>axe porteur</strong> — l'axe (structurel / comportemental / sémantique) le plus fort, <strong>non dilué</strong> par la moyenne. <em>Lecture&nbsp;:</em> dit <em>où</em> le segment agit. <em>Piège&nbsp;:</em> un fort porteur sémantique peut n'être qu'une reformulation, pas une perte de fonction → confirmer par les outputs.</li>
+                  <li><strong>S/N</strong> — impact / (variance + 0,05). <em>Lecture&nbsp;:</em> grand = effet réel et <strong>stable</strong>. <em>Piège&nbsp;:</em> un S/N faible ne veut pas dire « inutile », mais « instable / dépend du scénario ».</li>
+                  <li><strong>direction</strong> — <code>porte</code> / <code>nuit</code> / <code>neutre</code> / <code>non-mesurable</code> (axes structurel + comportemental uniquement). <em>Lecture&nbsp;:</em> <code>nuit</code> = retirer le segment <strong>améliore</strong> la conformité. <em>Piège&nbsp;:</em> <code>non-mesurable</code> ≠ neutre — cela signifie qu'aucun critère structurel/comportemental n'était configuré.</li>
+                </ul>
+              </details>
+            </div>
+
             <div id="axes-breakdown"></div>
           </div>
         </div>
@@ -1885,7 +1944,8 @@ const state = {
   semanticProvider: 'tfidf_local',
   temperature: 0,
   abortController: null,
-  resumable: null
+  resumable: null,
+  showAdvancedStats: false
 };
 
 const reachyPrompt = `Tu es Reachy Mini, un petit robot qui vit dans un appartement parisien. Tu n'es pas là pour aider, tu es là pour exister avec les gens autour de toi.
@@ -1984,6 +2044,18 @@ function extractQuotedStrings(text) {
   return out;
 }
 
+// Prohibitions CONCRÈTES -> règles structurelles checkables. Garde-fou : ne se déclenche
+// que sur une formulation prohibitive (« utilise des listes » ne renvoie donc rien).
+function concreteProhibitions(lowerLine) {
+  const out = [];
+  const prohibitive = /(interdit|jamais|évite|evite|pas d|sans |aucun|proscri|bannir|ne pas)/i.test(lowerLine);
+  if (!prohibitive) return out;
+  if (/ast[ée]risque/i.test(lowerLine)) out.push('no_asterisk');
+  if (/(liste|puce)/i.test(lowerLine)) out.push('no_list');
+  if (/emoji/i.test(lowerLine)) out.push('no_emoji');
+  return out;
+}
+
 function detectAutoStructuralRules(segments) {
   const joined = (segments || []).join('\n');
   const lines = extractPromptLines(segments);
@@ -1996,6 +2068,21 @@ function detectAutoStructuralRules(segments) {
     const quoted = extractQuotedStrings(line);
     if (quoted.length && /(termine|conclus|fini|finish|end)/i.test(lower)) endings.push(...quoted);
     if (quoted.length && /(inclus|contient|include|mentionne|ajoute)/i.test(lower)) mustContain.push(...quoted);
+
+    // LONGUEUR — un mot limitant n'importe où dans la ligne (ordre libre) + nombre + unité
+    const hasLimit = /(max\b|maximum|sous |pas plus de|au plus|jusqu['’]à|n['’]exc[eè]de|moins de|≤|<=)/i.test(lower);
+    if (hasLimit) {
+      const w = lower.match(/(\d+)\s*mots?/);
+      if (w) rules.push({ axis: 'struct', source: 'auto', type: 'max_words', value: parseInt(w[1], 10), label: `Longueur max ${w[1]} mots`, enabled: true });
+      const l = lower.match(/(\d+)\s*lignes?/);
+      if (l) rules.push({ axis: 'struct', source: 'auto', type: 'max_lines', value: parseInt(l[1], 10), label: `Longueur max ${l[1]} lignes`, enabled: true });
+    }
+
+    // PROHIBITIONS CONCRÈTES
+    for (const t of concreteProhibitions(lower)) {
+      const label = t === 'no_asterisk' ? "Pas d'astérisques" : t === 'no_list' ? 'Pas de listes' : "Pas d'emoji";
+      rules.push({ axis: 'struct', source: 'auto', type: t, label, enabled: true });
+    }
   }
 
   for (const phrase of dedupeStrings(endings)) {
@@ -2003,11 +2090,6 @@ function detectAutoStructuralRules(segments) {
   }
   for (const phrase of dedupeStrings(mustContain)) {
     rules.push({ axis: 'struct', source: 'auto', type: 'must_contain', phrase, label: `Contenu imposé: "${phrase}"`, enabled: true });
-  }
-
-  const maxWordsMatch = joined.match(/(?:maximum|max|pas plus de|jusqu['’]à)\s*(\d+)\s*mots?/i);
-  if (maxWordsMatch) {
-    rules.push({ axis: 'struct', source: 'auto', type: 'max_words', value: parseInt(maxWordsMatch[1], 10), label: `Longueur max ${maxWordsMatch[1]} mots`, enabled: true });
   }
 
   if (/(json|format json|réponse json)/i.test(joined)) {
@@ -2025,7 +2107,15 @@ function detectAutoStructuralRules(segments) {
       enabled: true
     });
   }
-  return rules;
+
+  // dédoublonnage (type + phrase/valeur)
+  const seen = new Set();
+  return rules.filter(r => {
+    const k = r.type + '|' + (r.phrase || r.value || '');
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
 }
 
 function detectAutoBehavioralRules(segments) {
@@ -2098,6 +2188,18 @@ function evalStructural(output, criteria) {
     if (rule.type === 'no_list') {
       total++;
       if (!(/^\s*[-*•]\s/m.test(output) || /^\s*\d+\.\s/m.test(output))) matched++;
+      continue;
+    }
+    if (rule.type === 'no_emoji') {
+      total++;
+      const EMOJI = /[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{1F1E6}-\u{1F1FF}]/u;
+      if (!EMOJI.test(output)) matched++;
+      continue;
+    }
+    if (rule.type === 'max_lines') {
+      total++;
+      const lineCount = output.split('\n').map(s => s.trim()).filter(Boolean).length;
+      if (lineCount <= rule.value) matched++;
       continue;
     }
     if (rule.type === 'must_contain') {
@@ -2381,6 +2483,83 @@ function activationRate(values, threshold = AXIS_ACTIVE_THRESHOLD) {
   return active / valid.length;
 }
 
+/* ===================== Couche de lecture statistique (Lot A, additive) =====================
+   Ne produit AUCUNE nouvelle mesure : re-présente les deltas déjà calculés pour rendre la
+   discrimination lisible. Chaque chiffre est recalculable à la main (falsifiable). */
+
+const SNR_FLOOR = 0.05; // empêche un segment à variance ~0 d'avoir un SNR explosif
+
+function enrichResults(results) {
+  if (!Array.isArray(results) || results.length === 0) return results;
+  const imps = results.map(r => r.impact);
+  const mean = imps.reduce((s, v) => s + v, 0) / imps.length;
+  const variancePop = imps.reduce((s, v) => s + (v - mean) ** 2, 0) / imps.length;
+  const sd = Math.sqrt(variancePop) || 1e-9;
+  const mn = Math.min(...imps);
+  const rng = (Math.max(...imps) - mn) || 1e-9;
+
+  // rang (1 = impact le plus fort)
+  const order = [...results].sort((a, b) => b.impact - a.impact);
+  const rankOf = new Map(order.map((r, i) => [r.id, i + 1]));
+
+  results.forEach(r => {
+    const axes = [['struct', r.struct], ['behav', r.behav], ['sem', r.sem]];
+    const carrier = axes.reduce((m, x) => (x[1] > m[1] ? x : m), ['struct', -1]);
+    r.stats = {
+      zImpact: (r.impact - mean) / sd,               // > +1 : nettement au-dessus du run
+      minmaxImpact: (r.impact - mn) / rng,            // 0 = plancher du run, 1 = sommet
+      rankImpact: rankOf.get(r.id),
+      snr: r.impact / (r.variance + SNR_FLOOR),       // grand = effet réel et stable
+      carrierAxis: carrier[0],                        // axe qui PORTE l'effet
+      carrierImpact: carrier[1],                      // impact NON dilué par le moyennage
+      runMeanImpact: mean,
+      runSdImpact: sd
+    };
+  });
+  return results;
+}
+
+function calibrateWithControls(results, { negId, posId } = {}) {
+  const neg = results.find(r => r.id === negId);
+  const pos = results.find(r => r.id === posId);
+  if (!neg || !pos) return results; // pas de témoins : on ne calibre pas
+  const floor = neg.impact;
+  const ceil = pos.impact;
+  const span = (ceil - floor) || 1e-9;
+  results.forEach(r => {
+    const c = (r.impact - floor) / span;
+    r.stats = r.stats || {};
+    r.stats.calibratedImpact = c;                    // < 0 ≈ sous le bruit ; ~1 ≈ sature
+    r.stats.belowNoiseFloor = r.impact <= floor + 1e-9;
+  });
+  return results;
+}
+
+function discriminationRead(r) {
+  const s = r.stats || {};
+  const strongAxis = s.carrierImpact >= 0.40;        // un axe sature -> effet franc
+  const aboveRun = s.zImpact >= 1.0;                 // nettement au-dessus du prompt
+  const stable = s.snr >= 1.8;                       // peu de bruit relatif
+  const nearFloor = s.calibratedImpact != null
+    ? s.belowNoiseFloor
+    : s.minmaxImpact <= 0.10;
+
+  if (strongAxis && stable) return 'porteur-net';            // garder, segment-clé
+  if (aboveRun && r.variance >= 0.25) return 'contextuel';   // filet : agit sur certains scénarios
+  if (aboveRun) return 'porteur-modéré';                     // compte, mais sans saturer
+  if (nearFloor) return 'inerte-candidat-suppression';       // à confirmer par OUTPUTS
+  return 'faible-redondance-probable';                       // tester en ablation combinée
+}
+
+function directionOf(structSignedMean, behavSignedMean) {
+  const vals = [structSignedMean, behavSignedMean].filter(v => typeof v === 'number');
+  if (!vals.length) return 'non-mesurable';           // pas de critère struct/behav configuré
+  const net = vals.reduce((s, v) => s + v, 0) / vals.length;
+  if (net > 0.10) return 'porte';
+  if (net < -0.10) return 'nuit';                      // signal direct pour H3
+  return 'neutre';
+}
+
 async function aggregateSegment(i, segments, scenarios, baselines, baselineScores, outputs, criteria, voyageApiKey) {
   const perScenario = [];
   for (let j = 0; j < scenarios.length; j++) {
@@ -2390,12 +2569,20 @@ async function aggregateSegment(i, segments, scenarios, baselines, baselineScore
 
     const structDelta = (baselineScores[j].struct.score == null || ablatedStruct.score == null) ? null : Math.abs(baselineScores[j].struct.score - ablatedStruct.score);
     const behavDelta = (baselineScores[j].behav.score == null || ablatedBehav.score == null) ? null : Math.abs(baselineScores[j].behav.score - ablatedBehav.score);
+    // Delta SIGNÉ (Lot B.2) : information EN PLUS, n'entre PAS dans activeValues/impact.
+    // signe > 0 ⇒ retirer le segment abaisse la conformité ⇒ il PORTE ; signe < 0 ⇒ il NUIT.
+    const structSigned = (baselineScores[j].struct.score == null || ablatedStruct.score == null)
+      ? null : (baselineScores[j].struct.score - ablatedStruct.score);
+    const behavSigned = (baselineScores[j].behav.score == null || ablatedBehav.score == null)
+      ? null : (baselineScores[j].behav.score - ablatedBehav.score);
     const semDelta = sem.delta;
     const activeValues = [structDelta, behavDelta, semDelta].filter(v => typeof v === 'number' && Number.isFinite(v));
     const impact = activeValues.length ? activeValues.reduce((s, v) => s + v, 0) / activeValues.length : null;
     perScenario.push({
       struct: structDelta,
       behav: behavDelta,
+      structSigned,
+      behavSigned,
       sem: semDelta,
       impact,
       semProvider: sem.provider,
@@ -2405,6 +2592,8 @@ async function aggregateSegment(i, segments, scenarios, baselines, baselineScore
 
   const meanStruct = meanOrNull(perScenario.map(p => p.struct));
   const meanBehav = meanOrNull(perScenario.map(p => p.behav));
+  const structSignedMean = meanOrNull(perScenario.map(p => p.structSigned));
+  const behavSignedMean = meanOrNull(perScenario.map(p => p.behavSigned));
   const meanSem = meanOrNull(perScenario.map(p => p.sem));
   const perScenarioImpact = perScenario.map(p => p.impact).filter(v => typeof v === 'number' && Number.isFinite(v));
   const impact = perScenarioImpact.length ? perScenarioImpact.reduce((s, v) => s + v, 0) / perScenarioImpact.length : 0;
@@ -2424,6 +2613,9 @@ async function aggregateSegment(i, segments, scenarios, baselines, baselineScore
     struct: meanStruct == null ? 0 : meanStruct,
     behav: meanBehav == null ? 0 : meanBehav,
     sem: meanSem == null ? 0 : meanSem,
+    structSigned: structSignedMean,
+    behavSigned: behavSignedMean,
+    direction: directionOf(structSignedMean, behavSignedMean),
     activation,
     criteriaTrace: {
       structuralRules: criteria.structuralRules || [],
@@ -2515,6 +2707,7 @@ async function runAblation(segments, scenarios, criteria, apiKey, model, tempera
   const results = await Promise.all(segments.map((_, i) =>
     aggregateSegment(i, segments, scenarios, baselines, baselineScores, ablations[i], criteria, opts.voyageApiKey)
   ));
+  enrichResults(results); // couche de lecture (Lot A) : ajoute results[i].stats, n'altère aucun chiffre existant
   clearRunState();
   return results;
 }
@@ -2796,12 +2989,24 @@ function renderResults() {
     `<span><span class="swatch" style="background:${m.color}"></span>${m.label}</span>`
   ).join('');
 
-  // Cards 3-axes
+  // Statistiques avancées (Lot A.3) : option off par défaut.
+  const advanced = state.showAdvancedStats;
+  const advToggle = $('#toggle-advanced-stats');
+  if (advToggle) advToggle.checked = advanced;
+
+  // Cards 3-axes — triées par rang d'impact uniquement en mode avancé (le graphique reste
+  // en ordre de segment pour rester comparable). Sinon, ordre de segment inchangé.
+  const cardData = advanced
+    ? [...data].sort((a, b) => ((a.stats && a.stats.rankImpact) || 1e9) - ((b.stats && b.stats.rankImpact) || 1e9))
+    : data;
+
   const ax = $('#axes-breakdown');
-  ax.innerHTML = data.map((d) => {
+  ax.innerHTML = cardData.map((d) => {
     const meta = VERDICT_META[d.verdict];
     const quote = d.text.slice(0, 120).replace(/\n/g, ' ') + (d.text.length > 120 ? '…' : '');
     const hasScenarioDetails = Array.isArray(d.perScenario) && d.perScenario.length > 0;
+    const advLine = (advanced && d.stats) ? `
+          <div class="seg-card-meta-adv">z ${(d.stats.zImpact ?? 0).toFixed(2)} · porteur ${d.stats.carrierAxis ?? '—'} (${Math.round((d.stats.carrierImpact ?? 0) * 100)}%) · S/N ${(d.stats.snr ?? 0).toFixed(1)} · direction ${d.direction ?? 'non-mesurable'}</div>` : '';
     return `
       <div class="seg-card">
         <div class="seg-card-h">
@@ -2810,7 +3015,7 @@ function renderResults() {
             <span class="verdict-pill v-${d.verdict}" style="margin-left:8px;">${meta.label}</span>
           </div>
           <div class="seg-card-meta">impact ${Math.round(d.impact*100)}% · σ ±${Math.round(d.variance*100)}% · activation ${Math.round(((d.activation && d.activation.overall) || 0) * 100)}%</div>
-        </div>
+        </div>${advLine}
         <div class="seg-quote">"${escapeHtml(quote)}"</div>
         <div class="seg-axes">
           <span class="ax-label">structurel</span>
@@ -2837,7 +3042,7 @@ function renderResults() {
       </div>
     `;
   }).join('');
-  bindDrilldownToggles(data);
+  bindDrilldownToggles(cardData);
 }
 
 function buildExportPayload() {
@@ -2877,6 +3082,8 @@ function buildExportPayload() {
       sem: d.sem,
       activation: d.activation,
       verdict: d.verdict,
+      stats: d.stats || null,
+      direction: d.direction || null,
       perScenario: (Array.isArray(d.perScenario) ? d.perScenario : []).map(s => ({
         scenarioId: s.scenarioId,
         input: s.input,
@@ -3055,6 +3262,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Run
   $('#btn-export-json').addEventListener('click', exportAnalysis);
+  $('#toggle-advanced-stats').addEventListener('change', e => {
+    state.showAdvancedStats = e.target.checked;
+    if (state.results) renderResults();
+  });
   $('#btn-run').addEventListener('click', () => launchAnalysis(false));
   $('#btn-cancel-run').addEventListener('click', () => {
     if (state.abortController) state.abortController.abort();

@@ -77,11 +77,24 @@ Inputs utilisateur typiques. Recommandation : **5 à 8 scénarios** couvrant les
 ### Règles des 3 axes
 
 **Structurel** — règles vérifiables et traçables :
-- longueur ≤ N mots
-- absence de caractère/pattern (ex. `*`, listes Markdown)
+- longueur ≤ N mots **ou** ≤ N lignes
+- absence de caractère/pattern (ex. `*`, listes Markdown, emoji)
 - présence de structure attendue (JSON valide, clés requises)
 - présence d'une phrase imposée (`termine par "..."`)
 - seuil numérique extrait du prompt (`pas plus de 20€`)
+
+#### Auto-extraction robuste (V0.4, Lot B)
+
+L'auto-extraction structurelle a été durcie pour cesser de rater des contraintes pourtant explicites :
+
+- **Longueur** : le nombre est désormais détecté quel que soit l'ordre des mots dans la ligne, dès qu'un mot limitant est présent (`max`, `maximum`, `sous`, `pas plus de`, `au plus`, `jusqu'à`, `n'excède`, `moins de`, `≤`, `<=`). Ainsi `« Garde tes réponses sous 200 mots »`, `« 6 mots max »` ou `« 15 mots maximum »` produisent une règle `max_words`. La même logique vaut pour les lignes (`max_lines`).
+- **Prohibitions concrètes** : une formulation prohibitive (`interdit`, `jamais`, `évite`, `pas de`, `sans`, `aucun`, `ne pas`, …) portant sur un objet mesurable génère une règle checkable : `no_asterisk`, `no_list`, `no_emoji`. Garde-fou : une formulation **non** prohibitive ne déclenche rien (`« Utilise des listes à puces »` ne crée pas `no_list`).
+
+**Changement de mesure assumé** : ce durcissement fait désormais déclencher des règles structurelles/comportementales qui passaient inaperçues. Conséquence directe : sur certains runs, les scores struct/behav (et donc l'impact agrégé et les verdicts) peuvent changer par rapport aux versions antérieures. C'est l'effet recherché — réduire la domination de l'axe sémantique — et non une régression.
+
+**Limite assumée** : une prohibition **abstraite** (`« pas de superlatifs creux »`, `« reste non culpabilisant »`) n'est pas mesurable par matching lexical ; elle reste portée par l'axe sémantique. Seules les contraintes concrètes (astérisques, listes, emoji, phrases exactes, longueur) deviennent structurelles.
+
+**Contrat utilisateur préservé** : les règles auto-extraites restent **proposées, pas imposées**. Elles sont visibles et éditables dans l'aperçu des critères (`renderCriteriaPreview`) avant le lancement.
 
 **Comportemental** — détection lexicale :
 - termes interdits (liste de strings)
@@ -157,6 +170,28 @@ activation(i) = ratio_j(impact(i, j) >= seuil)
 ```
 
 La V0.3 évite la dilution par axes dormants : pas de moyenne fixe sur 3 axes quand un axe est non applicable.
+
+### Couche de lecture (z, S/N, axe porteur, direction) — V0.4, Lot A
+
+Une couche **purement additive** re-présente les deltas déjà calculés pour rendre la discrimination lisible. Elle ne produit **aucune nouvelle mesure** : chaque chiffre est recalculable à la main (falsifiable), et n'altère ni `impact`, ni `variance`, ni le `verdict`. Elle est calculée par `enrichResults(results)` (champ `results[i].stats`) après l'agrégation.
+
+| Indicateur | Définition | Lecture | Piège à éviter |
+|---|---|---|---|
+| `zImpact` (z) | écart à la moyenne du run, en σ | `z ≥ +1` = nettement au-dessus des autres segments **de ce prompt** | **relatif au run** : non comparable entre deux prompts différents |
+| `carrierAxis` / `carrierImpact` (axe porteur) | l'axe (struct/behav/sém) le plus fort, **non dilué** par la moyenne | dit *où* le segment agit | un fort porteur sémantique peut n'être qu'une reformulation → confirmer par outputs |
+| `snr` (S/N) | impact / (variance + 0,05) | grand = effet réel et **stable** | un S/N faible ≠ « inutile », mais « instable / dépend du scénario » |
+| `rankImpact` | rang de l'impact (1 = le plus fort) | trier les segments à regarder en priorité | un rang n'est qu'un ordre relatif, pas une amplitude |
+
+**Direction (delta signé)** — `directionOf(structSignedMean, behavSignedMean)` exploite que les axes structurel et comportemental sont **bornés et orientés** (l'axe sémantique, distance sans « bon sens », reste non signé). Convention :
+
+- signe **> 0** ⇒ retirer le segment **abaisse** la conformité ⇒ il `porte` ;
+- signe **< 0** ⇒ retirer le segment **améliore** la conformité ⇒ il `nuit` (signal direct) ;
+- proche de 0 ⇒ `neutre` ;
+- aucun critère struct/behav configuré ⇒ `non-mesurable` (à ne pas confondre avec `neutre`).
+
+`impact` reste la **valeur absolue** inchangée : le signé est une information **en plus**, il ne remplace rien.
+
+**Règle d'usage** : ces indicateurs servent à **localiser** quels segments inspecter ; toute décision (notamment une suppression) doit être **confirmée par la lecture des outputs** baseline vs ablé. L'affichage de cette couche dans l'interface est **optionnel et désactivé par défaut**, derrière un encart explicatif, pour éviter toute sur-interprétation.
 
 ## [7] Classification : verdict par segment (5 niveaux, V0.3)
 
