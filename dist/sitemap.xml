@@ -1,63 +1,137 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- Home (FR / EN) -->
   <url>
     <loc>https://preatorlabs.dev/</loc>
-    <changefreq>monthly</changefreq>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://preatorlabs.dev/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://preatorlabs.dev/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://preatorlabs.dev/"/>
+    <lastmod>2026-06-12</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://preatorlabs.dev/#method</loc>
+    <loc>https://preatorlabs.dev/en/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://preatorlabs.dev/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://preatorlabs.dev/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://preatorlabs.dev/"/>
+    <lastmod>2026-06-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://preatorlabs.dev/dashboard.html</loc>
+    <lastmod>2026-06-12</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Documentation (FR / EN pairs, clean URLs) -->
+  <url>
+    <loc>https://preatorlabs.dev/docs/rationale-scientifique</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://preatorlabs.dev/docs/rationale-scientifique"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://preatorlabs.dev/en/docs/scientific-rationale"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://preatorlabs.dev/docs/rationale-scientifique"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://preatorlabs.dev/#howto</loc>
+    <loc>https://preatorlabs.dev/en/docs/scientific-rationale</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://preatorlabs.dev/docs/rationale-scientifique"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://preatorlabs.dev/en/docs/scientific-rationale"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://preatorlabs.dev/docs/rationale-scientifique"/>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://preatorlabs.dev/docs/methodologie</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://preatorlabs.dev/docs/methodologie"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://preatorlabs.dev/en/docs/methodology"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://preatorlabs.dev/docs/methodologie"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://preatorlabs.dev/#demo</loc>
+    <loc>https://preatorlabs.dev/en/docs/methodology</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://preatorlabs.dev/docs/methodologie"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://preatorlabs.dev/en/docs/methodology"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://preatorlabs.dev/docs/methodologie"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://preatorlabs.dev/docs/architecture</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://preatorlabs.dev/docs/architecture"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://preatorlabs.dev/en/docs/architecture"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://preatorlabs.dev/docs/architecture"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://preatorlabs.dev/en/docs/architecture</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://preatorlabs.dev/docs/architecture"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://preatorlabs.dev/en/docs/architecture"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://preatorlabs.dev/docs/architecture"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://preatorlabs.dev/docs/guide-interpretation</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://preatorlabs.dev/docs/guide-interpretation"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://preatorlabs.dev/en/docs/interpretation-guide"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://preatorlabs.dev/docs/guide-interpretation"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://preatorlabs.dev/en/docs/interpretation-guide</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://preatorlabs.dev/docs/guide-interpretation"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://preatorlabs.dev/en/docs/interpretation-guide"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://preatorlabs.dev/docs/guide-interpretation"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://preatorlabs.dev/docs/roadmap</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://preatorlabs.dev/docs/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://preatorlabs.dev/en/docs/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://preatorlabs.dev/docs/roadmap"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://preatorlabs.dev/en/docs/roadmap</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://preatorlabs.dev/docs/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://preatorlabs.dev/en/docs/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://preatorlabs.dev/docs/roadmap"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Ablation study (dedicated subdomain) -->
+  <url>
+    <loc>https://etude.preatorlabs.dev/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://etude.preatorlabs.dev/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://etude.preatorlabs.dev/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://etude.preatorlabs.dev/"/>
+    <lastmod>2026-06-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://preatorlabs.dev/#faq</loc>
+    <loc>https://etude.preatorlabs.dev/en/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://etude.preatorlabs.dev/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://etude.preatorlabs.dev/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://etude.preatorlabs.dev/"/>
+    <lastmod>2026-06-12</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://preatorlabs.dev/#privacy</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://preatorlabs.dev/dashboard.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://preatorlabs.dev/docs/01-SCIENTIFIC-RATIONALE.md</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://preatorlabs.dev/docs/02-METHODOLOGY.md</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://preatorlabs.dev/docs/03-ARCHITECTURE.md</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://preatorlabs.dev/docs/04-INTERPRETATION-GUIDE.md</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://preatorlabs.dev/docs/05-ROADMAP.md</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.9</priority>
   </url>
 </urlset>

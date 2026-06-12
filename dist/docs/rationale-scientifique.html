@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rationale scientifique · Documentation preatorlabs</title>
+<meta name="description" content="Pourquoi preatorlabs existe et pourquoi la méthode d'ablation multi-axes a été retenue : problème, contrainte boîte noire, méthodes écartées et limites assumées.">
+<meta name="theme-color" content="#1a1a18">
+<meta name="color-scheme" content="light">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="canonical" href="https://preatorlabs.dev/docs/rationale-scientifique">
+<link rel="alternate" hreflang="fr" href="https://preatorlabs.dev/docs/rationale-scientifique">
+<link rel="alternate" hreflang="en" href="https://preatorlabs.dev/en/docs/scientific-rationale">
+<link rel="alternate" hreflang="x-default" href="https://preatorlabs.dev/docs/rationale-scientifique">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="preatorlabs">
+<meta property="og:title" content="Rationale scientifique · preatorlabs">
+<meta property="og:description" content="Pourquoi preatorlabs existe et pourquoi la méthode d'ablation multi-axes a été retenue : problème, contrainte boîte noire, méthodes écartées et limites assumées.">
+<meta property="og:url" content="https://preatorlabs.dev/docs/rationale-scientifique">
+<meta property="og:image" content="https://preatorlabs.dev/og-image.png">
+<meta property="og:locale" content="fr_FR">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Rationale scientifique · preatorlabs">
+<meta name="twitter:description" content="Pourquoi preatorlabs existe et pourquoi la méthode d'ablation multi-axes a été retenue : problème, contrainte boîte noire, méthodes écartées et limites assumées.">
+<meta name="twitter:image" content="https://preatorlabs.dev/og-image.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Rationale scientifique",
+  "description": "Pourquoi preatorlabs existe et pourquoi la méthode d'ablation multi-axes a été retenue : problème, contrainte boîte noire, méthodes écartées et limites assumées.",
+  "inLanguage": "fr",
+  "url": "https://preatorlabs.dev/docs/rationale-scientifique",
+  "author": {
+    "@type": "Organization",
+    "name": "preatorlabs"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "preatorlabs",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://preatorlabs.dev/og-image.png"
+    }
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "url": "https://preatorlabs.dev/"
+  }
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=JetBrains+Mono:wght@400;500&family=Inter+Tight:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #f5f3ee;
+  --bg-2: #ebe7dd;
+  --ink: #1a1a18;
+  --ink-soft: #4a4842;
+  --ink-mute: #6e6c64;
+  --rule: rgba(26, 26, 24, 0.12);
+  --rule-strong: rgba(26, 26, 24, 0.25);
+  --accent: #c44322;
+  --accent-soft: #f4d9cf;
+}
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Inter Tight', system-ui, sans-serif;
+  line-height: 1.65;
+  font-size: 16px;
+}
+.shell { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
+@media (max-width: 720px) { .shell { padding: 0 20px; } }
+.topbar {
+  border-bottom: 1px solid var(--rule);
+  padding: 18px 0;
+  position: sticky;
+  top: 0;
+  background: rgba(245, 243, 238, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 100;
+}
+.topbar-inner { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.brand {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+  text-decoration: none;
+}
+.brand-mark {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ink);
+  position: relative;
+  flex-shrink: 0;
+}
+.brand-mark::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+}
+.topbar-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.topbar-actions a {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid var(--rule-strong);
+  padding: 6px 12px;
+  transition: color 0.2s, border-color 0.2s;
+}
+.topbar-actions a:hover { color: var(--ink); border-color: var(--ink); }
+.lang-toggle { display: inline-flex; align-items: center; border: 1px solid var(--rule-strong); border-radius: 999px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; line-height: 1; }
+.lang-toggle a, .lang-toggle span { display: inline-flex; align-items: center; padding: 5px 9px; color: var(--ink-mute); text-decoration: none; transition: background 0.18s, color 0.18s; }
+.lang-toggle a:hover { color: var(--ink); }
+.lang-toggle .is-active { background: var(--accent); color: #fff; font-weight: 600; }
+.i18n-note { background: var(--accent-soft); border: 1px solid var(--rule); border-radius: 8px; font-size: 13px; line-height: 1.55; color: var(--ink-soft); padding: 10px 14px; margin-bottom: 24px; }
+.i18n-note a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.doc-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 48px;
+  padding: 48px 0 96px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .doc-layout { grid-template-columns: 1fr; gap: 28px; }
+  .doc-nav { position: static !important; }
+}
+.doc-nav { position: sticky; top: 88px; }
+.doc-nav-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+.doc-nav a {
+  display: block;
+  font-size: 14px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--rule);
+  transition: color 0.2s;
+}
+.doc-nav a:hover { color: var(--ink); }
+.doc-nav a.is-active { color: var(--ink); font-weight: 500; }
+.doc-main { min-width: 0; }
+.md-prose { max-width: 720px; }
+.md-prose h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: clamp(28px, 4vw, 36px);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--rule);
+}
+.md-prose h2 {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  margin: 40px 0 14px;
+  padding-top: 8px;
+}
+.md-prose h3 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 18px; margin: 28px 0 10px; }
+.md-prose h4 { font-size: 15px; font-weight: 600; margin: 20px 0 8px; color: var(--ink-soft); }
+.md-prose p { margin-bottom: 14px; color: var(--ink-soft); }
+.md-prose blockquote {
+  border-left: 2px solid var(--accent);
+  padding: 4px 0 4px 18px;
+  margin: 20px 0;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+.md-prose ul, .md-prose ol { margin: 0 0 16px 22px; color: var(--ink-soft); }
+.md-prose li { margin-bottom: 6px; }
+.md-prose li > ul, .md-prose li > ol { margin-top: 6px; margin-bottom: 0; }
+.md-prose a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.md-prose a:hover { color: var(--ink); }
+.md-prose strong { color: var(--ink); font-weight: 600; }
+.md-prose hr { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
+.md-prose code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.88em;
+  background: var(--bg-2);
+  padding: 2px 6px;
+  border-radius: 2px;
+  color: var(--ink);
+}
+.md-prose pre {
+  background: var(--bg-2);
+  border: 1px solid var(--rule);
+  padding: 16px 18px;
+  overflow-x: auto;
+  margin: 16px 0 20px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+.md-prose pre code { background: none; padding: 0; font-size: inherit; }
+.md-prose table { width: 100%; border-collapse: collapse; margin: 20px 0 24px; font-size: 14px; }
+.md-prose th, .md-prose td { border: 1px solid var(--rule-strong); padding: 10px 14px; text-align: left; vertical-align: top; }
+.md-prose th { background: var(--bg-2); font-weight: 600; color: var(--ink); }
+.md-prose td { color: var(--ink-soft); }
+.md-prose img { max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="shell topbar-inner">
+    <a class="brand" href="/">
+      <span class="brand-mark" aria-hidden="true"></span>
+      preatorlabs
+    </a>
+    <div class="topbar-actions">
+      <a href="/">← accueil</a>
+      <a href="/#demo">démo</a>
+      <a href="/docs/01-SCIENTIFIC-RATIONALE.md" download>source .md</a>
+      <span class="lang-toggle" role="group" aria-label="Langue">
+        <span class="is-active" aria-current="true">FR</span>
+        <a href="/en/docs/scientific-rationale" hreflang="en" lang="en">EN</a>
+      </span>
+    </div>
+  </div>
+</header>
+
+<div class="shell doc-layout">
+  <nav class="doc-nav" aria-label="Documentation">
+    <div class="doc-nav-label">documentation</div>
+      <a href="/docs/rationale-scientifique" class="is-active">Rationale scientifique</a>
+      <a href="/docs/methodologie">Méthodologie</a>
+      <a href="/docs/architecture">Architecture</a>
+      <a href="/docs/guide-interpretation">Guide d'interprétation</a>
+      <a href="/docs/roadmap">Roadmap</a>
+  </nav>
+
+  <main class="doc-main">
+    <article class="md-prose">
+<h1>01 — Rationale scientifique</h1>
+<blockquote>
+<p>Pourquoi preatorlabs existe, et pourquoi la méthode choisie est celle-là et pas une autre.</p>
+</blockquote>
+<h2>1. Le problème</h2>
+<p>L&#39;ingénierie de prompt est aujourd&#39;hui un travail empirique. Le cycle standard est :</p>
+<ol>
+<li>Rédiger un prompt</li>
+<li>L&#39;injecter dans le LLM</li>
+<li>Tester sur quelques inputs</li>
+<li>Ajuster à l&#39;aveugle</li>
+</ol>
+<p>Le point 4 est le problème. Quand un prompt fonctionne mal, <strong>on ignore quelle partie du prompt en est responsable</strong>. Quand il fonctionne bien, on ignore quelle partie porte réellement le résultat. Modifier un prompt revient donc à toucher au hasard à des éléments dont on ne connaît pas la contribution.</p>
+<p>Ce flou a trois conséquences mesurables :</p>
+<ul>
+<li><strong>Régression</strong> : on supprime ou modifie un segment apparemment décoratif qui était en fait critique.</li>
+<li><strong>Inflation</strong> : on accumule des phrases &quot;au cas où&quot; sans savoir qu&#39;elles sont ignorées par le modèle.</li>
+<li><strong>Faux positifs</strong> : on attribue à une phrase un effet qui vient en réalité d&#39;une autre.</li>
+</ul>
+<h2>2. La contrainte boîte noire</h2>
+<p>Les LLMs commerciaux (Claude, GPT-4, Gemini…) ne sont pas inspectables. On n&#39;a pas accès aux poids, aux couches d&#39;attention, ni à la propagation interne. La seule chose qu&#39;on peut observer est <strong>l&#39;output textuel</strong> pour un input donné.</p>
+<p>Toute méthode d&#39;analyse doit donc se déduire de ce qu&#39;on peut mesurer en surface, sans hypothèse sur la mécanique interne.</p>
+<h2>3. Méthodes envisagées et écartées</h2>
+<p>Quatre méthodes ont été analysées. Trois ont été rejetées.</p>
+<h3>Méthode A — Demander à un LLM de juger le prompt</h3>
+<p><strong>Principe :</strong> soumettre le prompt à un LLM tiers et lui demander de classer ses parties.</p>
+<p><strong>Raison du rejet :</strong> non-objectif par construction. Un LLM &quot;juge&quot; produit une réponse plausible, pas une mesure. La sortie dépend du LLM, du wording de la consigne, et n&#39;est pas reproductible. Cette méthode est éliminée d&#39;emblée.</p>
+<h3>Méthode B — Analyse des logprobs</h3>
+<p><strong>Principe :</strong> certaines APIs (OpenAI partiellement) exposent la probabilité associée à chaque token généré. Mesurer comment cette distribution change selon la présence ou l&#39;absence d&#39;un segment.</p>
+<p><strong>Raison du rejet :</strong></p>
+<ul>
+<li>Claude ne l&#39;expose pas.</li>
+<li>Gemini ne l&#39;expose pas.</li>
+<li>OpenAI ne l&#39;expose que partiellement (top-K seulement).</li>
+</ul>
+<p>Une méthode qui exclut deux LLMs majeurs sur trois n&#39;est pas universelle. Écartée du chemin principal. Pourra revenir en V3 comme <strong>signal complémentaire</strong> quand disponible.</p>
+<h3>Méthode C — Shapley values (analyse de jeu coopératif)</h3>
+<p><strong>Principe :</strong> rigoureux théoriquement. La contribution marginale d&#39;un segment est la moyenne de son apport sur <strong>toutes les combinaisons possibles</strong> de segments présents/absents.</p>
+<p><strong>Raison du rejet :</strong> complexité combinatoire. Avec N segments, il faut 2^N appels API. N=10 → 1024 appels par scénario. N=15 → 32 768 appels. Intenable économiquement, et le surcoût ne se traduit pas par un gain de qualité proportionnel sur les prompts typiques (où les interactions inter-segments sont rares et faibles).</p>
+<h3>Méthode D — Ablation simple + similarité cosinus</h3>
+<p><strong>Principe :</strong> retirer un segment, comparer l&#39;embedding de l&#39;output avec/sans le segment, mesurer la distance.</p>
+<p><strong>Raison du rejet partiel :</strong> la similarité cosinus mesure le <strong>changement</strong>, pas la <strong>qualité</strong>. Un segment peut changer fortement l&#39;output tout en étant contre-productif. Inversement, retirer un mauvais segment peut rapprocher l&#39;output d&#39;un bon résultat — la métrique dirait alors qu&#39;il &quot;comptait&quot;.</p>
+<p>Cette méthode est insuffisante seule mais conservée comme <strong>un des trois axes</strong> dans la méthode retenue.</p>
+<h2>4. Méthode retenue : ablation multi-axes multi-scénarios</h2>
+<p>C&#39;est la combinaison qui réunit le maximum d&#39;avantages :</p>
+<ul>
+<li><strong>Objective</strong> : mesures parsables/calculables, jamais interprétatives.</li>
+<li><strong>Universelle</strong> : ne dépend que de l&#39;output texte. Marche sur tout LLM accessible par API.</li>
+<li><strong>Frugale</strong> : N×M+M appels (N segments, M scénarios). Linéaire en N, pas exponentielle.</li>
+<li><strong>Décomposable</strong> : trois axes orthogonaux qui répondent à des questions différentes.</li>
+<li><strong>Discriminante</strong> : la variance entre scénarios sépare les segments fondamentaux des segments contextuels.</li>
+</ul>
+<h3>Les trois axes</h3>
+<table>
+<thead>
+<tr>
+<th>Axe</th>
+<th>Question répondue</th>
+<th>Méthode de mesure</th>
+<th>Coût</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Structurel</strong></td>
+<td>L&#39;output respecte-t-il le format ?</td>
+<td>parsing / regex / comptage</td>
+<td>nul</td>
+</tr>
+<tr>
+<td><strong>Comportemental</strong></td>
+<td>L&#39;output suit-il les règles métier ?</td>
+<td>détection lexicale, exact match</td>
+<td>nul</td>
+</tr>
+<tr>
+<td><strong>Sémantique</strong></td>
+<td>Le sens et le style sont-ils préservés ?</td>
+<td>distance cosinus sur embeddings</td>
+<td>très faible</td>
+</tr>
+</tbody></table>
+<h3>Le multi-scénarios</h3>
+<p>Un segment peut être :</p>
+<ul>
+<li><strong>vital partout</strong> (ex. : règle de format) → impact haut, variance basse</li>
+<li><strong>vital sur un seul cas</strong> (ex. : règle anti-clichés ne servant que sur un thème) → impact moyen, variance haute</li>
+<li><strong>ignoré</strong> (ex. : phrase décorative) → impact bas, variance basse</li>
+<li><strong>contre-productif</strong> (rare) → impact négatif si on utilise une métrique signée</li>
+</ul>
+<p>Sans plusieurs scénarios, on confond <em>segment ignoré</em> et <em>segment ponctuel</em>. C&#39;est précisément le multi-scénarios qui transforme l&#39;outil d&#39;un détecteur grossier en un débogueur fin.</p>
+<h3>Température = 0</h3>
+<p>Tous les appels sont passés à <code>temperature = 0</code>. Justification : sans ça, la variance observée entre scénarios mélange deux signaux :</p>
+<ol>
+<li>la variance due à l&#39;ablation (le signal qu&#39;on veut isoler)</li>
+<li>la variance stochastique du LLM (le bruit)</li>
+</ol>
+<p>Fixer la température à zéro isole le signal. Pour les LLMs où T=0 reste légèrement stochastique (Claude notamment), on peut moyenner sur 2-3 runs par ablation en V2 si nécessaire.</p>
+<h2>5. Ce qui change entre V0.2 et V0.3</h2>
+<p>La V0.3 ne change pas la philosophie du projet (ablation mesurable), mais corrige des biais observés en pratique.</p>
+<h3>5.1 Biais observés en V0.2</h3>
+<ol>
+<li><strong>Axes dormants</strong> : l&#39;axe structurel/comportemental restait souvent neutre faute de critères activés.</li>
+<li><strong>Dilution artificielle</strong> : moyenne fixe sur 3 axes, même quand certains axes n&#39;étaient pas applicables.</li>
+<li><strong>Sous-détection des règles ponctuelles</strong> : ex. &quot;Termine toujours par ...&quot;, peu visible en sémantique seul.</li>
+<li><strong>Comportement abstrait non opérationnalisé</strong> : ex. &quot;public jeune&quot; non mesurable sans marqueurs explicites.</li>
+</ol>
+<h3>5.2 Correctifs V0.3</h3>
+<ol>
+<li><p><strong>Auto-extraction déterministe des règles</strong></p>
+<ul>
+<li>Structurel : fin imposée, phrase requise, contraintes longueur, JSON, seuils numériques simples.</li>
+<li>Comportemental : termes attendus/interdits explicites, tutoiement/vouvoiement explicitement demandés.</li>
+<li>Les règles extraites sont traçables (<code>source: auto</code>), pas inférées par jugement.</li>
+</ul>
+</li>
+<li><p><strong>État <code>non applicable</code> par axe</strong></p>
+<ul>
+<li>Un axe sans règle ou sans signal exploitable n&#39;est plus artificiellement scoré.</li>
+<li>Il est exclu de l&#39;agrégation de ce scénario.</li>
+</ul>
+</li>
+<li><p><strong>Agrégation sur axes actifs</strong></p>
+<ul>
+<li>Impact scénario = moyenne des deltas sur axes applicables uniquement.</li>
+<li>Ajout d&#39;un <code>activationRate</code> (global + par axe) pour distinguer signal stable vs contextuel.</li>
+</ul>
+</li>
+<li><p><strong>Sémantique switchable</strong></p>
+<ul>
+<li><code>TF-IDF local</code> (gratuit) ou <code>Voyage API</code> (payant).</li>
+<li>Même mécanique de mesure (cosinus), seule la qualité de l&#39;embedding change.</li>
+<li>Fallback explicite vers TF-IDF si l&#39;API externe échoue.</li>
+</ul>
+</li>
+</ol>
+<h3>5.3 Pourquoi c&#39;est scientifiquement plus solide</h3>
+<ul>
+<li><strong>Même observables, meilleure instrumentation</strong> : on n&#39;ajoute pas de jugement subjectif, on améliore ce qui est mesuré.</li>
+<li><strong>Moins de faux &quot;impact faible&quot;</strong> : disparition de la division automatique par 3 quand 1-2 axes sont inactifs.</li>
+<li><strong>Meilleure falsifiabilité locale</strong> : une règle &quot;fin imposée&quot; est vérifiable par inspection directe de l&#39;output.</li>
+</ul>
+<h3>5.4 Où trouver le détail des calculs</h3>
+<table>
+<thead>
+<tr>
+<th>Besoin</th>
+<th>Où lire</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Principe + formule d&#39;agrégation (aperçu)</td>
+<td>Site <code>#method</code></td>
+</tr>
+<tr>
+<td>Parcours utilisateur (4 étapes)</td>
+<td>Site <code>#howto</code> + liens doc</td>
+</tr>
+<tr>
+<td>Lecture des résultats et verdicts</td>
+<td>Site <code>#reading</code></td>
+</tr>
+<tr>
+<td>Workflow, scores, deltas, verdicts (complet)</td>
+<td><code>02-METHODOLOGY.md</code></td>
+</tr>
+<tr>
+<td>Interprétation et pièges</td>
+<td><code>04-INTERPRETATION-GUIDE.md</code></td>
+</tr>
+</tbody></table>
+<p><strong>Évolution V0.2 → V0.3 (résumé)</strong> : règles auto/manuel + état non applicable ; agrégation sur axes actifs ; activation dans le verdict ; cinq niveaux (fusion <code>modéré</code> → <code>contextuel</code>) ; prévisualisation des règles avant run.</p>
+<h2>6. Limites assumées (V0.3)</h2>
+<p>Toute méthode a un domaine de validité. Voici les limites explicites de preatorlabs :</p>
+<p><strong>Limite 1 — critères abstraits non opérationnalisés.</strong> Une consigne comme &quot;adapte-toi à un public jeune&quot; reste partiellement abstraite tant qu&#39;elle n&#39;est pas traduite en marqueurs (<code>attendus/interdits</code>). V0.3 permet cette traduction mais ne l&#39;invente pas automatiquement sans risque de subjectivité.</p>
+<p><strong>Limite 2 — interactions entre segments.</strong> L&#39;ablation simple ne capture pas les effets de coalition (deux segments inutiles isolément mais critiques ensemble). Pour les capturer, il faudrait Shapley. Le compromis assumé : on couvre 95 % des cas avec une fraction négligeable du coût.</p>
+<p><strong>Limite 3 — scénarios mono-tour.</strong> Pour la V1, les scénarios de test sont des inputs uniques. Les prompts incluant des règles sur la <strong>mémoire conversationnelle</strong> (ex. : &quot;si on t&#39;a blessé il y a 3 messages…&quot;) ne pourront être pleinement testés qu&#39;en V2 avec scénarios à historique.</p>
+<p><strong>Limite 4 — stochasticité résiduelle.</strong> Même à T=0, certains modèles conservent une variabilité (sampling top-K, race conditions). Sur Claude, c&#39;est marginal. Pour des résultats publication-grade, prévoir n=3 répétitions par ablation (V2+).</p>
+<p><strong>Limite 5 — extraction regex canoniques.</strong> L&#39;auto-extraction V0.3 couvre des formulations explicites. Une formulation implicite ou ambiguë peut ne pas être détectée. Le mode manuel reste nécessaire pour les cas non canoniques.</p>
+<p><strong>Limite 6 — coût/latence du provider sémantique externe.</strong> Voyage améliore la précision sémantique, mais introduit coût API et dépendance réseau. Le mode local reste le baseline frugal.</p>
+<h2>7. Ce qui rend la méthode défendable scientifiquement</h2>
+<p>Trois propriétés en font une méthode de mesure et pas une heuristique :</p>
+<ol>
+<li><strong>Reproductibilité</strong> : à prompt, scénarios et modèle fixés, le résultat est déterministe (T=0).</li>
+<li><strong>Falsifiabilité</strong> : un verdict produit par preatorlabs peut être contredit par un test indépendant (manuel ou via un autre outil).</li>
+<li><strong>Décomposabilité</strong> : un score d&#39;impact n&#39;est jamais opaque. Il se décompose en axes, scénarios, règles actives et provenance (<code>manual</code>/<code>auto</code>).</li>
+</ol>
+<p>C&#39;est ce qui distingue preatorlabs d&#39;un &quot;score de qualité de prompt&quot; produit par un LLM tiers.</p>
+
+    </article>
+  </main>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,213 @@
+{
+  "meta": {
+    "tool": "preatorlabs",
+    "version": "v0.3",
+    "exportedAt": "2026-06-04T10:28:22.704Z",
+    "model": "claude-haiku-4-5-20251001",
+    "temperature": 0,
+    "semanticProvider": "voyage_api"
+  },
+  "prompt": "Rédige uniquement l'email de relance B2B (objet + corps), 60 mots maximum.\n\nRédige de façon professionnelle.",
+  "segments": [
+    "Rédige uniquement l'email de relance B2B (objet + corps), 60 mots maximum.",
+    "Rédige de façon professionnelle."
+  ],
+  "scenarios": [
+    "Pierre Henri, patron de ABC Société, ouvert à une nouvelle collaboration. Inactif depuis 9 jours",
+    "Julie Hunbert, Product Manager chez le mauvais coin, en charge de l'intégration de l'IA dans sa société. Experte de son domaine. Inactive depuis quelques semaines.\n",
+    "Maitre Vigneau, Avocat en droit des affaires, cherche à automatiser une partie de ses process pour lui dégager du temps.",
+    "Pierre Lassus, Ami d'enfance, à pris contact avec moi pour en savoir plus, mais après un mail de réponse, plus de nouvelle. A relancer",
+    "Chan Lee, PDG d'un grand groupe, cherche à influer une politique IA dans sa société."
+  ],
+  "summary": {
+    "segmentCount": 2,
+    "scenarioCount": 5,
+    "meanImpact": 0.25847355426770885,
+    "verdictCounts": {
+      "high": 1,
+      "placebo": 1
+    }
+  },
+  "results": [
+    {
+      "id": "S1",
+      "label": "Rédige uniquement l'email de relance B2B (objet…",
+      "text": "Rédige uniquement l'email de relance B2B (objet + corps), 60 mots maximum.",
+      "impact": 0.4542711515041429,
+      "variance": 0.009458158789411392,
+      "struct": 1,
+      "behav": 0.10000000000000006,
+      "sem": 0.26281345451242843,
+      "activation": {
+        "overall": 1,
+        "struct": 1,
+        "behav": 0,
+        "sem": 0.2
+      },
+      "verdict": "high",
+      "stats": {
+        "zImpact": 1,
+        "minmaxImpact": 1,
+        "rankImpact": 1,
+        "snr": 7.6401819490085146,
+        "carrierAxis": "struct",
+        "carrierImpact": 1,
+        "runMeanImpact": 0.25847355426770885,
+        "runSdImpact": 0.19579759723643403
+      },
+      "direction": "porte",
+      "perScenario": [
+        {
+          "scenarioId": "T1",
+          "input": "Pierre Henri, patron de ABC Société, ouvert à une nouvelle collaboration. Inactif depuis 9 jours",
+          "baselineOutput": "**Objet :** Relance – Opportunité de collaboration ABC Société\n\nMonsieur Henri,\n\nSuite à notre dernier échange, je reviens vers vous concernant notre proposition de collaboration. Disposez-vous d'un créneau cette semaine pour en discuter davantage ?\n\nJe reste à votre entière disposition pour répondre à vos questions.\n\nCordialement,\n[Votre nom]",
+          "ablatedOutput": "# Relance Commerciale\n\n**Objet : Opportunité de collaboration – ABC Société**\n\n---\n\nMonsieur Henri,\n\nJ'espère que vous allez bien.\n\nJe remarque que nous n'avons pas eu d'échanges depuis neuf jours. Souhaitant poursuivre notre discussion concernant une possible collaboration, je me permets de vous recontacter.\n\nAvez-vous eu l'occasion d'examiner les éléments que nous avons évoqués ? Je serais ravi de :\n\n- Répondre à vos questions éventuelles\n- Adapter notre proposition à vos besoins spécifiques\n- Convenir d'un entretien à votre convenance\n\nN'hésitez pas à me faire connaître vos disponibilités pour un appel ou une rencontre.\n\nJe reste à votre entière disposition.\n\nCordialement,\n\n[Votre nom]  \n[Votre titre]  \n[Coordonnées]\n\n---\n\n**Conseil :** Personnalisez ce message en fonction de votre dernier échange et proposez des créneaux concrets pour relancer le dialogue.",
+          "axisDelta": {
+            "struct": 1,
+            "behav": 0.20000000000000007,
+            "sem": 0.1393240138354095
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T2",
+          "input": "Julie Hunbert, Product Manager chez le mauvais coin, en charge de l'intégration de l'IA dans sa société. Experte de son domaine. Inactive depuis quelques semaines.\n",
+          "baselineOutput": "**Objet :** Intégration IA – Relance de notre proposition\n\nChère Julie,\n\nNous espérons que tout va bien. Nous n'avons pas eu de nouvelles concernant notre solution d'intégration IA adaptée aux plateformes de petites annonces.\n\nDisposez-vous d'un créneau cette semaine pour en discuter ? Nous serions ravis de vous présenter les bénéfices pour Le Bon Coin.\n\nCordialement,\n[Votre nom]",
+          "ablatedOutput": "# Profil Professionnel\n\n**Julie Hunbert**\nProduct Manager – Intégration IA\nLe Mauvais Coin\n\n---\n\n## Contexte Professionnel\n\nJulie Hunbert occupe un rôle stratégique en tant que Product Manager responsable de l'intégration des technologies d'intelligence artificielle au sein de Le Mauvais Coin. Son expertise reconnue dans ce domaine en fait une figure clé de la transformation numérique de l'organisation.\n\n## Situation Actuelle\n\n**Statut : Inactivité récente**\n\nJulie est actuellement inactive depuis plusieurs semaines. Cette période d'absence peut être liée à :\n- Un congé professionnel ou personnel\n- Une pause dans ses activités opérationnelles\n- Une transition ou réorganisation interne\n\n## Domaines de Compétence\n\n- Gestion de produits digitaux\n- Stratégie d'intégratio IA et machine learning\n- Transformation technologique\n- Pilotage de projets complexes\n- Innovation produit\n\n---\n\n**Note** : Pour toute prise de contact ou collaboration, il est recommandé de vérifier son statut de disponibilité actuel auprès des ressources humaines ou de l'équipe de direction de Le Mauvais Coin.",
+          "axisDelta": {
+            "struct": 1,
+            "behav": 0,
+            "sem": 0.40162665171136747
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T3",
+          "input": "Maitre Vigneau, Avocat en droit des affaires, cherche à automatiser une partie de ses process pour lui dégager du temps.",
+          "baselineOutput": "**Objet :** Automatisation de vos processus juridiques\n\nMaître Vigneau,\n\nSuite à notre échange, je reviens vers vous concernant l'automatisation de vos processus administratifs et juridiques.\n\nUne solution adaptée aux cabinets d'avocats pourrait vous libérer plusieurs heures hebdomadaires sur la gestion documentaire et le suivi dossiers.\n\nDisponible pour un appel découverte cette semaine ?\n\nCordialement",
+          "ablatedOutput": "# Proposition d'Automatisation des Processus\n## Cabinet Vigneau - Droit des Affaires\n\n---\n\n## 1. Diagnostic Initial\n\nPour proposer une solution adaptée, je dois comprendre vos priorités :\n\n**Quels processus consomment le plus votre temps ?**\n- Gestion administrative (courriers, relances, archivage)\n- Suivi de dossiers clients\n- Facturation et gestion financière\n- Rédaction de documents types\n- Gestion d'agenda et planification\n- Suivi des délais légaux\n\n---\n\n## 2. Opportunités d'Automatisation Prioritaires\n\n### **A. Gestion Documentaire**\n- Modèles de contrats paramétrables\n- Génération automatique de documents (actes, courriers)\n- Classement et archivage intelligents\n\n### **B. Suivi Administratif**\n- Alertes délais légaux et prescriptions\n- Relances clients automatisées\n- Gestion des dossiers en attente\n\n### **C. Facturation & Comptabilité**\n- Génération automatique des factures\n- Suivi des paiements\n- Rapprochement bancaire\n\n### **D. Communication Client**\n- Confirmations de rendez-vous\n- Mises à jour de dossier\n- Demandes de documents\n\n---\n\n## 3. Solutions Recommandées\n\n**Outils adaptés aux cabinets juridiques :**\n- Logiciel métier spécialisé (Jurisprudence, Caselaw, etc.)\n- Intégration CRM + gestion documentaire\n- Automatisation par workflow (Zapier, Make)\n\n---\n\n**Quel domaine souhaitez-vous prioriser ?** Je peux affiner ma recommandation en fonction de votre contexte spécifique.",
+          "axisDelta": {
+            "struct": 1,
+            "behav": 0.10000000000000009,
+            "sem": 0.228753770982546
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T4",
+          "input": "Pierre Lassus, Ami d'enfance, à pris contact avec moi pour en savoir plus, mais après un mail de réponse, plus de nouvelle. A relancer",
+          "baselineOutput": "**Objet :** Relance – Informations complémentaires\n\nBonjour Pierre,\n\nJ'espère que tu vas bien. Suite à mon dernier message, je n'ai pas eu de retour de ta part. Je reste à ta disposition pour répondre à tes questions ou discuter davantage du sujet.\n\nSerais-tu disponible pour un appel cette semaine ?\n\nCordialement,\n[Ton nom]",
+          "ablatedOutput": "# Objet : Relance – Suite à votre demande d'information\n\nBonjour Pierre,\n\nJ'espère que vous allez bien. Je vous recontacte suite à mon dernier message concernant votre demande d'information.\n\nN'ayant pas eu de retour de votre part, je me demandais si vous aviez bien reçu ma réponse ou si vous aviez besoin de précisions supplémentaires. Je reste bien entendu à votre disposition pour répondre à vos questions.\n\nN'hésitez pas à me recontacter si vous souhaitez en discuter davantage.\n\nCordialement,\n\n[Votre nom]\n\n---\n\n**Note :** Si vous souhaitez une version plus personnalisée, je peux l'adapter en fonction du contexte spécifique (nature de votre demande, délai écoulé, ton souhaité, etc.).",
+          "axisDelta": {
+            "struct": 1,
+            "behav": 0.10000000000000009,
+            "sem": 0.25440844804576446
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T5",
+          "input": "Chan Lee, PDG d'un grand groupe, cherche à influer une politique IA dans sa société.",
+          "baselineOutput": "**Objet :** Politique IA pour votre groupe – Accompagnement stratégique\n\nMonsieur Lee,\n\nSuite à notre échange, je vous propose une consultation pour structurer votre politique IA. Nos experts vous aideront à définir un cadre éthique et opérationnel adapté à votre groupe.\n\nDisponible cette semaine pour discuter de vos enjeux prioritaires.\n\nCordialement",
+          "ablatedOutput": "# Mémorandum : Stratégie de Gouvernance IA\n\n**DESTINATAIRE :** Chan Lee, Président-Directeur Général  \n**OBJET :** Cadre de politique IA pour le groupe  \n**DATE :** [Date]\n\n---\n\n## 1. DIAGNOSTIC PRÉALABLE\n\nAvant de déployer une politique IA, je recommande :\n\n- **Audit interne** : inventorier les usages IA actuels (outils, données, risques)\n- **Consultation** : impliquer IT, RH, Conformité, Éthique et métiers clés\n- **Benchmark** : analyser les bonnes pratiques sectorielles\n\n---\n\n## 2. PILIERS D'UNE POLITIQUE EFFICACE\n\n### **Gouvernance**\n- Créer un comité IA transversal (pilotage stratégique)\n- Désigner un responsable IA/Chief AI Officer\n- Définir les processus d'approbation et de contrôle\n\n### **Conformité & Risques**\n- Respecter RGPD, lois IA émergentes (EU AI Act)\n- Évaluer les biais algorithmiques\n- Assurer la traçabilité et l'auditabilité\n\n### **Éthique & Responsabilité**\n- Transparence sur l'usage de l'IA auprès des clients/collaborateurs\n- Protéger les données sensibles\n- Prévoir des recours en cas de décision IA contestée\n\n### **Compétences & Culture**\n- Former les collaborateurs (littératie IA)\n- Attirer les talents en IA\n- Encourager l'innovation responsable\n\n---\n\n## 3. PLAN D'ACTION RECOMMANDÉ\n\n| Phase | Actions | Délai |\n|-------|---------|-------|\n| **1. Fondation** | Audit + comité IA + politique cadre | 2-3 mois |\n| **2. Déploiement** | Formation + outils de conformité | 3-6 mois |\n| **3. Optimisation** | Suivi KPI + ajustements | Continu |\n\n---\n\n## 4. BÉNÉFICES ATTENDUS\n\n✓ Réduction des risques légaux et réputationnels  \n✓ Meilleure adoption interne de l'IA  \n✓ Avantage concurrentiel (confiance client)  \n✓ Alignement avec les attentes réglementaires\n\nSouhaitez-vous approfondir un aspect particulier ?",
+          "axisDelta": {
+            "struct": 1,
+            "behav": 0.10000000000000009,
+            "sem": 0.28995438798705464
+          },
+          "semanticProvider": "voyage_api"
+        }
+      ]
+    },
+    {
+      "id": "S2",
+      "label": "Rédige de façon professionnelle",
+      "text": "Rédige de façon professionnelle.",
+      "impact": 0.06267595703127482,
+      "variance": 0.020082597875399094,
+      "struct": 0,
+      "behav": 0.040000000000000015,
+      "sem": 0.14802787109382443,
+      "activation": {
+        "overall": 0,
+        "struct": 0,
+        "behav": 0,
+        "sem": 0
+      },
+      "verdict": "placebo",
+      "stats": {
+        "zImpact": -1,
+        "minmaxImpact": 0,
+        "rankImpact": 2,
+        "snr": 0.8943155495278207,
+        "carrierAxis": "sem",
+        "carrierImpact": 0.14802787109382443,
+        "runMeanImpact": 0.25847355426770885,
+        "runSdImpact": 0.19579759723643403
+      },
+      "direction": "neutre",
+      "perScenario": [
+        {
+          "scenarioId": "T1",
+          "input": "Pierre Henri, patron de ABC Société, ouvert à une nouvelle collaboration. Inactif depuis 9 jours",
+          "baselineOutput": "**Objet :** Relance – Opportunité de collaboration ABC Société\n\nMonsieur Henri,\n\nSuite à notre dernier échange, je reviens vers vous concernant notre proposition de collaboration. Disposez-vous d'un créneau cette semaine pour en discuter davantage ?\n\nJe reste à votre entière disposition pour répondre à vos questions.\n\nCordialement,\n[Votre nom]",
+          "ablatedOutput": "**Objet :** Relance – Collaboration ABC Société\n\nBonjour Pierre,\n\nSuite à notre dernier échange, j'aimerais connaître votre retour sur notre proposition. Disposez-vous d'un créneau cette semaine pour en discuter ?\n\nJe reste à votre écoute pour adapter notre offre à vos besoins spécifiques.\n\nCordialement,\n[Votre nom]",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.10189389895596346
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T2",
+          "input": "Julie Hunbert, Product Manager chez le mauvais coin, en charge de l'intégration de l'IA dans sa société. Experte de son domaine. Inactive depuis quelques semaines.\n",
+          "baselineOutput": "**Objet :** Intégration IA – Relance de notre proposition\n\nChère Julie,\n\nNous espérons que tout va bien. Nous n'avons pas eu de nouvelles concernant notre solution d'intégration IA adaptée aux plateformes de petites annonces.\n\nDisposez-vous d'un créneau cette semaine pour en discuter ? Nous serions ravis de vous présenter les bénéfices pour Le Bon Coin.\n\nCordialement,\n[Votre nom]",
+          "ablatedOutput": "**Objet :** Intégration IA - Continuons notre discussion\n\nBonjour Julie,\n\nJ'espère que tout va bien. Nous n'avons pas eu de nouvelles depuis quelques semaines concernant votre projet d'intégration IA.\n\nDisposez-vous d'un créneau cette semaine pour en reparler ? Je serais ravi de vous présenter nos dernières solutions adaptées à votre contexte.\n\nÀ bientôt,\n[Votre nom]",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.17304490702255926
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T3",
+          "input": "Maitre Vigneau, Avocat en droit des affaires, cherche à automatiser une partie de ses process pour lui dégager du temps.",
+          "baselineOutput": "**Objet :** Automatisation de vos processus juridiques\n\nMaître Vigneau,\n\nSuite à notre échange, je reviens vers vous concernant l'automatisation de vos processus administratifs et juridiques.\n\nUne solution adaptée aux cabinets d'avocats pourrait vous libérer plusieurs heures hebdomadaires sur la gestion documentaire et le suivi dossiers.\n\nDisponible pour un appel découverte cette semaine ?\n\nCordialement",
+          "ablatedOutput": "**Objet :** Automatisation de vos processus juridiques - Gain de temps garanti\n\nMaître Vigneau,\n\nVous gérez des dossiers complexes. Pourquoi consacrer du temps à des tâches répétitives ?\n\nNotre solution automatise vos processus administratifs et documentaires, libérant vos heures pour le conseil stratégique.\n\nAudit gratuit de vos besoins cette semaine ?\n\nCordialement,\n[Votre nom]",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.10000000000000009,
+            "sem": 0.16547758269119028
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T4",
+          "input": "Pierre Lassus, Ami d'enfance, à pris contact avec moi pour en savoir plus, mais après un mail de réponse, plus de nouvelle. A relancer",
+          "baselineOutput": "**Objet :** Relance – Informations complémentaires\n\nBonjour Pierre,\n\nJ'espère que tu vas bien. Suite à mon dernier message, je n'ai pas eu de retour de ta part. Je reste à ta disposition pour répondre à tes questions ou discuter davantage du sujet.\n\nSerais-tu disponible pour un appel cette semaine ?\n\nCordialement,\n[Ton nom]",
+          "ablatedOutput": "**Objet :** Retour sur notre échange\n\nBonjour Pierre,\n\nJ'espère que tu vas bien ! Je n'ai pas eu de retour suite à mon dernier message. Je reste intéressé par notre discussion et aimerais en savoir plus sur tes besoins.\n\nSerais-tu disponible pour un appel cette semaine ?\n\nÀ bientôt,\n[Ton nom]",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.09999999999999998,
+            "sem": 0.14583379152421982
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T5",
+          "input": "Chan Lee, PDG d'un grand groupe, cherche à influer une politique IA dans sa société.",
+          "baselineOutput": "**Objet :** Politique IA pour votre groupe – Accompagnement stratégique\n\nMonsieur Lee,\n\nSuite à notre échange, je vous propose une consultation pour structurer votre politique IA. Nos experts vous aideront à définir un cadre éthique et opérationnel adapté à votre groupe.\n\nDisponible cette semaine pour discuter de vos enjeux prioritaires.\n\nCordialement",
+          "ablatedOutput": "**Objet :** Gouvernance IA pour votre groupe – Solution clés en main\n\nMonsieur Lee,\n\nSuite à notre échange, je vous propose une audit gratuit de votre maturité IA et un cadre de gouvernance adapté à votre structure.\n\nNos experts ont accompagné 50+ grands groupes. Disponible cette semaine pour un appel 20 min ?\n\nCordialement",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.1538891752751893
+          },
+          "semanticProvider": "voyage_api"
+        }
+      ]
+    }
+  ]
+}

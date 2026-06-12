@@ -1,0 +1,486 @@
+{
+  "meta": {
+    "tool": "preatorlabs",
+    "version": "v0.3",
+    "exportedAt": "2026-06-10T15:30:34.789Z",
+    "model": "claude-haiku-4-5-20251001",
+    "temperature": 0,
+    "semanticProvider": "voyage_api"
+  },
+  "prompt": "Tu réponds aux clients de Flowtask, un outil de gestion de tâches.\n\nRéponds en prose, sans aucune liste ni puce.\n\nMaximum 60 mots.\n\nNe termine jamais par une question ni par une offre d'aide.\n\nTutoiement.\n\nAucun emoji.\n\nRappel : pas de liste, écris en paragraphes.",
+  "segments": [
+    "Tu réponds aux clients de Flowtask, un outil de gestion de tâches.",
+    "Réponds en prose, sans aucune liste ni puce.",
+    "Maximum 60 mots.\nNe termine jamais par une question ni par une offre d'aide.",
+    "Tutoiement.\nAucun emoji.",
+    "Rappel : pas de liste, écris en paragraphes."
+  ],
+  "scenarios": [
+    "Comment activer la double authentification sur mon compte Flowtask ?",
+    "Quelle est la différence entre le forfait Pro et le forfait Entreprise ?",
+    "Mon paiement mensuel a été refusé, que dois-je faire ?",
+    "Est-ce que Flowtask est conforme au RGPD pour les données de mes clients ?",
+    "Comment exporter toutes mes tâches au format CSV ?"
+  ],
+  "summary": {
+    "segmentCount": 5,
+    "scenarioCount": 5,
+    "meanImpact": 0.07931170283408598,
+    "verdictCounts": {
+      "placebo": 4,
+      "context": 1
+    }
+  },
+  "results": [
+    {
+      "id": "S1",
+      "label": "Tu réponds aux clients de Flowtask, un outil de…",
+      "text": "Tu réponds aux clients de Flowtask, un outil de gestion de tâches.",
+      "impact": 0.0816281860651448,
+      "variance": 0.05211118833321707,
+      "struct": 0.06666666666666668,
+      "behav": 0,
+      "sem": 0.1782178915287677,
+      "activation": {
+        "overall": 0,
+        "struct": 0.2,
+        "behav": 0,
+        "sem": 0.2
+      },
+      "verdict": "placebo",
+      "stats": {
+        "zImpact": 0.035595326769667215,
+        "minmaxImpact": 0.3741632421478365,
+        "rankImpact": 2,
+        "snr": 0.7994049173022003,
+        "carrierAxis": "sem",
+        "carrierImpact": 0.1782178915287677,
+        "runMeanImpact": 0.07931170283408598,
+        "runSdImpact": 0.0650782965429278
+      },
+      "direction": "neutre",
+      "perScenario": [
+        {
+          "scenarioId": "T1",
+          "input": "Comment activer la double authentification sur mon compte Flowtask ?",
+          "baselineOutput": "Pour activer la double authentification sur Flowtask, accède à tes paramètres de compte, puis à la section sécurité. Tu trouveras l'option d'activation de la double authentification où tu pourras choisir entre SMS ou une application d'authentification. Suis les étapes de vérification pour finaliser la configuration.",
+          "ablatedOutput": "Pour activer la double authentification sur Flowtask, accède à tes paramètres de compte, puis cherche la section sécurité. Tu y trouveras l'option d'activation de la 2FA. Suis les instructions pour scanner le code QR avec une application d'authentification comme Google Authenticator ou Authy, puis confirme en entrant le code généré.",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.08860382080277052
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T2",
+          "input": "Quelle est la différence entre le forfait Pro et le forfait Entreprise ?",
+          "baselineOutput": "Le forfait Pro te permet de gérer jusqu'à 5 projets avec 10 membres d'équipe, tandis que le forfait Entreprise offre une capacité illimitée de projets et de collaborateurs. Entreprise inclut aussi des fonctionnalités avancées comme l'authentification SSO et le support prioritaire dédié.",
+          "ablatedOutput": "Je n'ai pas accès aux détails spécifiques de tes forfaits Pro et Entreprise. Pour connaître les différences exactes, tu dois consulter directement ta documentation produit ou ton espace client. Les variations dépendent entièrement de l'entreprise et du service concerné.",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.3461958097429293
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T3",
+          "input": "Mon paiement mensuel a été refusé, que dois-je faire ?",
+          "baselineOutput": "Ton paiement a probablement été refusé pour une raison technique ou un problème avec ta carte bancaire. Vérifie d'abord les coordonnées de ta carte dans les paramètres de facturation, puis essaie une nouvelle tentative. Si le problème persiste, contacte ton établissement bancaire pour vérifier qu'il n'y a pas de blocage.",
+          "ablatedOutput": "Tu dois d'abord vérifier que tes coordonnées bancaires sont à jour et que tu as suffisamment de solde. Contacte ensuite ton établissement bancaire pour comprendre le motif du refus. Si tout est correct de ton côté, réessaye le paiement ou utilise un autre moyen de paiement. Tu peux aussi consulter ton espace client pour voir les détails de la transaction refusée.",
+          "axisDelta": {
+            "struct": 0.33333333333333337,
+            "behav": 0,
+            "sem": 0.16838141117241767
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T4",
+          "input": "Est-ce que Flowtask est conforme au RGPD pour les données de mes clients ?",
+          "baselineOutput": "Flowtask respecte les exigences du RGPD concernant la protection des données. Tes données clients sont chiffrées et stockées de manière sécurisée. Tu conserves le contrôle total sur tes informations et peux les exporter ou les supprimer à tout moment selon tes besoins.",
+          "ablatedOutput": "Flowtask affirme respecter le RGPD et propose des fonctionnalités de conformité comme la suppression de données et les droits d'accès. Cependant, tu dois vérifier leur documentation officielle, notamment leur accord de traitement de données et leur politique de confidentialité, pour t'assurer que ça correspond à tes besoins spécifiques avant de stocker des données sensibles.",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.16822006217257524
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T5",
+          "input": "Comment exporter toutes mes tâches au format CSV ?",
+          "baselineOutput": "Tu peux exporter tes tâches en CSV directement depuis Flowtask. Va dans les paramètres de ton projet, cherche l'option \"Exporter\" et sélectionne le format CSV. Le fichier se téléchargera automatiquement avec toutes tes tâches et leurs détails.",
+          "ablatedOutput": "Tu peux exporter tes tâches en CSV en accédant aux paramètres de ton application de gestion de tâches, puis en cherchant l'option \"Exporter\" ou \"Télécharger\". Sélectionne le format CSV et choisis les tâches à exporter. Le fichier se téléchargera ensuite sur ton ordinateur, prêt à être utilisé dans Excel ou tout autre tableur.",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.11968835375314579
+          },
+          "semanticProvider": "voyage_api"
+        }
+      ]
+    },
+    {
+      "id": "S2",
+      "label": "Réponds en prose, sans aucune liste ni puce",
+      "text": "Réponds en prose, sans aucune liste ni puce.",
+      "impact": 0.0328055908745758,
+      "variance": 0.02983613598355706,
+      "struct": 0,
+      "behav": 0,
+      "sem": 0.09841677262372742,
+      "activation": {
+        "overall": 0,
+        "struct": 0,
+        "behav": 0,
+        "sem": 0
+      },
+      "verdict": "placebo",
+      "stats": {
+        "zImpact": -0.7146178438895248,
+        "minmaxImpact": 0.11397029272575808,
+        "rankImpact": 4,
+        "snr": 0.41091155615713165,
+        "carrierAxis": "sem",
+        "carrierImpact": 0.09841677262372742,
+        "runMeanImpact": 0.07931170283408598,
+        "runSdImpact": 0.0650782965429278
+      },
+      "direction": "neutre",
+      "perScenario": [
+        {
+          "scenarioId": "T1",
+          "input": "Comment activer la double authentification sur mon compte Flowtask ?",
+          "baselineOutput": "Pour activer la double authentification sur Flowtask, accède à tes paramètres de compte, puis à la section sécurité. Tu trouveras l'option d'activation de la double authentification où tu pourras choisir entre SMS ou une application d'authentification. Suis les étapes de vérification pour finaliser la configuration.",
+          "ablatedOutput": "Pour activer la double authentification, accède à tes paramètres de compte, puis à la section Sécurité. Tu trouveras l'option d'activation de la 2FA. Suis les instructions pour scanner le code QR avec une application d'authentification comme Google Authenticator ou Authy. Confirme ensuite avec le code généré.",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.22111974974597137
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T2",
+          "input": "Quelle est la différence entre le forfait Pro et le forfait Entreprise ?",
+          "baselineOutput": "Le forfait Pro te permet de gérer jusqu'à 5 projets avec 10 membres d'équipe, tandis que le forfait Entreprise offre une capacité illimitée de projets et de collaborateurs. Entreprise inclut aussi des fonctionnalités avancées comme l'authentification SSO et le support prioritaire dédié.",
+          "ablatedOutput": "Le forfait Pro te permet de gérer jusqu'à 5 projets avec 10 membres d'équipe, tandis que le forfait Entreprise offre des projets illimités et jusqu'à 50 membres. Entreprise inclut aussi l'authentification SSO, les rapports avancés et le support prioritaire.",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.020438429271402714
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T3",
+          "input": "Mon paiement mensuel a été refusé, que dois-je faire ?",
+          "baselineOutput": "Ton paiement a probablement été refusé pour une raison technique ou un problème avec ta carte bancaire. Vérifie d'abord les coordonnées de ta carte dans les paramètres de facturation, puis essaie une nouvelle tentative. Si le problème persiste, contacte ton établissement bancaire pour vérifier qu'il n'y a pas de blocage.",
+          "ablatedOutput": "Vérifie d'abord les informations de ta carte bancaire dans les paramètres de paiement. Assure-toi que la date d'expiration et le code de sécurité sont corrects. Si tout est bon, contacte ton établissement bancaire pour vérifier qu'il n'y a pas de blocage. Tu peux aussi essayer une autre méthode de paiement dans Flowtask.",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.1876921974119723
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T4",
+          "input": "Est-ce que Flowtask est conforme au RGPD pour les données de mes clients ?",
+          "baselineOutput": "Flowtask respecte les exigences du RGPD concernant la protection des données. Tes données clients sont chiffrées et stockées de manière sécurisée. Tu conserves le contrôle total sur tes informations et peux les exporter ou les supprimer à tout moment selon tes besoins.",
+          "ablatedOutput": "Flowtask respecte les exigences du RGPD concernant la protection des données. Tes données et celles de tes clients sont chiffrées et stockées de manière sécurisée. Tu peux consulter notre documentation complète sur la conformité et les mesures de sécurité mises en place pour garantir la confidentialité.",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.06283348668929056
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T5",
+          "input": "Comment exporter toutes mes tâches au format CSV ?",
+          "baselineOutput": "Tu peux exporter tes tâches en CSV directement depuis Flowtask. Va dans les paramètres de ton projet, cherche l'option \"Exporter\" et sélectionne le format CSV. Le fichier se téléchargera automatiquement avec toutes tes tâches et leurs détails.",
+          "ablatedOutput": "Tu peux exporter tes tâches en CSV directement depuis Flowtask. Va dans les paramètres de ton projet, cherche l'option \"Exporter\" et sélectionne le format CSV. Le fichier se téléchargera automatiquement avec toutes tes tâches et leurs détails.",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 1.1102230246251565e-16
+          },
+          "semanticProvider": "voyage_api"
+        }
+      ]
+    },
+    {
+      "id": "S3",
+      "label": "Maximum 60 mots",
+      "text": "Maximum 60 mots.\nNe termine jamais par une question ni par une offre d'aide.",
+      "impact": 0.19906017164300469,
+      "variance": 0.021322694033108616,
+      "struct": 0.33333333333333337,
+      "behav": 0.0888888888888889,
+      "sem": 0.1749582927067918,
+      "activation": {
+        "overall": 0,
+        "struct": 1,
+        "behav": 0,
+        "sem": 0
+      },
+      "verdict": "context",
+      "stats": {
+        "zImpact": 1.840067659575703,
+        "minmaxImpact": 1,
+        "rankImpact": 1,
+        "snr": 2.790979425855664,
+        "carrierAxis": "struct",
+        "carrierImpact": 0.33333333333333337,
+        "runMeanImpact": 0.07931170283408598,
+        "runSdImpact": 0.0650782965429278
+      },
+      "direction": "porte",
+      "perScenario": [
+        {
+          "scenarioId": "T1",
+          "input": "Comment activer la double authentification sur mon compte Flowtask ?",
+          "baselineOutput": "Pour activer la double authentification sur Flowtask, accède à tes paramètres de compte, puis à la section sécurité. Tu trouveras l'option d'activation de la double authentification où tu pourras choisir entre SMS ou une application d'authentification. Suis les étapes de vérification pour finaliser la configuration.",
+          "ablatedOutput": "Pour activer la double authentification sur ton compte Flowtask, tu dois d'abord accéder à tes paramètres de sécurité. Connecte-toi à ton compte, puis rends-toi dans les paramètres en cliquant sur ton profil en haut à droite de l'écran. Tu trouveras une section dédiée à la sécurité où tu pourras activer l'authentification à deux facteurs.\n\nUne fois que tu as cliqué sur l'option pour activer la double authentification, tu seras invité à scanner un code QR avec une application d'authentification comme Google Authenticator, Microsoft Authenticator ou Authy. Après avoir scanné ce code, l'application te générera un code à six chiffres que tu devras entrer pour confirmer l'activation.\n\nIl est important de noter que tu recevras également des codes de secours que tu dois conserver précieusement. Ces codes te permettront d'accéder à ton compte si tu perds l'accès à ton application d'authentification. Stocke-les dans un endroit sûr, comme un gestionnaire de mots de passe ou un document chiffré.\n\nUne fois la double authentification activée, tu devras entrer ce code à six chiffres chaque fois que tu te connecteras à Flowtask, ce qui rendra ton compte beaucoup plus sécurisé. Si tu rencontres des difficultés lors de ce processus, n'hésite pas à contacter notre équipe d'assistance.",
+          "axisDelta": {
+            "struct": 0.33333333333333337,
+            "behav": 0.2222222222222222,
+            "sem": 0.11083949886524258
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T2",
+          "input": "Quelle est la différence entre le forfait Pro et le forfait Entreprise ?",
+          "baselineOutput": "Le forfait Pro te permet de gérer jusqu'à 5 projets avec 10 membres d'équipe, tandis que le forfait Entreprise offre une capacité illimitée de projets et de collaborateurs. Entreprise inclut aussi des fonctionnalités avancées comme l'authentification SSO et le support prioritaire dédié.",
+          "ablatedOutput": "Je n'ai pas accès aux informations spécifiques sur les forfaits Pro et Entreprise de Flowtask. Pour te donner une réponse précise sur les différences entre ces deux plans, je te recommande de consulter directement la page de tarification sur le site de Flowtask ou de contacter l'équipe support qui pourra te détailler les fonctionnalités, les limites d'utilisateurs, les options de stockage et tous les avantages propres à chaque forfait.\n\nSi tu as des questions plus générales sur la façon d'utiliser Flowtask ou sur ses fonctionnalités principales, je serais ravi de t'aider.",
+          "axisDelta": {
+            "struct": 0.33333333333333337,
+            "behav": 0,
+            "sem": 0.2650272432554792
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T3",
+          "input": "Mon paiement mensuel a été refusé, que dois-je faire ?",
+          "baselineOutput": "Ton paiement a probablement été refusé pour une raison technique ou un problème avec ta carte bancaire. Vérifie d'abord les coordonnées de ta carte dans les paramètres de facturation, puis essaie une nouvelle tentative. Si le problème persiste, contacte ton établissement bancaire pour vérifier qu'il n'y a pas de blocage.",
+          "ablatedOutput": "Si ton paiement mensuel a été refusé, je te recommande d'abord de vérifier les informations de ta carte bancaire dans les paramètres de ton compte. Il est possible qu'il y ait une simple erreur de saisie ou que ta carte soit expirée. Assure-toi aussi que tu as suffisamment de solde disponible et que ta banque n'a pas bloqué la transaction pour des raisons de sécurité.\n\nSi tout semble correct de ton côté, contacte directement ta banque pour savoir si elle a rejeté le paiement et pour quelle raison. Parfois, les établissements bancaires refusent les transactions en ligne par mesure de sécurité. Une fois que tu auras résolu le problème avec ta banque, tu pourras réessayer de mettre à jour ton moyen de paiement dans Flowtask.\n\nSi le problème persiste après avoir vérifié ces éléments, n'hésite pas à nous contacter directement via le support client. Nous pourrons vérifier de notre côté si le paiement a bien été traité et t'aider à trouver une solution adaptée à ta situation.",
+          "axisDelta": {
+            "struct": 0.33333333333333337,
+            "behav": 0.11111111111111116,
+            "sem": 0.22322707267894482
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T4",
+          "input": "Est-ce que Flowtask est conforme au RGPD pour les données de mes clients ?",
+          "baselineOutput": "Flowtask respecte les exigences du RGPD concernant la protection des données. Tes données clients sont chiffrées et stockées de manière sécurisée. Tu conserves le contrôle total sur tes informations et peux les exporter ou les supprimer à tout moment selon tes besoins.",
+          "ablatedOutput": "Flowtask prend la conformité RGPD très au sérieux. L'outil est conçu pour respecter les obligations légales relatives à la protection des données personnelles, notamment en ce qui concerne le stockage sécurisé des informations, les droits d'accès et de suppression des données, ainsi que la transparence dans le traitement des données.\n\nCependant, je te recommande de consulter directement notre documentation complète sur la conformité RGPD ou de contacter notre équipe support pour obtenir des détails spécifiques sur tes besoins. Ils pourront te fournir des informations précises sur les mesures de sécurité mises en place, les accords de traitement de données, et comment Flowtask s'aligne avec tes obligations légales en tant que responsable de traitement. C'est important que tu aies une compréhension complète avant de stocker des données sensibles de tes clients dans l'outil.",
+          "axisDelta": {
+            "struct": 0.33333333333333337,
+            "behav": 0,
+            "sem": 0.1737298455024785
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T5",
+          "input": "Comment exporter toutes mes tâches au format CSV ?",
+          "baselineOutput": "Tu peux exporter tes tâches en CSV directement depuis Flowtask. Va dans les paramètres de ton projet, cherche l'option \"Exporter\" et sélectionne le format CSV. Le fichier se téléchargera automatiquement avec toutes tes tâches et leurs détails.",
+          "ablatedOutput": "Pour exporter tes tâches au format CSV dans Flowtask, tu dois d'abord accéder à la section des paramètres ou des outils d'export. Généralement, tu trouveras cette option dans le menu principal ou dans les paramètres de ton compte. Une fois que tu as localisé l'option d'export, tu peux sélectionner le format CSV et choisir si tu veux exporter toutes tes tâches ou seulement celles qui correspondent à certains critères comme une date ou un projet spécifique.\n\nAprès avoir configuré tes préférences d'export, tu cliques sur le bouton d'export et Flowtask génère un fichier CSV que tu peux télécharger directement sur ton ordinateur. Ce fichier contient toutes les informations de tes tâches comme les titres, les descriptions, les dates d'échéance et les statuts, ce qui te permet de les utiliser dans d'autres applications ou de les analyser dans un tableur.\n\nSi tu ne trouves pas cette fonctionnalité ou si tu rencontres des difficultés, n'hésite pas à consulter la documentation d'aide de Flowtask ou à contacter le support client qui pourra te guider pas à pas dans le processus.",
+          "axisDelta": {
+            "struct": 0.33333333333333337,
+            "behav": 0.11111111111111116,
+            "sem": 0.10196780323181398
+          },
+          "semanticProvider": "voyage_api"
+        }
+      ]
+    },
+    {
+      "id": "S4",
+      "label": "Tutoiement",
+      "text": "Tutoiement.\nAucun emoji.",
+      "impact": 0.07164435613049389,
+      "variance": 0.015860577167585214,
+      "struct": 0,
+      "behav": 0.11111111111111116,
+      "sem": 0.10382195728037047,
+      "activation": {
+        "overall": 0,
+        "struct": 0,
+        "behav": 0,
+        "sem": 0
+      },
+      "verdict": "placebo",
+      "stats": {
+        "zImpact": -0.11781726183527956,
+        "minmaxImpact": 0.32095586660613123,
+        "rankImpact": 3,
+        "snr": 1.0878185283465036,
+        "carrierAxis": "behav",
+        "carrierImpact": 0.11111111111111116,
+        "runMeanImpact": 0.07931170283408598,
+        "runSdImpact": 0.0650782965429278
+      },
+      "direction": "neutre",
+      "perScenario": [
+        {
+          "scenarioId": "T1",
+          "input": "Comment activer la double authentification sur mon compte Flowtask ?",
+          "baselineOutput": "Pour activer la double authentification sur Flowtask, accède à tes paramètres de compte, puis à la section sécurité. Tu trouveras l'option d'activation de la double authentification où tu pourras choisir entre SMS ou une application d'authentification. Suis les étapes de vérification pour finaliser la configuration.",
+          "ablatedOutput": "Pour activer la double authentification sur Flowtask, accédez à vos paramètres de compte, puis sélectionnez l'onglet sécurité. Vous trouverez l'option d'activation de la double authentification où vous pourrez choisir entre SMS ou une application d'authentification. Suivez les instructions pour confirmer votre méthode préférée.",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.11111111111111116,
+            "sem": 0.0190297888236447
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T2",
+          "input": "Quelle est la différence entre le forfait Pro et le forfait Entreprise ?",
+          "baselineOutput": "Le forfait Pro te permet de gérer jusqu'à 5 projets avec 10 membres d'équipe, tandis que le forfait Entreprise offre une capacité illimitée de projets et de collaborateurs. Entreprise inclut aussi des fonctionnalités avancées comme l'authentification SSO et le support prioritaire dédié.",
+          "ablatedOutput": "Le forfait Pro convient aux petites équipes avec des besoins de collaboration basiques et un nombre limité de projets. Le forfait Entreprise offre des capacités avancées, une meilleure scalabilité, des intégrations personnalisées et un support dédié pour les organisations de plus grande taille.",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.11111111111111116,
+            "sem": 0.14230419651102266
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T3",
+          "input": "Mon paiement mensuel a été refusé, que dois-je faire ?",
+          "baselineOutput": "Ton paiement a probablement été refusé pour une raison technique ou un problème avec ta carte bancaire. Vérifie d'abord les coordonnées de ta carte dans les paramètres de facturation, puis essaie une nouvelle tentative. Si le problème persiste, contacte ton établissement bancaire pour vérifier qu'il n'y a pas de blocage.",
+          "ablatedOutput": "Votre paiement a probablement été refusé en raison d'une information bancaire expirée ou incorrecte. Accédez à vos paramètres de facturation pour mettre à jour votre carte de crédit. Si le problème persiste après cette correction, contactez votre banque pour vérifier qu'aucune restriction n'existe sur votre compte.",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.11111111111111116,
+            "sem": 0.1388203104509681
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T4",
+          "input": "Est-ce que Flowtask est conforme au RGPD pour les données de mes clients ?",
+          "baselineOutput": "Flowtask respecte les exigences du RGPD concernant la protection des données. Tes données clients sont chiffrées et stockées de manière sécurisée. Tu conserves le contrôle total sur tes informations et peux les exporter ou les supprimer à tout moment selon tes besoins.",
+          "ablatedOutput": "Flowtask respecte les exigences du RGPD concernant la protection des données. Nous appliquons le chiffrement des données, limitons l'accès aux informations sensibles et permettons aux utilisateurs de contrôler leurs données personnelles. Pour des détails spécifiques sur notre conformité, consultez notre documentation de sécurité.",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.11111111111111116,
+            "sem": 0.13556079243760855
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T5",
+          "input": "Comment exporter toutes mes tâches au format CSV ?",
+          "baselineOutput": "Tu peux exporter tes tâches en CSV directement depuis Flowtask. Va dans les paramètres de ton projet, cherche l'option \"Exporter\" et sélectionne le format CSV. Le fichier se téléchargera automatiquement avec toutes tes tâches et leurs détails.",
+          "ablatedOutput": "Pour exporter vos tâches en CSV, accédez à votre tableau de bord et cliquez sur le menu des paramètres. Sélectionnez l'option \"Exporter les données\" puis choisissez le format CSV. Flowtask générera automatiquement un fichier contenant toutes vos tâches avec leurs détails respectifs.",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.11111111111111116,
+            "sem": 0.08339469817860834
+          },
+          "semanticProvider": "voyage_api"
+        }
+      ]
+    },
+    {
+      "id": "S5",
+      "label": "Rappel : pas de liste, écris en paragraphes",
+      "text": "Rappel : pas de liste, écris en paragraphes.",
+      "impact": 0.011420209457210687,
+      "variance": 0.010640830246374135,
+      "struct": 0,
+      "behav": 0,
+      "sem": 0.03426062837163206,
+      "activation": {
+        "overall": 0,
+        "struct": 0,
+        "behav": 0,
+        "sem": 0
+      },
+      "verdict": "placebo",
+      "stats": {
+        "zImpact": -1.0432278806205664,
+        "minmaxImpact": 0,
+        "rankImpact": 5,
+        "snr": 0.18832541393005628,
+        "carrierAxis": "sem",
+        "carrierImpact": 0.03426062837163206,
+        "runMeanImpact": 0.07931170283408598,
+        "runSdImpact": 0.0650782965429278
+      },
+      "direction": "neutre",
+      "perScenario": [
+        {
+          "scenarioId": "T1",
+          "input": "Comment activer la double authentification sur mon compte Flowtask ?",
+          "baselineOutput": "Pour activer la double authentification sur Flowtask, accède à tes paramètres de compte, puis à la section sécurité. Tu trouveras l'option d'activation de la double authentification où tu pourras choisir entre SMS ou une application d'authentification. Suis les étapes de vérification pour finaliser la configuration.",
+          "ablatedOutput": "Pour activer la double authentification sur Flowtask, accède à tes paramètres de compte, puis à la section sécurité. Tu trouveras l'option d'activation de la double authentification où tu pourras choisir entre SMS ou une application d'authentification. Suis les étapes de vérification pour finaliser la configuration.",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T2",
+          "input": "Quelle est la différence entre le forfait Pro et le forfait Entreprise ?",
+          "baselineOutput": "Le forfait Pro te permet de gérer jusqu'à 5 projets avec 10 membres d'équipe, tandis que le forfait Entreprise offre une capacité illimitée de projets et de collaborateurs. Entreprise inclut aussi des fonctionnalités avancées comme l'authentification SSO et le support prioritaire dédié.",
+          "ablatedOutput": "Le forfait Pro te permet de gérer jusqu'à 5 projets avec ton équipe et d'accéder aux intégrations essentielles. Le forfait Entreprise offre une capacité illimitée de projets, des fonctionnalités avancées de collaboration, une API personnalisée et un support dédié pour les besoins spécifiques de ta structure.",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.06143331743137026
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T3",
+          "input": "Mon paiement mensuel a été refusé, que dois-je faire ?",
+          "baselineOutput": "Ton paiement a probablement été refusé pour une raison technique ou un problème avec ta carte bancaire. Vérifie d'abord les coordonnées de ta carte dans les paramètres de facturation, puis essaie une nouvelle tentative. Si le problème persiste, contacte ton établissement bancaire pour vérifier qu'il n'y a pas de blocage.",
+          "ablatedOutput": "Ton paiement a probablement été refusé pour une raison technique ou un problème avec ta carte bancaire. Vérifie d'abord les informations de paiement dans tes paramètres de compte, puis essaie une autre méthode de paiement. Si le problème persiste, contacte ton établissement bancaire pour vérifier que ta carte n'est pas bloquée.",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.030909522449315663
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T4",
+          "input": "Est-ce que Flowtask est conforme au RGPD pour les données de mes clients ?",
+          "baselineOutput": "Flowtask respecte les exigences du RGPD concernant la protection des données. Tes données clients sont chiffrées et stockées de manière sécurisée. Tu conserves le contrôle total sur tes informations et peux les exporter ou les supprimer à tout moment selon tes besoins.",
+          "ablatedOutput": "Flowtask respecte les exigences du RGPD concernant la protection des données. Tes données et celles de tes clients sont traitées conformément à la réglementation européenne, avec chiffrement et sécurité renforcée. Tu peux consulter notre politique de confidentialité pour tous les détails spécifiques sur le traitement et la conservation des données.",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.07896030197747428
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T5",
+          "input": "Comment exporter toutes mes tâches au format CSV ?",
+          "baselineOutput": "Tu peux exporter tes tâches en CSV directement depuis Flowtask. Va dans les paramètres de ton projet, cherche l'option \"Exporter\" et sélectionne le format CSV. Le fichier se téléchargera automatiquement avec toutes tes tâches et leurs détails.",
+          "ablatedOutput": "Tu peux exporter tes tâches en CSV directement depuis Flowtask. Va dans les paramètres de ton projet, cherche l'option \"Exporter\" et sélectionne le format CSV. Le fichier se téléchargera automatiquement avec toutes tes tâches et leurs détails.",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 1.1102230246251565e-16
+          },
+          "semanticProvider": "voyage_api"
+        }
+      ]
+    }
+  ]
+}

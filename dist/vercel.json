@@ -4,11 +4,24 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/docs/:name.md",
-      "destination": "/docs/view.html?f=:name.md"
+      "has": [{ "type": "host", "value": "etude.preatorlabs.dev" }],
+      "source": "/",
+      "destination": "/etude/index.html"
+    },
+    {
+      "has": [{ "type": "host", "value": "etude.preatorlabs.dev" }],
+      "source": "/:path*",
+      "destination": "/etude/:path*"
     }
   ],
   "headers": [
+    {
+      "source": "/etude/(.*)",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "index, follow" },
+        { "key": "Cache-Control", "value": "public, max-age=3600" }
+      ]
+    },
     {
       "source": "/(.*)",
       "headers": [
@@ -32,6 +45,13 @@
     },
     {
       "source": "/docs/(.*)\\.md",
+      "headers": [
+        { "key": "Content-Type", "value": "text/markdown; charset=utf-8" },
+        { "key": "Cache-Control", "value": "public, max-age=3600" }
+      ]
+    },
+    {
+      "source": "/en/docs/(.*)\\.md",
       "headers": [
         { "key": "Content-Type", "value": "text/markdown; charset=utf-8" },
         { "key": "Cache-Control", "value": "public, max-age=3600" }

@@ -1,0 +1,487 @@
+{
+  "meta": {
+    "tool": "preatorlabs",
+    "version": "v0.3",
+    "exportedAt": "2026-06-11T09:48:21.628Z",
+    "model": "claude-haiku-4-5-20251001",
+    "temperature": 0,
+    "semanticProvider": "voyage_api"
+  },
+  "prompt": "Tu es un copywriter B2B sénior de classe mondiale, expert reconnu des emails de relance, doté d'une intuition rare pour la psychologie commerciale.\n\nAvant d'écrire, visualise mentalement le destinataire, son quotidien et ses préoccupations, puis imagine l'email idéal dans ta tête.\n\nTon : chaleureux, direct, confiant, professionnel, engageant, authentique, naturel.\n\nImportant : sois toujours concis et va droit au but.\n\nNe sois pas insistant, ne culpabilise jamais le destinataire, et reste poli et respectueux en toutes circonstances.",
+  "segments": [
+    "Tu es un copywriter B2B sénior de classe mondiale, expert reconnu des emails de relance, doté d'une intuition rare pour la psychologie commerciale.",
+    "Avant d'écrire, visualise mentalement le destinataire, son quotidien et ses préoccupations, puis imagine l'email idéal dans ta tête.",
+    "Ton : chaleureux, direct, confiant, professionnel, engageant, authentique, naturel.",
+    "Important : sois toujours concis et va droit au but.",
+    "Ne sois pas insistant, ne culpabilise jamais le destinataire, et reste poli et respectueux en toutes circonstances."
+  ],
+  "scenarios": [
+    "Pierre Henri, patron de ABC Société, ouvert à une collaboration. Inactif depuis 9 jours.",
+    "Julie Humbert, Product Manager, experte de son domaine. A zappé ma dernière relance.",
+    "Maître Vigneau, avocat en droit des affaires, veut automatiser une partie de ses process.",
+    "Pierre Lassus, ami d'enfance, a pris contact puis plus de nouvelles. À relancer.",
+    "Chan Lee, PDG d'un grand groupe, veut impulser une politique IA."
+  ],
+  "summary": {
+    "segmentCount": 5,
+    "scenarioCount": 5,
+    "meanImpact": 0.10620821117601764,
+    "verdictCounts": {
+      "low": 1,
+      "placebo": 3,
+      "context": 1
+    }
+  },
+  "results": [
+    {
+      "id": "S1",
+      "label": "Tu es un copywriter B2B sénior de classe mondia…",
+      "text": "Tu es un copywriter B2B sénior de classe mondiale, expert reconnu des emails de relance, doté d'une intuition rare pour la psychologie commerciale.",
+      "impact": 0.11568850496875602,
+      "variance": 0.04731327919641911,
+      "struct": 0.06666666666666667,
+      "behav": 0.06666666666666665,
+      "sem": 0.21373218157293467,
+      "activation": {
+        "overall": 0,
+        "struct": 0.2,
+        "behav": 0,
+        "sem": 0.2
+      },
+      "verdict": "low",
+      "stats": {
+        "zImpact": 0.2616541349485679,
+        "minmaxImpact": 0.4073782474033804,
+        "rankImpact": 2,
+        "snr": 1.1888254709333963,
+        "carrierAxis": "sem",
+        "carrierImpact": 0.21373218157293467,
+        "runMeanImpact": 0.10620821117601764,
+        "runSdImpact": 0.036232157365301616
+      },
+      "direction": "neutre",
+      "perScenario": [
+        {
+          "scenarioId": "T1",
+          "input": "Pierre Henri, patron de ABC Société, ouvert à une collaboration. Inactif depuis 9 jours.",
+          "baselineOutput": "**Objet :** Juste une question rapide\n\n---\n\nSalut Pierre,\n\nJe me demandais si mon dernier message t'a échappé ou si le timing n'était juste pas bon.\n\nPas de souci dans les deux cas — je sais que les boîtes mail débordent.\n\nJe pensais vraiment que ce qu'on discutait pouvait créer quelque chose d'intéressant pour ABC Société. Ça vaut le coup qu'on en reparle ?\n\nDis-moi simplement si ça t'intéresse toujours ou si c'est mieux qu'on laisse tomber.\n\nÀ bientôt,\n[Ton nom]\n\n---\n\n**Pourquoi ça marche :**\n- Pas de reproche caché\n- Lui donne une porte de sortie honorable\n- Rappelle la valeur sans insister\n- Court et respectueux du temps",
+          "ablatedOutput": "**Objet : Reprendre notre conversation ?**\n\n---\n\nBonjour Pierre,\n\nJ'espère que tout va bien de ton côté. \n\nJe reviens vers toi simplement parce que j'aimerais vraiment explorer cette collaboration qu'on avait commencé à discuter. Je pense sincèrement qu'il y a quelque chose d'intéressant à construire ensemble.\n\nSerais-tu disponible pour un appel rapide cette semaine ? Je m'adapte à ton agenda.\n\nÀ bientôt,\n[Ton nom]\n\n---\n\n**Pourquoi cette approche :**\n- Pas de culpabilité sur l'inactivité\n- Rappel léger du contexte (collaboration)\n- Proposition concrète (appel)\n- Flexibilité (son agenda)\n- Court et direct",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.16666666666666663,
+            "sem": 0.37427565948289787
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T2",
+          "input": "Julie Humbert, Product Manager, experte de son domaine. A zappé ma dernière relance.",
+          "baselineOutput": "# Email de relance #2 pour Julie\n\n**Objet :** Juste une question rapide\n\n---\n\nHi Julie,\n\nJe sais que tu reçois des tonnes de messages, donc je vais être direct.\n\nJ'ai envoyé quelque chose la semaine dernière sur [sujet spécifique], mais aucune réaction de ta part. Deux possibilités :\n\n1. **C'est pas le bon moment** → pas de souci, je comprends\n2. **C'est pas pertinent pour toi** → utile à savoir aussi\n\nCe qui m'intéresse vraiment, c'est juste de comprendre si ça vaut le coup qu'on continue la conversation ou si je dois laisser tomber.\n\nDeux secondes pour me dire ? \n\nMerci,\n[Ton nom]\n\n---\n\n## Pourquoi ça marche :\n\n✓ **Honnête** – tu reconnais qu'elle a ignoré ta relance (pas de faux-semblant)  \n✓ **Respectueux** – tu lui donnes une porte de sortie  \n✓ **Clair** – tu demandes juste un oui/non, pas un engagement  \n✓ **Court** – elle peut répondre en 10 secondes  \n✓ **Psycho** – tu lui donnes du contrôle (elle choisit, elle n'est pas forcée)\n\n**Attends 5-7 jours avant une 3e relance.** Si rien, laisse tomber proprement.",
+          "ablatedOutput": "**Objet :** Juste une question rapide 👋\n\n---\n\nSalut Julie,\n\nJe sais que tu dois être submergée de messages, donc je vais être direct.\n\nJ'ai envoyé quelque chose il y a peu, mais aucune réaction de ta part — ce qui est totalement normal. Avant de continuer à te spammer, je préfère vérifier : est-ce que c'est vraiment pertinent pour toi en ce moment, ou j'ai juste mal visé ?\n\nSi c'est pas le bon timing ou pas ta priorité, pas de souci. Je préfère le savoir plutôt que de te pourrir ta boîte mail.\n\nÀ toi de voir 👍\n\n---\n\n**Pourquoi ça marche :**\n- Pas de culpabilité, juste de l'honnêteté\n- Tu reconnais qu'elle est occupée (crédibilité)\n- Tu lui donnes une porte de sortie facile\n- Ça montre du respect et de la confiance en toi\n- Court et sans prise de tête",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.16666666666666663,
+            "sem": 0.18150458386674317
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T3",
+          "input": "Maître Vigneau, avocat en droit des affaires, veut automatiser une partie de ses process.",
+          "baselineOutput": "# Email de relance pour Maître Vigneau\n\n---\n\n**Objet :** Automatiser sans perdre le contact humain – une idée pour votre cabinet\n\nBonjour Maître Vigneau,\n\nJe vous contacte parce que j'ai remarqué que les cabinets d'avocats comme le vôtre passent énormément de temps sur des tâches répétitives : relances clients, mise à jour de dossiers, suivi des délais, coordination interne.\n\nTemps précieux qui vous éloigne du cœur de votre métier : conseiller et plaider.\n\n**Voici ce que je vois souvent fonctionner :**\n- Automatiser les rappels de paiement et les demandes de documents\n- Centraliser les infos clients pour y accéder en 10 secondes\n- Programmer les relances sans effort\n\nRésultat : plus de fluidité, moins de stress administratif, et vos clients reçoivent des réponses plus rapides.\n\nJe ne sais pas si c'est une priorité pour vous en ce moment. Mais si vous envisagez sérieusement de gagner quelques heures par semaine, j'aimerais bien en discuter 15 minutes.\n\nLibre jeudi ou vendredi ?\n\nCordialement,\n[Votre nom]\n\n---\n\n*P.S. – Pas de pression si ce n'est pas le moment. Je reste à disposition si vous y pensez plus tard.*",
+          "ablatedOutput": "# Email à Maître Vigneau\n\n---\n\n**Objet :** Automatiser vos process – une opportunité pour votre cabinet\n\nBonjour Maître Vigneau,\n\nJ'imagine que votre cabinet gère quotidiennement des tâches répétitives : relances clients, mise à jour de dossiers, suivi de délais, génération de documents standards...\n\nCes tâches, bien que nécessaires, consomment du temps que vous pourriez consacrer à ce qui compte vraiment : conseiller vos clients et développer votre activité.\n\nL'automatisation de certains processus (relances, rappels de délais, documents types, suivi administratif) peut libérer plusieurs heures par semaine à votre équipe.\n\nJe travaille avec des cabinets d'avocats pour identifier les tâches à automatiser et mettre en place des solutions adaptées à votre contexte juridique.\n\nAuriez-vous 15 minutes cette semaine pour explorer ensemble les processus qui pourraient être optimisés dans votre cabinet ?\n\nCordialement,\n[Votre nom]\n\n---\n\n**Variante plus directe (si vous le connaissez) :**\n\nMaître Vigneau, avez-vous identifié des tâches répétitives dans votre cabinet qui vous ralentissent ? Je peux vous aider à les automatiser. Disponible pour un appel court cette semaine ?",
+          "axisDelta": {
+            "struct": 0.3333333333333333,
+            "behav": 0,
+            "sem": 0.1278494986794544
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T4",
+          "input": "Pierre Lassus, ami d'enfance, a pris contact puis plus de nouvelles. À relancer.",
+          "baselineOutput": "# Email de relance amical\n\n**Objet :** Ça te dit un café ? ☕\n\n---\n\nSalut Pierre,\n\nJ'ai pensé à toi l'autre jour en repensant à nos histoires du lycée. On s'était dit qu'on se redonnerait des nouvelles et j'ai réalisé que j'avais laissé traîner.\n\nPas de prise de tête, juste envie de savoir comment ça va de ton côté. Qu'est-ce que tu deviens ?\n\nSi tu as un moment, on pourrait se prendre un café ou un verre ? Sinon, un simple message pour dire que tu vas bien, ça me suffit.\n\nÀ bientôt j'espère,\n\n[Ton prénom]\n\n---\n\n**Pourquoi ça marche :**\n- Pas de reproche implicite\n- Ton léger et authentique\n- Proposition concrète et facile à accepter\n- Porte de sortie honorable (\"un simple message\")\n- Court et mémorable",
+          "ablatedOutput": "**Objet : Ça fait un moment ! 👋**\n\n---\n\nSalut Pierre,\n\nJ'ai pensé à toi l'autre jour en repensant à [insérer un souvenir commun léger]. Ça m'a fait sourire.\n\nOn s'était dit qu'on se redonnerait des nouvelles, et j'aimerais bien savoir comment ça va de ton côté. Pas de pression si tu es débordé – je sais que la vie s'accélère parfois !\n\nSi tu as un moment, j'aimerais bien qu'on se rattrape. Un café, un appel, ou juste un message pour me dire ce que tu deviens.\n\nÀ bientôt j'espère !\n\n[Ton prénom]\n\n---\n\n**Pourquoi ça marche :**\n- Léger et sans reproche\n- Référence personnelle (crée de la proximité)\n- Lui donne une porte de sortie (\"pas de pression\")\n- Propose plusieurs formats (flexibilité)\n- Court et naturel",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.22680130783575458
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T5",
+          "input": "Chan Lee, PDG d'un grand groupe, veut impulser une politique IA.",
+          "baselineOutput": "# Email de relance pour Chan Lee\n\n**Objet :** Une minute pour transformer votre stratégie IA\n\n---\n\nChan,\n\nJe sais que votre agenda est blindé, donc je vais être direct.\n\nJ'ai remarqué que votre groupe explore l'IA en ce moment. C'est le bon moment—mais aussi le moment où les décisions prises maintenant déterminent qui domine dans 18 mois.\n\nLa plupart des PDG font l'erreur de laisser la tech décider. Les meilleurs ? Ils imposent d'abord une vision claire, puis la tech suit.\n\nJe travaille avec des groupes de votre taille à structurer exactement ça : une stratégie IA qui crée de la valeur réelle, pas juste du buzz.\n\nÇa vous intéresse d'en parler 15 min ? Je peux vous montrer comment d'autres ont accéléré leur adoption sans chaos organisationnel.\n\nSinon, pas de souci—je comprends que ce ne soit pas le moment.\n\nÀ bientôt,\n\n[Ton nom]\n\n---\n\n**Pourquoi ça marche :**\n- Respecte son temps (concision)\n- Montre qu'on l'a observé (crédibilité)\n- Parle de *sa* préoccupation réelle (vision vs chaos)\n- Pas de culpabilité, juste une option claire\n- Donne une porte de sortie honorable",
+          "ablatedOutput": "# Email à Chan Lee\n\n**Objet :** Une opportunité pour positionner [Groupe] comme leader IA\n\n---\n\nBonjour Chan,\n\nJ'ai suivi vos récentes déclarations sur la transformation digitale. Votre vision résonne particulièrement sur un sujet qui devient décisif : **comment intégrer l'IA de manière stratégique** sans perdre votre culture d'entreprise.\n\nBeaucoup de groupes lancent des initiatives IA fragmentées. Les meilleurs créent une **politique cohérente** : cadre éthique clair, montée en compétences ciblée, cas d'usage prioritaires.\n\nJe pense pouvoir vous aider à structurer cette approche pour que l'IA devienne un **avantage concurrentiel réel**, pas juste un buzzword.\n\nAuriez-vous 20 minutes cette semaine pour en discuter ?\n\nCordialement,\n[Ton nom]\n\n---\n\n**Pourquoi ça marche :**\n- ✓ Reconnaît son leadership\n- ✓ Identifie un vrai problème (initiatives fragmentées)\n- ✓ Propose une solution claire\n- ✓ Respecte son temps (20 min)\n- ✓ Pas de pression, juste une ouverture",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.15822985799982336
+          },
+          "semanticProvider": "voyage_api"
+        }
+      ]
+    },
+    {
+      "id": "S2",
+      "label": "Avant d'écrire, visualise mentalement le destin…",
+      "text": "Avant d'écrire, visualise mentalement le destinataire, son quotidien et ses préoccupations, puis imagine l'email idéal dans ta tête.",
+      "impact": 0.07613610603282296,
+      "variance": 0.045514860104981424,
+      "struct": 0.06666666666666667,
+      "behav": 0.033333333333333326,
+      "sem": 0.12840831809846887,
+      "activation": {
+        "overall": 0,
+        "struct": 0.2,
+        "behav": 0,
+        "sem": 0
+      },
+      "verdict": "placebo",
+      "stats": {
+        "zImpact": -0.8299838411497346,
+        "minmaxImpact": 0,
+        "rankImpact": 5,
+        "snr": 0.7971126791071143,
+        "carrierAxis": "sem",
+        "carrierImpact": 0.12840831809846887,
+        "runMeanImpact": 0.10620821117601764,
+        "runSdImpact": 0.036232157365301616
+      },
+      "direction": "neutre",
+      "perScenario": [
+        {
+          "scenarioId": "T1",
+          "input": "Pierre Henri, patron de ABC Société, ouvert à une collaboration. Inactif depuis 9 jours.",
+          "baselineOutput": "**Objet :** Juste une question rapide\n\n---\n\nSalut Pierre,\n\nJe me demandais si mon dernier message t'a échappé ou si le timing n'était juste pas bon.\n\nPas de souci dans les deux cas — je sais que les boîtes mail débordent.\n\nJe pensais vraiment que ce qu'on discutait pouvait créer quelque chose d'intéressant pour ABC Société. Ça vaut le coup qu'on en reparle ?\n\nDis-moi simplement si ça t'intéresse toujours ou si c'est mieux qu'on laisse tomber.\n\nÀ bientôt,\n[Ton nom]\n\n---\n\n**Pourquoi ça marche :**\n- Pas de reproche caché\n- Lui donne une porte de sortie honorable\n- Rappelle la valeur sans insister\n- Court et respectueux du temps",
+          "ablatedOutput": "**Objet :** Juste une question rapide\n\n---\n\nSalut Pierre,\n\nJe me demandais si mon dernier message t'a échappé ou si le timing n'était juste pas bon.\n\nPas de souci dans les deux cas — je sais que les boîtes mail débordent.\n\nJe pensais vraiment que ce qu'on proposait pouvait créer quelque chose d'intéressant pour ABC Société. Ça vaut le coup qu'on en parle 15 min ?\n\nDis-moi si ça te dit.\n\nÀ bientôt,\n[Ton nom]\n\n---\n\n**Conseil :** Cette relance est légère et sans pression. Elle réouvre la porte naturellement sans accuser réception du silence. Si Pierre ne répond pas à celle-ci, attends 5-7 jours avant une dernière tentative plus courte, puis archive.",
+          "axisDelta": {
+            "struct": 0.3333333333333333,
+            "behav": 0,
+            "sem": 0.12137019690944251
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T2",
+          "input": "Julie Humbert, Product Manager, experte de son domaine. A zappé ma dernière relance.",
+          "baselineOutput": "# Email de relance #2 pour Julie\n\n**Objet :** Juste une question rapide\n\n---\n\nHi Julie,\n\nJe sais que tu reçois des tonnes de messages, donc je vais être direct.\n\nJ'ai envoyé quelque chose la semaine dernière sur [sujet spécifique], mais aucune réaction de ta part. Deux possibilités :\n\n1. **C'est pas le bon moment** → pas de souci, je comprends\n2. **C'est pas pertinent pour toi** → utile à savoir aussi\n\nCe qui m'intéresse vraiment, c'est juste de comprendre si ça vaut le coup qu'on continue la conversation ou si je dois laisser tomber.\n\nDeux secondes pour me dire ? \n\nMerci,\n[Ton nom]\n\n---\n\n## Pourquoi ça marche :\n\n✓ **Honnête** – tu reconnais qu'elle a ignoré ta relance (pas de faux-semblant)  \n✓ **Respectueux** – tu lui donnes une porte de sortie  \n✓ **Clair** – tu demandes juste un oui/non, pas un engagement  \n✓ **Court** – elle peut répondre en 10 secondes  \n✓ **Psycho** – tu lui donnes du contrôle (elle choisit, elle n'est pas forcée)\n\n**Attends 5-7 jours avant une 3e relance.** Si rien, laisse tomber proprement.",
+          "ablatedOutput": "# Email de relance #2\n\n**Objet :** Juste une question rapide, Julie\n\n---\n\nSalut Julie,\n\nJe sais que tu reçois des tonnes de messages, donc je vais être direct.\n\nMa dernière relance n'a probablement pas trouvé le bon moment ou le bon angle. C'est normal.\n\nAvant de te laisser tranquille, j'aimerais juste savoir : **est-ce que [ta solution/ce dont tu parlais] n'est simplement pas une priorité en ce moment, ou c'est plutôt que ça ne correspond pas à vos enjeux actuels ?**\n\nÇa m'aide à comprendre, c'est tout.\n\nSi c'est non, pas de souci. Si c'est \"pas maintenant\", je peux revenir dans quelques mois.\n\nÀ toi de voir.\n\nBonne journée,\n[Ton nom]\n\n---\n\n**Pourquoi ça marche :**\n- Pas de culpabilité, juste de l'honnêteté\n- Une vraie question (pas rhétorique)\n- Tu lui donnes une porte de sortie honorable\n- Ça montre que tu respectes son temps\n- Les PMs apprécient la clarté",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.16666666666666663,
+            "sem": 0.1508724122693057
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T3",
+          "input": "Maître Vigneau, avocat en droit des affaires, veut automatiser une partie de ses process.",
+          "baselineOutput": "# Email de relance pour Maître Vigneau\n\n---\n\n**Objet :** Automatiser sans perdre le contact humain – une idée pour votre cabinet\n\nBonjour Maître Vigneau,\n\nJe vous contacte parce que j'ai remarqué que les cabinets d'avocats comme le vôtre passent énormément de temps sur des tâches répétitives : relances clients, mise à jour de dossiers, suivi des délais, coordination interne.\n\nTemps précieux qui vous éloigne du cœur de votre métier : conseiller et plaider.\n\n**Voici ce que je vois souvent fonctionner :**\n- Automatiser les rappels de paiement et les demandes de documents\n- Centraliser les infos clients pour y accéder en 10 secondes\n- Programmer les relances sans effort\n\nRésultat : plus de fluidité, moins de stress administratif, et vos clients reçoivent des réponses plus rapides.\n\nJe ne sais pas si c'est une priorité pour vous en ce moment. Mais si vous envisagez sérieusement de gagner quelques heures par semaine, j'aimerais bien en discuter 15 minutes.\n\nLibre jeudi ou vendredi ?\n\nCordialement,\n[Votre nom]\n\n---\n\n*P.S. – Pas de pression si ce n'est pas le moment. Je reste à disposition si vous y pensez plus tard.*",
+          "ablatedOutput": "# Email de relance pour Maître Vigneau\n\n---\n\n**Objet :** Automatisation cabinet – 15 min pour voir ce qui change\n\nBonjour Maître Vigneau,\n\nJe vous relance sur notre échange précédent concernant l'automatisation de vos process.\n\nAvant de vous laisser tranquille, je voulais juste vous partager **3 points concrets** que les cabinets d'affaires comme le vôtre gagnent à automatiser :\n\n1. **Relances clients** → gain de 4-5h/semaine\n2. **Mise en forme des dossiers** → moins d'erreurs, plus de cohérence\n3. **Suivi des délais légaux** → zéro oubli, zéro risque\n\nRien de révolutionnaire, mais ça libère du temps pour ce qui compte vraiment : le conseil.\n\nSi ça vous intéresse, je peux vous montrer en 15 min comment ça fonctionne concrètement dans un cabinet. Sinon, pas de souci – je comprends que ce ne soit pas la priorité du moment.\n\nDites-moi juste : **oui, intéressé** ou **pas pour maintenant** ?\n\nCordialement,  \n[Votre nom]\n\n---\n\n*P.S. – Si vous avez des questions spécifiques sur vos process, je peux aussi vous proposer une analyse rapide sans engagement.*",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.14709697106410147
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T4",
+          "input": "Pierre Lassus, ami d'enfance, a pris contact puis plus de nouvelles. À relancer.",
+          "baselineOutput": "# Email de relance amical\n\n**Objet :** Ça te dit un café ? ☕\n\n---\n\nSalut Pierre,\n\nJ'ai pensé à toi l'autre jour en repensant à nos histoires du lycée. On s'était dit qu'on se redonnerait des nouvelles et j'ai réalisé que j'avais laissé traîner.\n\nPas de prise de tête, juste envie de savoir comment ça va de ton côté. Qu'est-ce que tu deviens ?\n\nSi tu as un moment, on pourrait se prendre un café ou un verre ? Sinon, un simple message pour dire que tu vas bien, ça me suffit.\n\nÀ bientôt j'espère,\n\n[Ton prénom]\n\n---\n\n**Pourquoi ça marche :**\n- Pas de reproche implicite\n- Ton léger et authentique\n- Proposition concrète et facile à accepter\n- Porte de sortie honorable (\"un simple message\")\n- Court et mémorable",
+          "ablatedOutput": "# Email de relance amical\n\n**Objet :** Ça va ? 👋\n\n---\n\nSalut Pierre,\n\nJ'ai réalisé qu'on s'était perdu de vue depuis ton dernier message. Pas grave du tout — la vie s'accélère pour tout le monde !\n\nJe pensais à toi et j'avais envie de prendre des nouvelles. Comment ça va de ton côté ? Qu'est-ce que tu deviens ?\n\nSi tu as un moment, j'aimerais bien qu'on se rattrape. Un café, un verre, ou juste un appel ?\n\nÀ bientôt j'espère,\n\n[Ton prénom]\n\n---\n\n**Pourquoi ça marche :**\n- Pas de reproche caché\n- Ton léger et naturel\n- Porte la porte ouverte sans pression\n- Montre que tu as pensé à lui",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.10625530584921872
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T5",
+          "input": "Chan Lee, PDG d'un grand groupe, veut impulser une politique IA.",
+          "baselineOutput": "# Email de relance pour Chan Lee\n\n**Objet :** Une minute pour transformer votre stratégie IA\n\n---\n\nChan,\n\nJe sais que votre agenda est blindé, donc je vais être direct.\n\nJ'ai remarqué que votre groupe explore l'IA en ce moment. C'est le bon moment—mais aussi le moment où les décisions prises maintenant déterminent qui domine dans 18 mois.\n\nLa plupart des PDG font l'erreur de laisser la tech décider. Les meilleurs ? Ils imposent d'abord une vision claire, puis la tech suit.\n\nJe travaille avec des groupes de votre taille à structurer exactement ça : une stratégie IA qui crée de la valeur réelle, pas juste du buzz.\n\nÇa vous intéresse d'en parler 15 min ? Je peux vous montrer comment d'autres ont accéléré leur adoption sans chaos organisationnel.\n\nSinon, pas de souci—je comprends que ce ne soit pas le moment.\n\nÀ bientôt,\n\n[Ton nom]\n\n---\n\n**Pourquoi ça marche :**\n- Respecte son temps (concision)\n- Montre qu'on l'a observé (crédibilité)\n- Parle de *sa* préoccupation réelle (vision vs chaos)\n- Pas de culpabilité, juste une option claire\n- Donne une porte de sortie honorable",
+          "ablatedOutput": "# Email de relance pour Chan Lee\n\n**Objet :** Une minute pour transformer votre stratégie IA\n\n---\n\nChan,\n\nJe sais que votre agenda est saturé, donc je vais être direct.\n\nJ'ai remarqué que votre groupe explore l'IA, mais beaucoup d'organisations à votre échelle se perdent entre les buzzwords et les vrais gains opérationnels.\n\n**Ce qui change la donne :** avoir une feuille de route IA alignée sur vos objectifs métier réels—pas une liste de projets tech qui traînent.\n\nLes PDG que j'ai aidés récemment ont identifié 2-3 leviers IA qui ont généré des résultats concrets en 90 jours.\n\nÇa vous intéresse d'explorer comment structurer ça pour votre groupe ?\n\nJe peux vous proposer un diagnostic rapide (30 min) pour voir si c'est pertinent.\n\nÀ vous de décider.\n\nCordialement,  \n[Votre nom]\n\n---\n\n**Pourquoi ça marche :**\n- Respecte son temps (concis)\n- Montre qu'on comprend son contexte (PDG, groupe)\n- Propose une valeur claire (feuille de route, résultats)\n- Pas de pression, juste une option\n- Appel à l'action léger et optionnel",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.11644670440027594
+          },
+          "semanticProvider": "voyage_api"
+        }
+      ]
+    },
+    {
+      "id": "S3",
+      "label": "Ton : chaleureux, direct, confiant, professionn…",
+      "text": "Ton : chaleureux, direct, confiant, professionnel, engageant, authentique, naturel.",
+      "impact": 0.0824803693984168,
+      "variance": 0.04322449166475616,
+      "struct": 0.06666666666666667,
+      "behav": 0.033333333333333326,
+      "sem": 0.14744110819525041,
+      "activation": {
+        "overall": 0,
+        "struct": 0.2,
+        "behav": 0,
+        "sem": 0
+      },
+      "verdict": "placebo",
+      "stats": {
+        "zImpact": -0.6548834930907051,
+        "minmaxImpact": 0.06534407420211057,
+        "rankImpact": 4,
+        "snr": 0.8847500042695196,
+        "carrierAxis": "sem",
+        "carrierImpact": 0.14744110819525041,
+        "runMeanImpact": 0.10620821117601764,
+        "runSdImpact": 0.036232157365301616
+      },
+      "direction": "neutre",
+      "perScenario": [
+        {
+          "scenarioId": "T1",
+          "input": "Pierre Henri, patron de ABC Société, ouvert à une collaboration. Inactif depuis 9 jours.",
+          "baselineOutput": "**Objet :** Juste une question rapide\n\n---\n\nSalut Pierre,\n\nJe me demandais si mon dernier message t'a échappé ou si le timing n'était juste pas bon.\n\nPas de souci dans les deux cas — je sais que les boîtes mail débordent.\n\nJe pensais vraiment que ce qu'on discutait pouvait créer quelque chose d'intéressant pour ABC Société. Ça vaut le coup qu'on en reparle ?\n\nDis-moi simplement si ça t'intéresse toujours ou si c'est mieux qu'on laisse tomber.\n\nÀ bientôt,\n[Ton nom]\n\n---\n\n**Pourquoi ça marche :**\n- Pas de reproche caché\n- Lui donne une porte de sortie honorable\n- Rappelle la valeur sans insister\n- Court et respectueux du temps",
+          "ablatedOutput": "# Email de relance – Pierre Henri\n\n**Objet :** Rapide question sur [votre secteur]\n\n---\n\nBonjour Pierre,\n\nJe me demandais si mon dernier message vous a échappé ou si le timing n'était simplement pas bon.\n\nPas de souci dans les deux cas — je sais que les boîtes mail débordent.\n\nJe pensais juste que ça valait le coup de creuser ensemble, mais je préfère vérifier directement plutôt que de vous relancer à l'aveugle.\n\nÇa vous dit un rapide appel cette semaine pour voir si c'est pertinent ?\n\nSinon, aucun problème — je comprends que ce ne soit pas une priorité en ce moment.\n\nÀ bientôt,\n\n[Votre nom]\n\n---\n\n**Pourquoi ça marche :**\n- Léger et sans pression\n- Reconnaît implicitement son silence sans l'accuser\n- Lui donne une porte de sortie honorable\n- Propose une action claire et minimaliste\n- Respecte son temps et son contexte",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.2538731528112327
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T2",
+          "input": "Julie Humbert, Product Manager, experte de son domaine. A zappé ma dernière relance.",
+          "baselineOutput": "# Email de relance #2 pour Julie\n\n**Objet :** Juste une question rapide\n\n---\n\nHi Julie,\n\nJe sais que tu reçois des tonnes de messages, donc je vais être direct.\n\nJ'ai envoyé quelque chose la semaine dernière sur [sujet spécifique], mais aucune réaction de ta part. Deux possibilités :\n\n1. **C'est pas le bon moment** → pas de souci, je comprends\n2. **C'est pas pertinent pour toi** → utile à savoir aussi\n\nCe qui m'intéresse vraiment, c'est juste de comprendre si ça vaut le coup qu'on continue la conversation ou si je dois laisser tomber.\n\nDeux secondes pour me dire ? \n\nMerci,\n[Ton nom]\n\n---\n\n## Pourquoi ça marche :\n\n✓ **Honnête** – tu reconnais qu'elle a ignoré ta relance (pas de faux-semblant)  \n✓ **Respectueux** – tu lui donnes une porte de sortie  \n✓ **Clair** – tu demandes juste un oui/non, pas un engagement  \n✓ **Court** – elle peut répondre en 10 secondes  \n✓ **Psycho** – tu lui donnes du contrôle (elle choisit, elle n'est pas forcée)\n\n**Attends 5-7 jours avant une 3e relance.** Si rien, laisse tomber proprement.",
+          "ablatedOutput": "# Email de relance #2\n\n**Objet :** Juste une question rapide\n\n---\n\nSalut Julie,\n\nJe comprends que tu sois submergée – les PM le sont toujours.\n\nJuste une question : est-ce que [problème spécifique] est encore sur ton radar en ce moment, ou c'est devenu moins prioritaire ?\n\nJe pose la question parce que j'ai un truc qui pourrait vraiment t'aider, mais je veux pas te déranger si le timing n'est pas bon.\n\nÀ bientôt,\n[Ton nom]\n\n---\n\n## Pourquoi ça marche :\n\n✓ **Pas de culpabilité** – tu reconnais sa charge de travail  \n✓ **Concis** – 30 secondes max à lire  \n✓ **Une vraie question** – tu lui donnes une porte de sortie honnête  \n✓ **Respectueux** – tu mets son agenda avant le tien  \n✓ **Soft CTA** – tu lui permets de dire non sans friction\n\n**Conseil :** Si elle ne répond pas à celle-ci, attends 2-3 semaines avant une 3e relance. Au-delà, c'est du bruit.",
+          "axisDelta": {
+            "struct": 0.3333333333333333,
+            "behav": 0,
+            "sem": 0.12614103957418854
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T3",
+          "input": "Maître Vigneau, avocat en droit des affaires, veut automatiser une partie de ses process.",
+          "baselineOutput": "# Email de relance pour Maître Vigneau\n\n---\n\n**Objet :** Automatiser sans perdre le contact humain – une idée pour votre cabinet\n\nBonjour Maître Vigneau,\n\nJe vous contacte parce que j'ai remarqué que les cabinets d'avocats comme le vôtre passent énormément de temps sur des tâches répétitives : relances clients, mise à jour de dossiers, suivi des délais, coordination interne.\n\nTemps précieux qui vous éloigne du cœur de votre métier : conseiller et plaider.\n\n**Voici ce que je vois souvent fonctionner :**\n- Automatiser les rappels de paiement et les demandes de documents\n- Centraliser les infos clients pour y accéder en 10 secondes\n- Programmer les relances sans effort\n\nRésultat : plus de fluidité, moins de stress administratif, et vos clients reçoivent des réponses plus rapides.\n\nJe ne sais pas si c'est une priorité pour vous en ce moment. Mais si vous envisagez sérieusement de gagner quelques heures par semaine, j'aimerais bien en discuter 15 minutes.\n\nLibre jeudi ou vendredi ?\n\nCordialement,\n[Votre nom]\n\n---\n\n*P.S. – Pas de pression si ce n'est pas le moment. Je reste à disposition si vous y pensez plus tard.*",
+          "ablatedOutput": "# Email de relance pour Maître Vigneau\n\n**Objet :** Automatisation légale : 3 processus à déléguer immédiatement\n\n---\n\nMaître Vigneau,\n\nVous gérez probablement en ce moment :\n- Des relances clients pour honoraires/délais\n- Des mises à jour de dossiers répétitives\n- Des confirmations de rendez-vous manuelles\n\nCes tâches consomment 5-7h/semaine en moyenne chez les cabinets de votre taille.\n\n**Trois processus se délèguent facilement :**\n1. Relances automatisées (sans perdre le ton personnel)\n2. Mise à jour des statuts dossiers\n3. Confirmations et rappels clients\n\nLe ROI ? Récupérer 20-30h/mois pour du travail à forte valeur ajoutée.\n\nJe peux vous montrer comment les cabinets similaires l'ont structuré en 30 min.\n\nÇa vous intéresse ?\n\n---\n\n**Signature**",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.15629168850411956
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T4",
+          "input": "Pierre Lassus, ami d'enfance, a pris contact puis plus de nouvelles. À relancer.",
+          "baselineOutput": "# Email de relance amical\n\n**Objet :** Ça te dit un café ? ☕\n\n---\n\nSalut Pierre,\n\nJ'ai pensé à toi l'autre jour en repensant à nos histoires du lycée. On s'était dit qu'on se redonnerait des nouvelles et j'ai réalisé que j'avais laissé traîner.\n\nPas de prise de tête, juste envie de savoir comment ça va de ton côté. Qu'est-ce que tu deviens ?\n\nSi tu as un moment, on pourrait se prendre un café ou un verre ? Sinon, un simple message pour dire que tu vas bien, ça me suffit.\n\nÀ bientôt j'espère,\n\n[Ton prénom]\n\n---\n\n**Pourquoi ça marche :**\n- Pas de reproche implicite\n- Ton léger et authentique\n- Proposition concrète et facile à accepter\n- Porte de sortie honorable (\"un simple message\")\n- Court et mémorable",
+          "ablatedOutput": "# Email de relance amical\n\n**Objet :** Ça va ? 👋\n\n---\n\nSalut Pierre,\n\nJ'ai pensé à toi l'autre jour en repensant à [insérer un souvenir commun léger]. Ça m'a fait sourire.\n\nJe me demandais comment tu allais. On avait commencé à discuter de [sujet de votre dernier échange] et puis les vies nous ont rattrapés, c'est comme ça.\n\nPas de pression, mais j'aimerais bien reprendre contact. Un café/appel quand tu as un moment ?\n\nÀ bientôt,\n[Ton prénom]\n\n---\n\n**Pourquoi ça marche :**\n- Ton personnel (souvenir partagé) = authentique\n- Pas de reproche caché\n- Porte de sortie facile (\"pas de pression\")\n- Appel à l'action simple et sans engagement lourd",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.16666666666666663,
+            "sem": 0.12356763445848362
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T5",
+          "input": "Chan Lee, PDG d'un grand groupe, veut impulser une politique IA.",
+          "baselineOutput": "# Email de relance pour Chan Lee\n\n**Objet :** Une minute pour transformer votre stratégie IA\n\n---\n\nChan,\n\nJe sais que votre agenda est blindé, donc je vais être direct.\n\nJ'ai remarqué que votre groupe explore l'IA en ce moment. C'est le bon moment—mais aussi le moment où les décisions prises maintenant déterminent qui domine dans 18 mois.\n\nLa plupart des PDG font l'erreur de laisser la tech décider. Les meilleurs ? Ils imposent d'abord une vision claire, puis la tech suit.\n\nJe travaille avec des groupes de votre taille à structurer exactement ça : une stratégie IA qui crée de la valeur réelle, pas juste du buzz.\n\nÇa vous intéresse d'en parler 15 min ? Je peux vous montrer comment d'autres ont accéléré leur adoption sans chaos organisationnel.\n\nSinon, pas de souci—je comprends que ce ne soit pas le moment.\n\nÀ bientôt,\n\n[Ton nom]\n\n---\n\n**Pourquoi ça marche :**\n- Respecte son temps (concision)\n- Montre qu'on l'a observé (crédibilité)\n- Parle de *sa* préoccupation réelle (vision vs chaos)\n- Pas de culpabilité, juste une option claire\n- Donne une porte de sortie honorable",
+          "ablatedOutput": "# Email de relance pour Chan Lee\n\n**Objet :** Une minute pour transformer votre stratégie IA\n\n---\n\nBonjour Chan,\n\nJe sais que votre agenda est saturé. Je serai bref.\n\nVous lancez une politique IA ambitieuse. C'est le bon moment—mais aussi le plus critique. Les groupes qui réussissent cette transition partagent une chose : une **vision claire dès le départ**, pas des ajustements coûteux après.\n\nJ'ai aidé des PDG comme vous à structurer leur approche IA pour :\n- Aligner les équipes autour d'objectifs concrets\n- Éviter les pièges classiques (projets pilotes qui traînent, ROI flou)\n- Accélérer l'adoption sans résistance interne\n\nRien de révolutionnaire—juste de l'expérience concentrée.\n\n**Vous avez 20 minutes cette semaine ?** Je peux vous montrer comment d'autres groupes ont structuré leur roadmap IA.\n\nSinon, pas de souci. Je vous laisse avancer.\n\nÀ bientôt,\n\n[Votre nom]\n\n---\n\n**Pourquoi ça marche :**\n- Respecte son temps (PDG = urgence maximale)\n- Parle de *sa* préoccupation (structurer, pas échouer)\n- Offre une valeur spécifique sans pression\n- Lui donne une porte de sortie honorable",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.07733202562822772
+          },
+          "semanticProvider": "voyage_api"
+        }
+      ]
+    },
+    {
+      "id": "S4",
+      "label": "Important : sois toujours concis et va droit au…",
+      "text": "Important : sois toujours concis et va droit au but.",
+      "impact": 0.17322621623885173,
+      "variance": 0.11867785821715102,
+      "struct": 0.2,
+      "behav": 0.13333333333333336,
+      "sem": 0.1863453153832218,
+      "activation": {
+        "overall": 0.2,
+        "struct": 0.6,
+        "behav": 0.4,
+        "sem": 0
+      },
+      "verdict": "context",
+      "stats": {
+        "zImpact": 1.8496829870532385,
+        "minmaxImpact": 1,
+        "rankImpact": 1,
+        "snr": 1.0269647603412493,
+        "carrierAxis": "struct",
+        "carrierImpact": 0.2,
+        "runMeanImpact": 0.10620821117601764,
+        "runSdImpact": 0.036232157365301616
+      },
+      "direction": "neutre",
+      "perScenario": [
+        {
+          "scenarioId": "T1",
+          "input": "Pierre Henri, patron de ABC Société, ouvert à une collaboration. Inactif depuis 9 jours.",
+          "baselineOutput": "**Objet :** Juste une question rapide\n\n---\n\nSalut Pierre,\n\nJe me demandais si mon dernier message t'a échappé ou si le timing n'était juste pas bon.\n\nPas de souci dans les deux cas — je sais que les boîtes mail débordent.\n\nJe pensais vraiment que ce qu'on discutait pouvait créer quelque chose d'intéressant pour ABC Société. Ça vaut le coup qu'on en reparle ?\n\nDis-moi simplement si ça t'intéresse toujours ou si c'est mieux qu'on laisse tomber.\n\nÀ bientôt,\n[Ton nom]\n\n---\n\n**Pourquoi ça marche :**\n- Pas de reproche caché\n- Lui donne une porte de sortie honorable\n- Rappelle la valeur sans insister\n- Court et respectueux du temps",
+          "ablatedOutput": "# Email de relance - Pierre Henri\n\n**Objet :** Juste une question rapide ☀️\n\n---\n\nSalut Pierre,\n\nJ'espère que tout va bien de ton côté !\n\nJe me posais une question en relisant nos échanges : est-ce que le timing n'était juste pas bon, ou il y a quelque chose de spécifique qui t'a freiné dans ta réflexion ?\n\nJe demande parce que j'ai l'intuition qu'on pourrait vraiment créer quelque chose d'intéressant ensemble, mais je veux pas te relancer pour rien si ce n'est pas pertinent pour ABC Société en ce moment.\n\nDis-moi franchement — ça m'aide plus qu'autre chose.\n\nÀ bientôt,\n[Ton nom]\n\n---\n\n## Pourquoi ça marche :\n\n✓ **Pas de culpabilité** — on reconnaît juste que 9 jours c'est normal  \n✓ **Curiosité authentique** — on demande vraiment ce qui s'est passé  \n✓ **Permission de dire non** — on lui donne une porte de sortie honorable  \n✓ **Court et respectueux** — on ne prend pas son temps  \n✓ **Humain** — aucune formule de politesse creuse",
+          "axisDelta": {
+            "struct": 0.3333333333333333,
+            "behav": 0.33333333333333337,
+            "sem": 0.2722919226671283
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T2",
+          "input": "Julie Humbert, Product Manager, experte de son domaine. A zappé ma dernière relance.",
+          "baselineOutput": "# Email de relance #2 pour Julie\n\n**Objet :** Juste une question rapide\n\n---\n\nHi Julie,\n\nJe sais que tu reçois des tonnes de messages, donc je vais être direct.\n\nJ'ai envoyé quelque chose la semaine dernière sur [sujet spécifique], mais aucune réaction de ta part. Deux possibilités :\n\n1. **C'est pas le bon moment** → pas de souci, je comprends\n2. **C'est pas pertinent pour toi** → utile à savoir aussi\n\nCe qui m'intéresse vraiment, c'est juste de comprendre si ça vaut le coup qu'on continue la conversation ou si je dois laisser tomber.\n\nDeux secondes pour me dire ? \n\nMerci,\n[Ton nom]\n\n---\n\n## Pourquoi ça marche :\n\n✓ **Honnête** – tu reconnais qu'elle a ignoré ta relance (pas de faux-semblant)  \n✓ **Respectueux** – tu lui donnes une porte de sortie  \n✓ **Clair** – tu demandes juste un oui/non, pas un engagement  \n✓ **Court** – elle peut répondre en 10 secondes  \n✓ **Psycho** – tu lui donnes du contrôle (elle choisit, elle n'est pas forcée)\n\n**Attends 5-7 jours avant une 3e relance.** Si rien, laisse tomber proprement.",
+          "ablatedOutput": "# Email de relance #2 pour Julie Humbert\n\n---\n\n**Objet :** Juste une question rapide sur [contexte pertinent]\n\n---\n\nSalut Julie,\n\nJe sais que tu dois être submergée de messages, donc je vais être direct.\n\nJ'ai envoyé quelque chose la semaine dernière qui n'a probablement pas trouvé le bon moment. Pas grave—ça arrive à tout le monde.\n\nAvant de te laisser tranquille, je voulais juste vérifier : est-ce que [problème/opportunité spécifique à son rôle] est vraiment un sujet pour toi en ce moment ? Ou c'est juste pas la priorité ?\n\nÇa m'aide à savoir si ça vaut le coup de continuer ou si je dois simplement te retirer de ma liste.\n\nMerci pour l'honnêteté.\n\nÀ bientôt,\n[Ton nom]\n\n---\n\n## Pourquoi ça marche :\n\n✅ **Pas de culpabilité** – Tu reconnais qu'elle a zappé, sans reproche  \n✅ **Respect du temps** – Tu dis clairement que tu seras bref  \n✅ **Question binaire** – Facile à répondre (oui/non/pas maintenant)  \n✅ **Permission de partir** – Tu lui donnes une sortie honorable  \n✅ **Authentique** – Ça sonne comme un vrai humain, pas un bot\n\n**Le secret :** Les PMs expérimentées respectent la franchise. Elle répondra probablement juste pour clarifier, ou elle te dira \"pas maintenant, reviens en [période]\".",
+          "axisDelta": {
+            "struct": 0.3333333333333333,
+            "behav": 0,
+            "sem": 0.194102356244366
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T3",
+          "input": "Maître Vigneau, avocat en droit des affaires, veut automatiser une partie de ses process.",
+          "baselineOutput": "# Email de relance pour Maître Vigneau\n\n---\n\n**Objet :** Automatiser sans perdre le contact humain – une idée pour votre cabinet\n\nBonjour Maître Vigneau,\n\nJe vous contacte parce que j'ai remarqué que les cabinets d'avocats comme le vôtre passent énormément de temps sur des tâches répétitives : relances clients, mise à jour de dossiers, suivi des délais, coordination interne.\n\nTemps précieux qui vous éloigne du cœur de votre métier : conseiller et plaider.\n\n**Voici ce que je vois souvent fonctionner :**\n- Automatiser les rappels de paiement et les demandes de documents\n- Centraliser les infos clients pour y accéder en 10 secondes\n- Programmer les relances sans effort\n\nRésultat : plus de fluidité, moins de stress administratif, et vos clients reçoivent des réponses plus rapides.\n\nJe ne sais pas si c'est une priorité pour vous en ce moment. Mais si vous envisagez sérieusement de gagner quelques heures par semaine, j'aimerais bien en discuter 15 minutes.\n\nLibre jeudi ou vendredi ?\n\nCordialement,\n[Votre nom]\n\n---\n\n*P.S. – Pas de pression si ce n'est pas le moment. Je reste à disposition si vous y pensez plus tard.*",
+          "ablatedOutput": "# Email de relance pour Maître Vigneau\n\n---\n\n**Objet :** Automatiser sans perdre le contact humain – une question pour vous\n\n---\n\nBonjour Maître Vigneau,\n\nJe vous écris parce que j'ai remarqué quelque chose : les cabinets d'avocats comme le vôtre passent énormément de temps sur des tâches répétitives (relances clients, suivi de dossiers, mise à jour de statuts) qui vous éloignent du cœur de votre métier.\n\n**Voici ma question simple :** Avez-vous identifié les 2-3 processus qui vous volent le plus de temps chaque semaine ?\n\nJe pose la question parce que nous aidons des cabinets en droit des affaires à automatiser précisément ces tâches—sans jamais sacrifier la relation client. Au contraire, ça la renforce.\n\nQuelques exemples concrets :\n- Relances automatisées mais personnalisées auprès des clients\n- Suivi de dossiers sans intervention manuelle\n- Génération de documents standards avec données pré-remplies\n\n**Rien de révolutionnaire**, mais ça libère généralement 5-8 heures par semaine par personne.\n\nSi vous pensez que ça pourrait être pertinent pour votre cabinet, je serais curieux d'en discuter 15 minutes. Sinon, aucun problème—je comprends que ce ne soit pas une priorité en ce moment.\n\nÀ vous de voir.\n\nCordialement,  \n[Votre nom]\n\n---\n\n*P.S. – Pas besoin de répondre si vous n'êtes pas intéressé. Mais si vous avez une question spécifique, je suis là.*",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.12406355350765286
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T4",
+          "input": "Pierre Lassus, ami d'enfance, a pris contact puis plus de nouvelles. À relancer.",
+          "baselineOutput": "# Email de relance amical\n\n**Objet :** Ça te dit un café ? ☕\n\n---\n\nSalut Pierre,\n\nJ'ai pensé à toi l'autre jour en repensant à nos histoires du lycée. On s'était dit qu'on se redonnerait des nouvelles et j'ai réalisé que j'avais laissé traîner.\n\nPas de prise de tête, juste envie de savoir comment ça va de ton côté. Qu'est-ce que tu deviens ?\n\nSi tu as un moment, on pourrait se prendre un café ou un verre ? Sinon, un simple message pour dire que tu vas bien, ça me suffit.\n\nÀ bientôt j'espère,\n\n[Ton prénom]\n\n---\n\n**Pourquoi ça marche :**\n- Pas de reproche implicite\n- Ton léger et authentique\n- Proposition concrète et facile à accepter\n- Porte de sortie honorable (\"un simple message\")\n- Court et mémorable",
+          "ablatedOutput": "# Email de relance à Pierre Lassus\n\n---\n\n**Objet :** Ça m'a fait plaisir de te revoir 👋\n\nSalut Pierre,\n\nJ'ai réalisé qu'on s'était perdu de vue depuis notre dernier échange, et ça m'a fait sourire en y repensant. C'est fou comme le temps passe.\n\nJe ne sais pas si tu es débordé en ce moment ou si mon message s'est juste perdu dans les méandres des notifications, mais j'aimerais bien continuer à discuter. Ça m'avait vraiment fait plaisir de reprendre contact.\n\nSi tu as un moment, n'hésite pas à me dire comment ça va de ton côté. Pas de pression si tu es occupé – je comprends parfaitement.\n\nÀ bientôt j'espère,\n\n[Ton prénom]\n\n---\n\n## Pourquoi ça marche :\n\n✓ **Pas de culpabilité** – on reconnaît juste que le temps passe  \n✓ **Authentique** – c'est ce qu'on dit vraiment à un ami  \n✓ **Donne une porte de sortie** – \"pas de pression\"  \n✓ **Court** – respecte son temps  \n✓ **Chaleureux** – montre que ça compte vraiment",
+          "axisDelta": {
+            "struct": 0.3333333333333333,
+            "behav": 0.33333333333333337,
+            "sem": 0.22520484147644382
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T5",
+          "input": "Chan Lee, PDG d'un grand groupe, veut impulser une politique IA.",
+          "baselineOutput": "# Email de relance pour Chan Lee\n\n**Objet :** Une minute pour transformer votre stratégie IA\n\n---\n\nChan,\n\nJe sais que votre agenda est blindé, donc je vais être direct.\n\nJ'ai remarqué que votre groupe explore l'IA en ce moment. C'est le bon moment—mais aussi le moment où les décisions prises maintenant déterminent qui domine dans 18 mois.\n\nLa plupart des PDG font l'erreur de laisser la tech décider. Les meilleurs ? Ils imposent d'abord une vision claire, puis la tech suit.\n\nJe travaille avec des groupes de votre taille à structurer exactement ça : une stratégie IA qui crée de la valeur réelle, pas juste du buzz.\n\nÇa vous intéresse d'en parler 15 min ? Je peux vous montrer comment d'autres ont accéléré leur adoption sans chaos organisationnel.\n\nSinon, pas de souci—je comprends que ce ne soit pas le moment.\n\nÀ bientôt,\n\n[Ton nom]\n\n---\n\n**Pourquoi ça marche :**\n- Respecte son temps (concision)\n- Montre qu'on l'a observé (crédibilité)\n- Parle de *sa* préoccupation réelle (vision vs chaos)\n- Pas de culpabilité, juste une option claire\n- Donne une porte de sortie honorable",
+          "ablatedOutput": "# Email de relance pour Chan Lee\n\n**Objet :** Une minute pour transformer votre stratégie IA\n\n---\n\nBonjour Chan,\n\nJe vous écris parce que je pense avoir quelque chose qui pourrait vraiment accélérer votre transition IA.\n\nVous lancez une politique ambitieuse—c'est le bon moment. Mais je sais aussi que les PDG comme vous font face à un défi spécifique : **comment embarquer 500+ collaborateurs sans créer du chaos organisationnel ?**\n\nC'est exactement ce que nous avons résolu pour [Groupe similaire] il y a 6 mois. Résultat : adoption 3x plus rapide, moins de résistance au changement, et surtout, une vraie création de valeur dès les 90 premiers jours.\n\nJe ne vais pas vous vendre une solution générique. Ce qui fonctionne, c'est :\n- Un diagnostic rapide de votre maturité IA actuelle\n- Une feuille de route adaptée à votre culture\n- Un plan d'activation des talents internes\n\n**Vous avez 15 minutes cette semaine ?** Je pourrais vous montrer comment d'autres groupes de votre taille ont structuré ça sans surcharger leurs équipes.\n\nSinon, pas de souci—je comprends que vous êtes débordé. Mais si le sujet vous intéresse vraiment, dites-moi et on trouve un créneau.\n\nÀ bientôt,\n\n[Votre nom]\n\n---\n\n**P.S.** — Si vous préférez, je peux aussi vous envoyer un cas d'étude spécifique à votre secteur. Dites-moi ce qui vous serait le plus utile.",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.11606390302051794
+          },
+          "semanticProvider": "voyage_api"
+        }
+      ]
+    },
+    {
+      "id": "S5",
+      "label": "Ne sois pas insistant, ne culpabilise jamais le…",
+      "text": "Ne sois pas insistant, ne culpabilise jamais le destinataire, et reste poli et respectueux en toutes circonstances.",
+      "impact": 0.08350985924124064,
+      "variance": 0.04416250076432685,
+      "struct": 0.06666666666666667,
+      "behav": 0.033333333333333326,
+      "sem": 0.15052957772372194,
+      "activation": {
+        "overall": 0,
+        "struct": 0.2,
+        "behav": 0,
+        "sem": 0
+      },
+      "verdict": "placebo",
+      "stats": {
+        "zImpact": -0.6264697877613682,
+        "minmaxImpact": 0.07594752125391874,
+        "rankImpact": 3,
+        "snr": 0.8868695984429299,
+        "carrierAxis": "sem",
+        "carrierImpact": 0.15052957772372194,
+        "runMeanImpact": 0.10620821117601764,
+        "runSdImpact": 0.036232157365301616
+      },
+      "direction": "neutre",
+      "perScenario": [
+        {
+          "scenarioId": "T1",
+          "input": "Pierre Henri, patron de ABC Société, ouvert à une collaboration. Inactif depuis 9 jours.",
+          "baselineOutput": "**Objet :** Juste une question rapide\n\n---\n\nSalut Pierre,\n\nJe me demandais si mon dernier message t'a échappé ou si le timing n'était juste pas bon.\n\nPas de souci dans les deux cas — je sais que les boîtes mail débordent.\n\nJe pensais vraiment que ce qu'on discutait pouvait créer quelque chose d'intéressant pour ABC Société. Ça vaut le coup qu'on en reparle ?\n\nDis-moi simplement si ça t'intéresse toujours ou si c'est mieux qu'on laisse tomber.\n\nÀ bientôt,\n[Ton nom]\n\n---\n\n**Pourquoi ça marche :**\n- Pas de reproche caché\n- Lui donne une porte de sortie honorable\n- Rappelle la valeur sans insister\n- Court et respectueux du temps",
+          "ablatedOutput": "**Objet :** Pierre, on en était où ? 👋\n\n---\n\nPierre,\n\n9 jours sans nouvelles — je me demande si mon dernier message s'est perdu dans les méandres de ta boîte mail ou si tu as simplement été submergé.\n\nPas de souci. Je sais que tu gères mille choses.\n\nJe voulais juste vérifier : **est-ce que le projet qu'on discutait te parle toujours ?** Ou est-ce que les priorités ont changé de ton côté ?\n\nJe préfère une réponse honnête (même un \"pas le moment\") plutôt que du silence. Ça m'aide à savoir comment avancer.\n\nDis-moi où tu en es — on trouvera un créneau si c'est pertinent.\n\nÀ bientôt,\n\n[Ton nom]\n\n---\n\n**Pourquoi ça marche :**\n- Léger, sans reproche\n- Reconnaît sa réalité (surcharge)\n- Donne une porte de sortie honorable\n- Demande une action claire\n- Reste court et respectueux",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.2641271687755028
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T2",
+          "input": "Julie Humbert, Product Manager, experte de son domaine. A zappé ma dernière relance.",
+          "baselineOutput": "# Email de relance #2 pour Julie\n\n**Objet :** Juste une question rapide\n\n---\n\nHi Julie,\n\nJe sais que tu reçois des tonnes de messages, donc je vais être direct.\n\nJ'ai envoyé quelque chose la semaine dernière sur [sujet spécifique], mais aucune réaction de ta part. Deux possibilités :\n\n1. **C'est pas le bon moment** → pas de souci, je comprends\n2. **C'est pas pertinent pour toi** → utile à savoir aussi\n\nCe qui m'intéresse vraiment, c'est juste de comprendre si ça vaut le coup qu'on continue la conversation ou si je dois laisser tomber.\n\nDeux secondes pour me dire ? \n\nMerci,\n[Ton nom]\n\n---\n\n## Pourquoi ça marche :\n\n✓ **Honnête** – tu reconnais qu'elle a ignoré ta relance (pas de faux-semblant)  \n✓ **Respectueux** – tu lui donnes une porte de sortie  \n✓ **Clair** – tu demandes juste un oui/non, pas un engagement  \n✓ **Court** – elle peut répondre en 10 secondes  \n✓ **Psycho** – tu lui donnes du contrôle (elle choisit, elle n'est pas forcée)\n\n**Attends 5-7 jours avant une 3e relance.** Si rien, laisse tomber proprement.",
+          "ablatedOutput": "# Email de relance #2\n\n**Objet :** Julie, une question rapide 👋\n\n---\n\nHi Julie,\n\nJe sais que tu reçois des tonnes de messages. Celui-ci sera court.\n\nJ'ai remarqué que tu n'as pas répondu à mon dernier email — ce qui est totalement normal. Mais avant de te laisser tranquille, je voulais juste vérifier : **est-ce que le timing n'était juste pas bon, ou c'est vraiment pas pertinent pour toi en ce moment ?**\n\nAucun jugement. Juste besoin de savoir si je dois continuer ou si je peux te rayer de ma liste.\n\nÀ bientôt,\n[Ton nom]\n\n---\n\n## Pourquoi ça marche :\n\n✅ **Honnête** — tu reconnais qu'elle a ignoré  \n✅ **Respectueux** — tu lui donnes une porte de sortie  \n✅ **Court** — 5 secondes à lire max  \n✅ **Humain** — pas de bullshit commercial  \n\nSi elle répond \"pas pertinent\" → tu fermes proprement.  \nSi elle répond \"timing\" → tu as ta réponse pour relancer plus tard.  \nSi elle ne répond pas → tu sais que c'est un non.",
+          "axisDelta": {
+            "struct": 0.3333333333333333,
+            "behav": 0,
+            "sem": 0.12246297301392983
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T3",
+          "input": "Maître Vigneau, avocat en droit des affaires, veut automatiser une partie de ses process.",
+          "baselineOutput": "# Email de relance pour Maître Vigneau\n\n---\n\n**Objet :** Automatiser sans perdre le contact humain – une idée pour votre cabinet\n\nBonjour Maître Vigneau,\n\nJe vous contacte parce que j'ai remarqué que les cabinets d'avocats comme le vôtre passent énormément de temps sur des tâches répétitives : relances clients, mise à jour de dossiers, suivi des délais, coordination interne.\n\nTemps précieux qui vous éloigne du cœur de votre métier : conseiller et plaider.\n\n**Voici ce que je vois souvent fonctionner :**\n- Automatiser les rappels de paiement et les demandes de documents\n- Centraliser les infos clients pour y accéder en 10 secondes\n- Programmer les relances sans effort\n\nRésultat : plus de fluidité, moins de stress administratif, et vos clients reçoivent des réponses plus rapides.\n\nJe ne sais pas si c'est une priorité pour vous en ce moment. Mais si vous envisagez sérieusement de gagner quelques heures par semaine, j'aimerais bien en discuter 15 minutes.\n\nLibre jeudi ou vendredi ?\n\nCordialement,\n[Votre nom]\n\n---\n\n*P.S. – Pas de pression si ce n'est pas le moment. Je reste à disposition si vous y pensez plus tard.*",
+          "ablatedOutput": "# Email de relance pour Maître Vigneau\n\n---\n\n**Objet :** Automatiser sans perdre le contact humain (cabinet juridique)\n\nBonjour Maître Vigneau,\n\nJ'imagine que vous passez du temps sur des tâches répétitives : relances clients, mise à jour de dossiers, suivi des délais... Pendant ce temps, vous n'êtes pas sur ce qui compte vraiment : conseiller vos clients et développer votre cabinet.\n\nBeaucoup d'avocats en droit des affaires comme vous ont automatisé 30-40% de leurs process administratifs. Résultat : plus de temps pour les dossiers complexes, moins d'erreurs, clients plus satisfaits.\n\nJe ne vends pas une usine à gaz. Je cherche juste à comprendre :\n- Quel process vous coûte le plus de temps chaque semaine ?\n- Avez-vous déjà essayé quelque chose qui n'a pas marché ?\n\nSi ça vous intéresse, on peut en parler 15 min. Sinon, pas de souci.\n\nÀ bientôt,\n\n[Votre nom]\n\n---\n\n**Pourquoi ça marche :**\n- Empathie immédiate (on reconnaît son quotidien)\n- Preuve sociale (autres avocats l'ont fait)\n- Pas de pitch agressif\n- Questions ouvertes (engagement)\n- Sortie de secours honnête (pas de pression)",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.10966205860611278
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T4",
+          "input": "Pierre Lassus, ami d'enfance, a pris contact puis plus de nouvelles. À relancer.",
+          "baselineOutput": "# Email de relance amical\n\n**Objet :** Ça te dit un café ? ☕\n\n---\n\nSalut Pierre,\n\nJ'ai pensé à toi l'autre jour en repensant à nos histoires du lycée. On s'était dit qu'on se redonnerait des nouvelles et j'ai réalisé que j'avais laissé traîner.\n\nPas de prise de tête, juste envie de savoir comment ça va de ton côté. Qu'est-ce que tu deviens ?\n\nSi tu as un moment, on pourrait se prendre un café ou un verre ? Sinon, un simple message pour dire que tu vas bien, ça me suffit.\n\nÀ bientôt j'espère,\n\n[Ton prénom]\n\n---\n\n**Pourquoi ça marche :**\n- Pas de reproche implicite\n- Ton léger et authentique\n- Proposition concrète et facile à accepter\n- Porte de sortie honorable (\"un simple message\")\n- Court et mémorable",
+          "ablatedOutput": "# Email de relance pour Pierre\n\n**Objet :** Pierre, on se reparle ? 👋\n\n---\n\nSalut Pierre,\n\nÇa m'a fait plaisir d'avoir de tes nouvelles il y a quelques semaines. Depuis, c'est le silence radio de mon côté — je me demande si tu as été submergé ou si j'ai raté quelque chose.\n\nPas de prise de tête, juste envie de savoir comment tu vas et ce que tu deviens.\n\nLibre pour un café/appel rapidement ?\n\nÀ bientôt,\n[Ton prénom]\n\n---\n\n**Pourquoi ça marche :**\n- Léger et sans reproche (pas d'accusation)\n- Reconnaît le contact initial\n- Propose une action simple et concrète\n- Ton ami d'enfance = relation authentique, pas besoin de formalités",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.16666666666666663,
+            "sem": 0.15107175762597957
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T5",
+          "input": "Chan Lee, PDG d'un grand groupe, veut impulser une politique IA.",
+          "baselineOutput": "# Email de relance pour Chan Lee\n\n**Objet :** Une minute pour transformer votre stratégie IA\n\n---\n\nChan,\n\nJe sais que votre agenda est blindé, donc je vais être direct.\n\nJ'ai remarqué que votre groupe explore l'IA en ce moment. C'est le bon moment—mais aussi le moment où les décisions prises maintenant déterminent qui domine dans 18 mois.\n\nLa plupart des PDG font l'erreur de laisser la tech décider. Les meilleurs ? Ils imposent d'abord une vision claire, puis la tech suit.\n\nJe travaille avec des groupes de votre taille à structurer exactement ça : une stratégie IA qui crée de la valeur réelle, pas juste du buzz.\n\nÇa vous intéresse d'en parler 15 min ? Je peux vous montrer comment d'autres ont accéléré leur adoption sans chaos organisationnel.\n\nSinon, pas de souci—je comprends que ce ne soit pas le moment.\n\nÀ bientôt,\n\n[Ton nom]\n\n---\n\n**Pourquoi ça marche :**\n- Respecte son temps (concision)\n- Montre qu'on l'a observé (crédibilité)\n- Parle de *sa* préoccupation réelle (vision vs chaos)\n- Pas de culpabilité, juste une option claire\n- Donne une porte de sortie honorable",
+          "ablatedOutput": "# Email de relance pour Chan Lee\n\n**Objet :** 3 min pour transformer votre stratégie IA\n\n---\n\nChan,\n\nJe vous écris parce que j'ai remarqué que votre groupe explore l'IA, mais sans vraiment l'intégrer à la stratégie globale.\n\nC'est normal. 90% des PDG se trouvent au même point : ils savent que l'IA est critique, mais ne savent pas par où commencer sans créer du chaos organisationnel.\n\nVoici ce que je vois souvent :\n- Des projets IA isolés qui ne parlent pas entre eux\n- Des équipes qui attendent des directives claires\n- Une crainte légitime : investir dans la mauvaise direction\n\n**Ce qui change la donne :** une feuille de route IA alignée sur vos objectifs métier (pas l'inverse).\n\nJ'aide des groupes comme le vôtre à :\n- Identifier les 3-4 cas d'usage IA à fort ROI\n- Structurer l'adoption sans paralyser l'organisation\n- Créer une culture IA sans résistance interne\n\nÇa prend 20 min pour voir si c'est pertinent pour vous.\n\nLibre jeudi ou vendredi ?\n\nÀ bientôt,\n\n[Votre nom]\n\n---\n\n**Pourquoi ça marche :**\n- Reconnaissance du défi réel (pas de prise de tête)\n- Spécificité (3-4 cas d'usage, pas \"tout l'IA\")\n- Appel à l'action clair et sans pression\n- Parle à son rôle de PDG (stratégie, organisation, ROI)",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.10532393059708478
+          },
+          "semanticProvider": "voyage_api"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roadmap · preatorlabs documentation</title>
+<meta name="description" content="Current status and upcoming milestones for preatorlabs: from V0.1 to V4, and what is explicitly out of scope.">
+<meta name="theme-color" content="#1a1a18">
+<meta name="color-scheme" content="light">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="canonical" href="https://preatorlabs.dev/en/docs/roadmap">
+<link rel="alternate" hreflang="fr" href="https://preatorlabs.dev/docs/roadmap">
+<link rel="alternate" hreflang="en" href="https://preatorlabs.dev/en/docs/roadmap">
+<link rel="alternate" hreflang="x-default" href="https://preatorlabs.dev/docs/roadmap">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="preatorlabs">
+<meta property="og:title" content="Roadmap · preatorlabs">
+<meta property="og:description" content="Current status and upcoming milestones for preatorlabs: from V0.1 to V4, and what is explicitly out of scope.">
+<meta property="og:url" content="https://preatorlabs.dev/en/docs/roadmap">
+<meta property="og:image" content="https://preatorlabs.dev/og-image.png">
+<meta property="og:locale" content="en_US">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Roadmap · preatorlabs">
+<meta name="twitter:description" content="Current status and upcoming milestones for preatorlabs: from V0.1 to V4, and what is explicitly out of scope.">
+<meta name="twitter:image" content="https://preatorlabs.dev/og-image.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Roadmap",
+  "description": "Current status and upcoming milestones for preatorlabs: from V0.1 to V4, and what is explicitly out of scope.",
+  "inLanguage": "en",
+  "url": "https://preatorlabs.dev/en/docs/roadmap",
+  "author": {
+    "@type": "Organization",
+    "name": "preatorlabs"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "preatorlabs",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://preatorlabs.dev/og-image.png"
+    }
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "url": "https://preatorlabs.dev/"
+  }
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=JetBrains+Mono:wght@400;500&family=Inter+Tight:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #f5f3ee;
+  --bg-2: #ebe7dd;
+  --ink: #1a1a18;
+  --ink-soft: #4a4842;
+  --ink-mute: #6e6c64;
+  --rule: rgba(26, 26, 24, 0.12);
+  --rule-strong: rgba(26, 26, 24, 0.25);
+  --accent: #c44322;
+  --accent-soft: #f4d9cf;
+}
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Inter Tight', system-ui, sans-serif;
+  line-height: 1.65;
+  font-size: 16px;
+}
+.shell { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
+@media (max-width: 720px) { .shell { padding: 0 20px; } }
+.topbar {
+  border-bottom: 1px solid var(--rule);
+  padding: 18px 0;
+  position: sticky;
+  top: 0;
+  background: rgba(245, 243, 238, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 100;
+}
+.topbar-inner { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.brand {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+  text-decoration: none;
+}
+.brand-mark {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ink);
+  position: relative;
+  flex-shrink: 0;
+}
+.brand-mark::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+}
+.topbar-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.topbar-actions a {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid var(--rule-strong);
+  padding: 6px 12px;
+  transition: color 0.2s, border-color 0.2s;
+}
+.topbar-actions a:hover { color: var(--ink); border-color: var(--ink); }
+.lang-toggle { display: inline-flex; align-items: center; border: 1px solid var(--rule-strong); border-radius: 999px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; line-height: 1; }
+.lang-toggle a, .lang-toggle span { display: inline-flex; align-items: center; padding: 5px 9px; color: var(--ink-mute); text-decoration: none; transition: background 0.18s, color 0.18s; }
+.lang-toggle a:hover { color: var(--ink); }
+.lang-toggle .is-active { background: var(--accent); color: #fff; font-weight: 600; }
+.i18n-note { background: var(--accent-soft); border: 1px solid var(--rule); border-radius: 8px; font-size: 13px; line-height: 1.55; color: var(--ink-soft); padding: 10px 14px; margin-bottom: 24px; }
+.i18n-note a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.doc-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 48px;
+  padding: 48px 0 96px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .doc-layout { grid-template-columns: 1fr; gap: 28px; }
+  .doc-nav { position: static !important; }
+}
+.doc-nav { position: sticky; top: 88px; }
+.doc-nav-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+.doc-nav a {
+  display: block;
+  font-size: 14px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--rule);
+  transition: color 0.2s;
+}
+.doc-nav a:hover { color: var(--ink); }
+.doc-nav a.is-active { color: var(--ink); font-weight: 500; }
+.doc-main { min-width: 0; }
+.md-prose { max-width: 720px; }
+.md-prose h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: clamp(28px, 4vw, 36px);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--rule);
+}
+.md-prose h2 {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  margin: 40px 0 14px;
+  padding-top: 8px;
+}
+.md-prose h3 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 18px; margin: 28px 0 10px; }
+.md-prose h4 { font-size: 15px; font-weight: 600; margin: 20px 0 8px; color: var(--ink-soft); }
+.md-prose p { margin-bottom: 14px; color: var(--ink-soft); }
+.md-prose blockquote {
+  border-left: 2px solid var(--accent);
+  padding: 4px 0 4px 18px;
+  margin: 20px 0;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+.md-prose ul, .md-prose ol { margin: 0 0 16px 22px; color: var(--ink-soft); }
+.md-prose li { margin-bottom: 6px; }
+.md-prose li > ul, .md-prose li > ol { margin-top: 6px; margin-bottom: 0; }
+.md-prose a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.md-prose a:hover { color: var(--ink); }
+.md-prose strong { color: var(--ink); font-weight: 600; }
+.md-prose hr { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
+.md-prose code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.88em;
+  background: var(--bg-2);
+  padding: 2px 6px;
+  border-radius: 2px;
+  color: var(--ink);
+}
+.md-prose pre {
+  background: var(--bg-2);
+  border: 1px solid var(--rule);
+  padding: 16px 18px;
+  overflow-x: auto;
+  margin: 16px 0 20px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+.md-prose pre code { background: none; padding: 0; font-size: inherit; }
+.md-prose table { width: 100%; border-collapse: collapse; margin: 20px 0 24px; font-size: 14px; }
+.md-prose th, .md-prose td { border: 1px solid var(--rule-strong); padding: 10px 14px; text-align: left; vertical-align: top; }
+.md-prose th { background: var(--bg-2); font-weight: 600; color: var(--ink); }
+.md-prose td { color: var(--ink-soft); }
+.md-prose img { max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="shell topbar-inner">
+    <a class="brand" href="/en/">
+      <span class="brand-mark" aria-hidden="true"></span>
+      preatorlabs
+    </a>
+    <div class="topbar-actions">
+      <a href="/en/">← home</a>
+      <a href="/en/#demo">demo</a>
+      <a href="/en/docs/05-ROADMAP.md" download>source .md</a>
+      <span class="lang-toggle" role="group" aria-label="Language">
+        <a href="/docs/roadmap" hreflang="fr" lang="fr">FR</a>
+        <span class="is-active" aria-current="true">EN</span>
+      </span>
+    </div>
+  </div>
+</header>
+
+<div class="shell doc-layout">
+  <nav class="doc-nav" aria-label="Documentation">
+    <div class="doc-nav-label">documentation</div>
+      <a href="/en/docs/scientific-rationale">Scientific rationale</a>
+      <a href="/en/docs/methodology">Methodology</a>
+      <a href="/en/docs/architecture">Architecture</a>
+      <a href="/en/docs/interpretation-guide">Interpretation guide</a>
+      <a href="/en/docs/roadmap" class="is-active">Roadmap</a>
+  </nav>
+
+  <main class="doc-main">
+    <div class="i18n-note" role="note">Originally written in French. This English version is a translation and may contain minor imperfections. <a href="/docs/roadmap" hreflang="fr" lang="fr">View the original (FR)</a>.</div>
+<article class="md-prose">
+<h1>05 — Roadmap</h1>
+<blockquote>
+<p>Current state, next steps, and what is explicitly out of scope.</p>
+</blockquote>
+<h2>V0.1 — Web MVP (deployed)</h2>
+<p><strong>Status: deployable.</strong> Self-contained <code>dist/</code> folder ready for Vercel / Netlify / Cloudflare Pages (see <code>DEPLOY.md</code>).</p>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> Scientific presentation landing page</li>
+<li><input checked="" disabled="" type="checkbox"> Automatic prompt segmentation (heuristic algorithm)</li>
+<li><input checked="" disabled="" type="checkbox"> Manual editing of detected segments</li>
+<li><input checked="" disabled="" type="checkbox"> Entry of test scenarios</li>
+<li><input checked="" disabled="" type="checkbox"> Configuration of the 3-axis criteria</li>
+<li><input checked="" disabled="" type="checkbox"> Ablation engine wired to the Claude API (key provided by the user)</li>
+<li><input checked="" disabled="" type="checkbox"> Per-axis delta computation (structural, behavioural, semantic)</li>
+<li><input checked="" disabled="" type="checkbox"> Visualisation: variance chart + 3-axis cards + synthesis</li>
+<li><input checked="" disabled="" type="checkbox"> Local storage of the API key + results</li>
+<li><input checked="" disabled="" type="checkbox"> Exponential backoff on 429 / 5xx / 529 (3 attempts, respecting <code>retry-after</code>)</li>
+<li><input checked="" disabled="" type="checkbox"> Incremental save per call → resume without replaying what succeeded</li>
+<li><input checked="" disabled="" type="checkbox"> Anthropic error messages translated into readable text (401, 429, 529, …)</li>
+<li><input checked="" disabled="" type="checkbox"> Input validation (empty prompt, empty scenarios, prompt &gt; 10k tokens)</li>
+<li><input checked="" disabled="" type="checkbox"> Explicit confirmation if the analysis exceeds 150 API calls</li>
+<li><input checked="" disabled="" type="checkbox"> Per-model $ cost estimate in the UI</li>
+<li><input checked="" disabled="" type="checkbox"> Restrictive CSP + HTTPS headers via <code>vercel.json</code> / <code>netlify.toml</code> / <code>_headers</code></li>
+<li><input checked="" disabled="" type="checkbox"> Open Graph + Twitter Card meta + SVG favicon</li>
+<li><input checked="" disabled="" type="checkbox"> Explicit privacy section + FAQ + 4-step &quot;how it works&quot; journey</li>
+<li><input checked="" disabled="" type="checkbox"> Responsive 360 px → 1920 px, WCAG AA contrast</li>
+<li><input checked="" disabled="" type="checkbox"> Branded 404 page</li>
+<li><input checked="" disabled="" type="checkbox"> Complete documentation (rationale, methodology, architecture, interpretation, roadmap + 3 agent documents)</li>
+</ul>
+<p>Intentionally out of scope for V0.1 (moved to V0.2 below): JSON export, import of a past analysis, per-scenario drill-down, combined ablation mode, signed counterproductivity.</p>
+<h2>V0.2 — Robustness (short term)</h2>
+<p>Incremental improvements with no architectural change.</p>
+<ul>
+<li><input disabled="" type="checkbox"> JSON export of results (for archiving and comparison)</li>
+<li><input disabled="" type="checkbox"> Import of a previous analysis</li>
+<li><input checked="" disabled="" type="checkbox"> Inline per-scenario output drill-down in the segment cards (baseline vs ablation comparison, collapsible panel, mobile-first)</li>
+<li><input disabled="" type="checkbox"> Refined calibration of verdict thresholds on a corpus larger than Reachy (observation 2026-05-26: on Haiku 4.5, 11 of 12 Reachy segments are classified &quot;low&quot; because the outputs are already very convergent; per-model normalisation or normalisation by the run&#39;s global variance to be considered — see <code>00-AGENT-SMOKE-TEST.md</code> §B.2)</li>
+<li><input disabled="" type="checkbox"> &quot;Combined ablation&quot; mode: remove 2 segments at once to detect coalitions</li>
+<li><input disabled="" type="checkbox"> Counterproductivity detection (signed delta, not absolute)</li>
+<li><input disabled="" type="checkbox"> OG image optimisation (get below 200 KB)</li>
+<li><input disabled="" type="checkbox"> Call compaction (controlled concurrency at 3-5 req/s, respectful of Anthropic)</li>
+<li><input disabled="" type="checkbox"> <strong>Extraction of the inline <code>&lt;script&gt;</code> to <code>dist/app.js</code></strong> to remove <code>&#39;unsafe-inline&#39;</code> from <code>script-src</code> and return to a strict CSP (V0.1 had to keep <code>&#39;unsafe-inline&#39;</code> after the 2026-05-26 regression on Vercel — see <code>00-AGENT-SMOKE-TEST.md</code> §B.6). The operation is risk-free as long as no <code>innerHTML</code> with user-content is introduced into the HTML.</li>
+</ul>
+<h2>V1 — Python reference engine</h2>
+<p>The browser JS engine has two limits: performance on large batches, and the quality of the semantic embedding (local TF-IDF in V0).</p>
+<ul>
+<li><input disabled="" type="checkbox"> <code>engine/preatorlabs.py</code> — standalone Python engine</li>
+<li><input disabled="" type="checkbox"> Real embeddings via Voyage AI (recommended) or local sentence-transformers</li>
+<li><input disabled="" type="checkbox"> CLI <code>preatorlabs analyze --prompt prompt.txt --scenarios scn.json</code></li>
+<li><input disabled="" type="checkbox"> Normalised JSON output, compatible with the web app format</li>
+<li><input disabled="" type="checkbox"> Unit tests + integration tests on the Reachy corpus</li>
+<li><input disabled="" type="checkbox"> PyPI distribution</li>
+</ul>
+<h2>V2 — Multi-turn and advanced features</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Multi-turn history scenarios (testable on prompts with conversational memory)</li>
+<li><input disabled="" type="checkbox"> Mode A for the semantic axis: reference corpus provided by the user</li>
+<li><input disabled="" type="checkbox"> Configurable weighting of the 3 axes</li>
+<li><input disabled="" type="checkbox"> n=3 repetition per ablation to absorb residual stochasticity</li>
+<li><input disabled="" type="checkbox"> Comparative analysis between two versions of the same prompt (semantic diff)</li>
+</ul>
+<h2>V3 — Multi-LLM</h2>
+<ul>
+<li><input disabled="" type="checkbox"> OpenAI adapter (GPT-4, GPT-4o, o3)</li>
+<li><input disabled="" type="checkbox"> Gemini adapter</li>
+<li><input disabled="" type="checkbox"> Mistral / Llama adapter via providers</li>
+<li><input disabled="" type="checkbox"> Unified <code>LLMAdapter</code> interface</li>
+<li><input disabled="" type="checkbox"> Comparative view: same prompt, several LLMs, cross-report</li>
+<li><input disabled="" type="checkbox"> Complementary logprobs signal when the API exposes it (OpenAI partially)</li>
+</ul>
+<h2>V4 — Community and ecosystem</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Library of reference prompts (benchmarked commons)</li>
+<li><input disabled="" type="checkbox"> VSCode / Cursor plugin to analyse a prompt from the editor</li>
+<li><input disabled="" type="checkbox"> Hosted REST API (optional, for CI/CD integration)</li>
+<li><input disabled="" type="checkbox"> Translated documentation (EN minimum)</li>
+</ul>
+<h2>Deliberate out-of-scope</h2>
+<p>These directions were considered and <strong>explicitly set aside</strong>:</p>
+<p>❌ <strong>LLM-as-judge</strong> — no interpretive evaluation by a third-party LLM. The rigour of the method depends on this exclusion. See <code>01-SCIENTIFIC-RATIONALE.md</code> §3.</p>
+<p>❌ <strong>Full Shapley values</strong> — untenable combinatorial cost. Possible as an advanced V4+ option with approximate sampling (Monte-Carlo Shapley), not on the main path.</p>
+<p>❌ <strong>Fine-tuning or learning</strong> — preatorlabs is an analysis tool, not an automatic-modification tool. It helps the human decide, it does not decide. This boundary is deliberate.</p>
+<p>❌ <strong>Automatic prompt generation</strong> — out of scope. Many tools already exist for that. preatorlabs solves a downstream problem: <em>understanding</em> an existing prompt.</p>
+<h2>For future contributors</h2>
+<p>If you take over the project, here are the questions to ask before each PR:</p>
+<ol>
+<li><strong>Does it preserve objectivity?</strong> No interpretive metric.</li>
+<li><strong>Does it preserve frugality?</strong> No combinatorial blow-up.</li>
+<li><strong>Does it preserve readability?</strong> A non-expert must be able to read the report.</li>
+<li><strong>Is it documented?</strong> Every added method has its section in <code>02-METHODOLOGY.md</code>.</li>
+<li><strong>Is it falsifiable?</strong> A verdict produced by preatorlabs must be contradictable by an independent test.</li>
+</ol>
+<p>If any of these answers is no, the change must be explicitly justified, otherwise refused.</p>
+
+    </article>
+  </main>
+</div>
+
+</body>
+</html>

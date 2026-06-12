@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Méthodologie · Documentation preatorlabs</title>
+<meta name="description" content="Le workflow scientifique de preatorlabs, étape par étape : segmentation, scénarios, boucle d'ablation, deltas par axe, agrégation et verdicts.">
+<meta name="theme-color" content="#1a1a18">
+<meta name="color-scheme" content="light">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="canonical" href="https://preatorlabs.dev/docs/methodologie">
+<link rel="alternate" hreflang="fr" href="https://preatorlabs.dev/docs/methodologie">
+<link rel="alternate" hreflang="en" href="https://preatorlabs.dev/en/docs/methodology">
+<link rel="alternate" hreflang="x-default" href="https://preatorlabs.dev/docs/methodologie">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="preatorlabs">
+<meta property="og:title" content="Méthodologie · preatorlabs">
+<meta property="og:description" content="Le workflow scientifique de preatorlabs, étape par étape : segmentation, scénarios, boucle d'ablation, deltas par axe, agrégation et verdicts.">
+<meta property="og:url" content="https://preatorlabs.dev/docs/methodologie">
+<meta property="og:image" content="https://preatorlabs.dev/og-image.png">
+<meta property="og:locale" content="fr_FR">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Méthodologie · preatorlabs">
+<meta name="twitter:description" content="Le workflow scientifique de preatorlabs, étape par étape : segmentation, scénarios, boucle d'ablation, deltas par axe, agrégation et verdicts.">
+<meta name="twitter:image" content="https://preatorlabs.dev/og-image.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Méthodologie",
+  "description": "Le workflow scientifique de preatorlabs, étape par étape : segmentation, scénarios, boucle d'ablation, deltas par axe, agrégation et verdicts.",
+  "inLanguage": "fr",
+  "url": "https://preatorlabs.dev/docs/methodologie",
+  "author": {
+    "@type": "Organization",
+    "name": "preatorlabs"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "preatorlabs",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://preatorlabs.dev/og-image.png"
+    }
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "url": "https://preatorlabs.dev/"
+  }
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=JetBrains+Mono:wght@400;500&family=Inter+Tight:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #f5f3ee;
+  --bg-2: #ebe7dd;
+  --ink: #1a1a18;
+  --ink-soft: #4a4842;
+  --ink-mute: #6e6c64;
+  --rule: rgba(26, 26, 24, 0.12);
+  --rule-strong: rgba(26, 26, 24, 0.25);
+  --accent: #c44322;
+  --accent-soft: #f4d9cf;
+}
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Inter Tight', system-ui, sans-serif;
+  line-height: 1.65;
+  font-size: 16px;
+}
+.shell { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
+@media (max-width: 720px) { .shell { padding: 0 20px; } }
+.topbar {
+  border-bottom: 1px solid var(--rule);
+  padding: 18px 0;
+  position: sticky;
+  top: 0;
+  background: rgba(245, 243, 238, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 100;
+}
+.topbar-inner { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.brand {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+  text-decoration: none;
+}
+.brand-mark {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ink);
+  position: relative;
+  flex-shrink: 0;
+}
+.brand-mark::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+}
+.topbar-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.topbar-actions a {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid var(--rule-strong);
+  padding: 6px 12px;
+  transition: color 0.2s, border-color 0.2s;
+}
+.topbar-actions a:hover { color: var(--ink); border-color: var(--ink); }
+.lang-toggle { display: inline-flex; align-items: center; border: 1px solid var(--rule-strong); border-radius: 999px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; line-height: 1; }
+.lang-toggle a, .lang-toggle span { display: inline-flex; align-items: center; padding: 5px 9px; color: var(--ink-mute); text-decoration: none; transition: background 0.18s, color 0.18s; }
+.lang-toggle a:hover { color: var(--ink); }
+.lang-toggle .is-active { background: var(--accent); color: #fff; font-weight: 600; }
+.i18n-note { background: var(--accent-soft); border: 1px solid var(--rule); border-radius: 8px; font-size: 13px; line-height: 1.55; color: var(--ink-soft); padding: 10px 14px; margin-bottom: 24px; }
+.i18n-note a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.doc-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 48px;
+  padding: 48px 0 96px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .doc-layout { grid-template-columns: 1fr; gap: 28px; }
+  .doc-nav { position: static !important; }
+}
+.doc-nav { position: sticky; top: 88px; }
+.doc-nav-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+.doc-nav a {
+  display: block;
+  font-size: 14px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--rule);
+  transition: color 0.2s;
+}
+.doc-nav a:hover { color: var(--ink); }
+.doc-nav a.is-active { color: var(--ink); font-weight: 500; }
+.doc-main { min-width: 0; }
+.md-prose { max-width: 720px; }
+.md-prose h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: clamp(28px, 4vw, 36px);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--rule);
+}
+.md-prose h2 {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  margin: 40px 0 14px;
+  padding-top: 8px;
+}
+.md-prose h3 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 18px; margin: 28px 0 10px; }
+.md-prose h4 { font-size: 15px; font-weight: 600; margin: 20px 0 8px; color: var(--ink-soft); }
+.md-prose p { margin-bottom: 14px; color: var(--ink-soft); }
+.md-prose blockquote {
+  border-left: 2px solid var(--accent);
+  padding: 4px 0 4px 18px;
+  margin: 20px 0;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+.md-prose ul, .md-prose ol { margin: 0 0 16px 22px; color: var(--ink-soft); }
+.md-prose li { margin-bottom: 6px; }
+.md-prose li > ul, .md-prose li > ol { margin-top: 6px; margin-bottom: 0; }
+.md-prose a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.md-prose a:hover { color: var(--ink); }
+.md-prose strong { color: var(--ink); font-weight: 600; }
+.md-prose hr { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
+.md-prose code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.88em;
+  background: var(--bg-2);
+  padding: 2px 6px;
+  border-radius: 2px;
+  color: var(--ink);
+}
+.md-prose pre {
+  background: var(--bg-2);
+  border: 1px solid var(--rule);
+  padding: 16px 18px;
+  overflow-x: auto;
+  margin: 16px 0 20px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+.md-prose pre code { background: none; padding: 0; font-size: inherit; }
+.md-prose table { width: 100%; border-collapse: collapse; margin: 20px 0 24px; font-size: 14px; }
+.md-prose th, .md-prose td { border: 1px solid var(--rule-strong); padding: 10px 14px; text-align: left; vertical-align: top; }
+.md-prose th { background: var(--bg-2); font-weight: 600; color: var(--ink); }
+.md-prose td { color: var(--ink-soft); }
+.md-prose img { max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="shell topbar-inner">
+    <a class="brand" href="/">
+      <span class="brand-mark" aria-hidden="true"></span>
+      preatorlabs
+    </a>
+    <div class="topbar-actions">
+      <a href="/">← accueil</a>
+      <a href="/#demo">démo</a>
+      <a href="/docs/02-METHODOLOGY.md" download>source .md</a>
+      <span class="lang-toggle" role="group" aria-label="Langue">
+        <span class="is-active" aria-current="true">FR</span>
+        <a href="/en/docs/methodology" hreflang="en" lang="en">EN</a>
+      </span>
+    </div>
+  </div>
+</header>
+
+<div class="shell doc-layout">
+  <nav class="doc-nav" aria-label="Documentation">
+    <div class="doc-nav-label">documentation</div>
+      <a href="/docs/rationale-scientifique">Rationale scientifique</a>
+      <a href="/docs/methodologie" class="is-active">Méthodologie</a>
+      <a href="/docs/architecture">Architecture</a>
+      <a href="/docs/guide-interpretation">Guide d'interprétation</a>
+      <a href="/docs/roadmap">Roadmap</a>
+  </nav>
+
+  <main class="doc-main">
+    <article class="md-prose">
+<h1>02 — Méthodologie</h1>
+<blockquote>
+<p>Le workflow scientifique de preatorlabs, étape par étape, des inputs au verdict.</p>
+</blockquote>
+<h2>Vue d&#39;ensemble</h2>
+<pre><code>Prompt brut
+    │
+    ▼
+[1] Segmentation automatique
+    │
+    ▼
+[2] Configuration des scénarios + règles (manual + auto)
+    │
+    ▼
+[3] Génération baseline (T=0)
+    │
+    ▼
+[4] Boucle d&#39;ablation (N × M appels)
+    │
+    ▼
+[5] Calcul des deltas par axe
+    │
+    ▼
+[6] Agrégation : axes actifs + impact + variance + activation
+    │
+    ▼
+[7] Classification : verdict par segment
+    │
+    ▼
+[8] Restitution visuelle
+</code></pre>
+<h2>[1] Segmentation</h2>
+<h3>Objectif</h3>
+<p>Découper le prompt brut en unités logiques cohérentes, suffisamment granulaires pour permettre l&#39;attribution d&#39;un effet, mais pas au point de produire du bruit (un segment d&#39;un seul mot n&#39;a pas d&#39;effet mesurable).</p>
+<h3>Algorithme V1 (heuristique)</h3>
+<pre><code>def auto_segment(text):
+    # Étape A : split sur double saut de ligne (paragraphes)
+    blocks = split(text, /\n\s*\n+/)
+    
+    # Étape B : détection des titres MAJUSCULES en ligne seule
+    # Un titre devient le début d&#39;un nouveau segment
+    refined = []
+    for block in blocks:
+        for line in block.split(&#39;\n&#39;):
+            if is_title(line):  # majuscules, 3-80 chars
+                refined.append(current); current = [line]
+            else:
+                current.append(line)
+        refined.append(current)
+    
+    # Étape C : fusion des fragments trop courts avec leur voisin
+    return merge_short(refined, min_chars=20)
+</code></pre>
+<h3>Algorithme V2 (envisagé)</h3>
+<p>Segmentation par embedding-clustering : on découpe phrase par phrase, on embedde, et on regroupe les phrases sémantiquement adjacentes. Plus robuste sur des prompts mal formatés. Hors-scope V1.</p>
+<h3>Contrôle utilisateur</h3>
+<p>La segmentation automatique est <strong>proposée, pas imposée</strong>. L&#39;utilisateur voit le découpage et peut éditer chaque segment, en fusionner, en supprimer. Le contrat : preatorlabs propose un découpage raisonnable, l&#39;utilisateur reste maître de la granularité finale.</p>
+<h2>[2] Configuration</h2>
+<h3>Scénarios de test (M)</h3>
+<p>Inputs utilisateur typiques. Recommandation : <strong>5 à 8 scénarios</strong> couvrant les principaux cas d&#39;usage du prompt. Trop peu → la variance est mal estimée. Trop → coût qui explose sans gain proportionnel.</p>
+<h3>Règles des 3 axes</h3>
+<p><strong>Structurel</strong> — règles vérifiables et traçables :</p>
+<ul>
+<li>longueur ≤ N mots <strong>ou</strong> ≤ N lignes</li>
+<li>absence de caractère/pattern (ex. <code>*</code>, listes Markdown, emoji)</li>
+<li>présence de structure attendue (JSON valide, clés requises)</li>
+<li>présence d&#39;une phrase imposée (<code>termine par &quot;...&quot;</code>)</li>
+<li>seuil numérique extrait du prompt (<code>pas plus de 20€</code>)</li>
+</ul>
+<h4>Auto-extraction robuste (V0.4, Lot B)</h4>
+<p>L&#39;auto-extraction structurelle a été durcie pour cesser de rater des contraintes pourtant explicites :</p>
+<ul>
+<li><strong>Longueur</strong> : le nombre est désormais détecté quel que soit l&#39;ordre des mots dans la ligne, dès qu&#39;un mot limitant est présent (<code>max</code>, <code>maximum</code>, <code>sous</code>, <code>pas plus de</code>, <code>au plus</code>, <code>jusqu&#39;à</code>, <code>n&#39;excède</code>, <code>moins de</code>, <code>≤</code>, <code>&lt;=</code>). Ainsi <code>« Garde tes réponses sous 200 mots »</code>, <code>« 6 mots max »</code> ou <code>« 15 mots maximum »</code> produisent une règle <code>max_words</code>. La même logique vaut pour les lignes (<code>max_lines</code>).</li>
+<li><strong>Prohibitions concrètes</strong> : une formulation prohibitive (<code>interdit</code>, <code>jamais</code>, <code>évite</code>, <code>pas de</code>, <code>sans</code>, <code>aucun</code>, <code>ne pas</code>, …) portant sur un objet mesurable génère une règle checkable : <code>no_asterisk</code>, <code>no_list</code>, <code>no_emoji</code>. Garde-fou : une formulation <strong>non</strong> prohibitive ne déclenche rien (<code>« Utilise des listes à puces »</code> ne crée pas <code>no_list</code>).</li>
+</ul>
+<p><strong>Changement de mesure assumé</strong> : ce durcissement fait désormais déclencher des règles structurelles/comportementales qui passaient inaperçues. Conséquence directe : sur certains runs, les scores struct/behav (et donc l&#39;impact agrégé et les verdicts) peuvent changer par rapport aux versions antérieures. C&#39;est l&#39;effet recherché — réduire la domination de l&#39;axe sémantique — et non une régression.</p>
+<p><strong>Limite assumée</strong> : une prohibition <strong>abstraite</strong> (<code>« pas de superlatifs creux »</code>, <code>« reste non culpabilisant »</code>) n&#39;est pas mesurable par matching lexical ; elle reste portée par l&#39;axe sémantique. Seules les contraintes concrètes (astérisques, listes, emoji, phrases exactes, longueur) deviennent structurelles.</p>
+<p><strong>Contrat utilisateur préservé</strong> : les règles auto-extraites restent <strong>proposées, pas imposées</strong>. Elles sont visibles et éditables dans l&#39;aperçu des critères (<code>renderCriteriaPreview</code>) avant le lancement.</p>
+<p><strong>Comportemental</strong> — détection lexicale :</p>
+<ul>
+<li>termes interdits (liste de strings)</li>
+<li>termes attendus (liste de strings)</li>
+<li>patterns regex métier</li>
+<li>tutoiement/vouvoiement explicitement demandé</li>
+</ul>
+<p><strong>Sémantique</strong> — distance cosinus :</p>
+<ul>
+<li>mode <code>tfidf_local</code> (gratuit) : comparaison directe output-complet vs output-ablé</li>
+<li>mode <code>voyage_api</code> (payant, optionnel) : embeddings Voyage + cosinus</li>
+</ul>
+<h2>[3] Génération baseline</h2>
+<p>Pour chaque scénario <code>Tj</code> (1 ≤ j ≤ M), on génère l&#39;output <strong>avec le prompt complet</strong> :</p>
+<pre><code>O(complet, Tj) = LLM(system=prompt_complet, user=Tj, temperature=0)
+</code></pre>
+<p>C&#39;est l&#39;output de référence. Sa conformité aux 3 axes définit le score baseline <code>B(Tj) ∈ [0, 1]^3</code>.</p>
+<h2>[4] Boucle d&#39;ablation</h2>
+<p>Pour chaque segment <code>Si</code> (1 ≤ i ≤ N) et chaque scénario <code>Tj</code> :</p>
+<pre><code>prompt_sans_Si = concatenate(segments \ {Si})
+O(¬Si, Tj) = LLM(system=prompt_sans_Si, user=Tj, temperature=0)
+</code></pre>
+<p>Coût total : <code>N × M + M</code> appels API.</p>
+<p>Exemple : 12 segments × 6 scénarios = 78 appels.</p>
+<h2>[5] Calcul des deltas par axe</h2>
+<p>Pour chaque triplet (segment Si, scénario Tj, axe a ∈ {struct, behav, sem}) :</p>
+<pre><code>delta(i, j, a) = |score_a(O(complet, Tj)) - score_a(O(¬Si, Tj))|
+</code></pre>
+<p>Un delta nul signifie qu&#39;il n&#39;avait pas d&#39;effet. Quand un axe n&#39;est pas calculable sur un scénario, il est marqué <strong>non applicable</strong> (et exclu de l&#39;agrégation de ce scénario).</p>
+<h3>Détail par axe</h3>
+<p><strong>Axe structurel — boolean diff :</strong></p>
+<pre><code>score_struct(output) = sum(criterion(output) for criterion in struct_criteria) / num_criteria
+</code></pre>
+<p><strong>Axe comportemental — proportion de règles respectées :</strong></p>
+<pre><code>score_behav(output) = matched_behav(output) / total_behav(output)
+# si total_behav = 0 → non applicable
+</code></pre>
+<p><strong>Axe sémantique — cosinus :</strong></p>
+<pre><code>score_sem(output, baseline) = cosine_similarity(embed(output), embed(baseline))
+</code></pre>
+<p>En mode B : <code>score_sem</code> est calculé sur la <em>différence</em> entre output complet et ablé. L&#39;impact est donc <code>1 - cos(O_complet, O_¬Si)</code>.</p>
+<h2>[6] Agrégation</h2>
+<p>Pour chaque segment Si :</p>
+<pre><code>impact(i, j) = moyenne des deltas sur axes applicables uniquement
+impact_total(i) = mean_j(impact(i, j))
+variance(i) = std_j(impact(i, j))
+activation(i) = ratio_j(impact(i, j) &gt;= seuil)
+</code></pre>
+<p>La V0.3 évite la dilution par axes dormants : pas de moyenne fixe sur 3 axes quand un axe est non applicable.</p>
+<h3>Couche de lecture (z, S/N, axe porteur, direction) — V0.4, Lot A</h3>
+<p>Une couche <strong>purement additive</strong> re-présente les deltas déjà calculés pour rendre la discrimination lisible. Elle ne produit <strong>aucune nouvelle mesure</strong> : chaque chiffre est recalculable à la main (falsifiable), et n&#39;altère ni <code>impact</code>, ni <code>variance</code>, ni le <code>verdict</code>. Elle est calculée par <code>enrichResults(results)</code> (champ <code>results[i].stats</code>) après l&#39;agrégation.</p>
+<table>
+<thead>
+<tr>
+<th>Indicateur</th>
+<th>Définition</th>
+<th>Lecture</th>
+<th>Piège à éviter</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>zImpact</code> (z)</td>
+<td>écart à la moyenne du run, en σ</td>
+<td><code>z ≥ +1</code> = nettement au-dessus des autres segments <strong>de ce prompt</strong></td>
+<td><strong>relatif au run</strong> : non comparable entre deux prompts différents</td>
+</tr>
+<tr>
+<td><code>carrierAxis</code> / <code>carrierImpact</code> (axe porteur)</td>
+<td>l&#39;axe (struct/behav/sém) le plus fort, <strong>non dilué</strong> par la moyenne</td>
+<td>dit <em>où</em> le segment agit</td>
+<td>un fort porteur sémantique peut n&#39;être qu&#39;une reformulation → confirmer par outputs</td>
+</tr>
+<tr>
+<td><code>snr</code> (S/N)</td>
+<td>impact / (variance + 0,05)</td>
+<td>grand = effet réel et <strong>stable</strong></td>
+<td>un S/N faible ≠ « inutile », mais « instable / dépend du scénario »</td>
+</tr>
+<tr>
+<td><code>rankImpact</code></td>
+<td>rang de l&#39;impact (1 = le plus fort)</td>
+<td>trier les segments à regarder en priorité</td>
+<td>un rang n&#39;est qu&#39;un ordre relatif, pas une amplitude</td>
+</tr>
+</tbody></table>
+<p><strong>Direction (delta signé)</strong> — <code>directionOf(structSignedMean, behavSignedMean)</code> exploite que les axes structurel et comportemental sont <strong>bornés et orientés</strong> (l&#39;axe sémantique, distance sans « bon sens », reste non signé). Convention :</p>
+<ul>
+<li>signe <strong>&gt; 0</strong> ⇒ retirer le segment <strong>abaisse</strong> la conformité ⇒ il <code>porte</code> ;</li>
+<li>signe <strong>&lt; 0</strong> ⇒ retirer le segment <strong>améliore</strong> la conformité ⇒ il <code>nuit</code> (signal direct) ;</li>
+<li>proche de 0 ⇒ <code>neutre</code> ;</li>
+<li>aucun critère struct/behav configuré ⇒ <code>non-mesurable</code> (à ne pas confondre avec <code>neutre</code>).</li>
+</ul>
+<p><code>impact</code> reste la <strong>valeur absolue</strong> inchangée : le signé est une information <strong>en plus</strong>, il ne remplace rien.</p>
+<p><strong>Règle d&#39;usage</strong> : ces indicateurs servent à <strong>localiser</strong> quels segments inspecter ; toute décision (notamment une suppression) doit être <strong>confirmée par la lecture des outputs</strong> baseline vs ablé. L&#39;affichage de cette couche dans l&#39;interface est <strong>optionnel et désactivé par défaut</strong>, derrière un encart explicatif, pour éviter toute sur-interprétation.</p>
+<h2>[7] Classification : verdict par segment (5 niveaux, V0.3)</h2>
+<p>Ordre d&#39;évaluation dans <code>classifyVerdict(impact, variance, activationRate)</code> :</p>
+<table>
+<thead>
+<tr>
+<th>Verdict</th>
+<th>Condition (résumé)</th>
+<th>Interprétation</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>placebo</strong></td>
+<td>impact &lt; 0.10</td>
+<td>Pas pris en compte par le LLM</td>
+</tr>
+<tr>
+<td><strong>critical</strong></td>
+<td>impact/activation forts + variance faible</td>
+<td>Fondamental, actif partout</td>
+</tr>
+<tr>
+<td><strong>high</strong></td>
+<td>impact solide + activation suffisante + variance contenue</td>
+<td>Important, modifier avec prudence</td>
+</tr>
+<tr>
+<td><strong>context</strong></td>
+<td>impact ≥ 0.15 <strong>et</strong> (variance ≥ 0.25 <strong>ou</strong> activation &lt; 0.50)</td>
+<td>Filet ponctuel ou activation partielle</td>
+</tr>
+<tr>
+<td><strong>low</strong></td>
+<td>impact &lt; 0.20, stable</td>
+<td>Faible impact, vérifier redondances</td>
+</tr>
+</tbody></table>
+<p>Le verdict <strong>modéré</strong> (<code>mid</code>) a été retiré : les cas à impact modéré mais variance haute ou activation partielle sont classés <strong>contextuel</strong>.</p>
+<p>Constante alignée code : <code>AXIS_ACTIVE_THRESHOLD = 0.30</code> pour le calcul d&#39;activation.</p>
+<h3>Protocole d&#39;interprétation</h3>
+<ol>
+<li><strong>Impact moyen fiable</strong> quand variance basse et activation ≥ 50 % → <code>critical</code> / <code>high</code> / <code>low</code> selon l&#39;amplitude.</li>
+<li><strong>Variance ou activation prioritaires</strong> quand l&#39;impact moyen est trompeur :<ul>
+<li><em>Disclaimer médical</em> : fin imposée → axe structurel actif sur peu de scénarios → <code>context</code> malgré impact moyen modeste.</li>
+<li><em>Segment prix</em> : règle seuil € → activation partielle selon scénarios → <code>context</code>.</li>
+<li><em>Segment public jeune</em> : sans marqueurs manuels, axes souvent non applicables ; ajouter termes attendus/interdits pour mesurer.</li>
+</ul>
+</li>
+<li><strong>Ne pas supprimer</strong> un segment <code>context</code> sur la seule base d&#39;un impact moyen bas.</li>
+</ol>
+<p>Ces seuils sont des <strong>heuristiques par défaut</strong>, calibrées empiriquement (prompt Reachy). Réévaluation cross-modèles prévue en V0.4.</p>
+<h2>[8] Restitution visuelle</h2>
+<p>Trois éléments :</p>
+<ol>
+<li><strong>Graphique de variance</strong> : barres par segment, hauteur = impact moyen, trait vertical = ±variance, couleur = verdict.</li>
+<li><strong>Cartes 3-axes</strong> : pour chaque segment, décomposition impact structurel / comportemental / sémantique + verdict + phrase explicative.</li>
+<li><strong>Synthèse globale</strong> : trois listes — à conserver, à surveiller, candidats à la suppression.</li>
+<li><strong>Drill-down outputs (V0.2)</strong> : dans chaque carte segment, panneau repliable affichant, scénario par scénario, le comparatif <code>baseline</code> vs <code>output ablé</code> (segment retiré) avec rappel des deltas d&#39;axes. Le panneau est masqué par défaut et rendu à la demande (lazy render) pour préserver les performances et la lisibilité mobile.</li>
+</ol>
+<h2>Reproductibilité</h2>
+<p>Une analyse preatorlabs est <strong>reproductible</strong> si :</p>
+<ul>
+<li>même prompt (segmentation incluse)</li>
+<li>mêmes scénarios</li>
+<li>même LLM et même version</li>
+<li>T=0</li>
+</ul>
+<p>Le déterminisme résiduel des LLMs à T=0 (négligeable sur Claude) peut être absorbé par n=3 répétitions en V2.</p>
+<h2>Falsifiabilité</h2>
+<p>Un verdict preatorlabs est <strong>falsifiable</strong> par test indépendant. Pour falsifier un verdict &quot;placebo&quot; sur un segment S :</p>
+<ol>
+<li>Construire deux prompts : <code>P_avec_S</code> et <code>P_sans_S</code>.</li>
+<li>Comparer manuellement les outputs sur les M scénarios.</li>
+<li>Si une différence systématique et conforme à l&#39;intention de S est observée, le verdict est faux.</li>
+</ol>
+<p>Cette propriété est non triviale : elle distingue preatorlabs d&#39;un score opaque produit par un LLM-juge.</p>
+
+    </article>
+  </main>
+</div>
+
+</body>
+</html>

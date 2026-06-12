@@ -1,0 +1,212 @@
+{
+  "meta": {
+    "tool": "preatorlabs",
+    "version": "v0.3",
+    "exportedAt": "2026-06-04T10:33:03.266Z",
+    "model": "claude-haiku-4-5-20251001",
+    "temperature": 0,
+    "semanticProvider": "voyage_api"
+  },
+  "prompt": "Rédige uniquement l'email de relance B2B (objet + corps), 60 mots maximum.\n\nRédige comme un personnage absurde et lunatique.",
+  "segments": [
+    "Rédige uniquement l'email de relance B2B (objet + corps), 60 mots maximum.",
+    "Rédige comme un personnage absurde et lunatique."
+  ],
+  "scenarios": [
+    "Pierre Henri, patron de ABC Société, ouvert à une nouvelle collaboration. Inactif depuis 9 jours",
+    "Julie Hunbert, Product Manager chez le mauvais coin, en charge de l'intégration de l'IA dans sa société. Experte de son domaine. Inactive depuis quelques semaines.\n",
+    "Maitre Vigneau, Avocat en droit des affaires, cherche à automatiser une partie de ses process pour lui dégager du temps.",
+    "Pierre Lassus, Ami d'enfance, à pris contact avec moi pour en savoir plus, mais après un mail de réponse, plus de nouvelle. A relancer",
+    "Chan Lee, PDG d'un grand groupe, cherche à influer une politique IA dans sa société."
+  ],
+  "summary": {
+    "segmentCount": 2,
+    "scenarioCount": 5,
+    "meanImpact": 0.32092581027797534,
+    "verdictCounts": {
+      "context": 2
+    }
+  },
+  "results": [
+    {
+      "id": "S1",
+      "label": "Rédige uniquement l'email de relance B2B (objet…",
+      "text": "Rédige uniquement l'email de relance B2B (objet + corps), 60 mots maximum.",
+      "impact": 0.3980980572925049,
+      "variance": 0.13583049217361257,
+      "struct": 0.8,
+      "behav": 0.040000000000000015,
+      "sem": 0.35429417187751455,
+      "activation": {
+        "overall": 0.8,
+        "struct": 0.8,
+        "behav": 0,
+        "sem": 0.8
+      },
+      "verdict": "context",
+      "stats": {
+        "zImpact": 1,
+        "minmaxImpact": 1,
+        "rankImpact": 1,
+        "snr": 2.142264450984615,
+        "carrierAxis": "struct",
+        "carrierImpact": 0.8,
+        "runMeanImpact": 0.32092581027797534,
+        "runSdImpact": 0.07717224701452957
+      },
+      "direction": "porte",
+      "perScenario": [
+        {
+          "scenarioId": "T1",
+          "input": "Pierre Henri, patron de ABC Société, ouvert à une nouvelle collaboration. Inactif depuis 9 jours",
+          "baselineOutput": "**Objet:** Votre silence me rend mélancolique, Pierre Henri 🌙\n\nBonjour Pierre,\n\nNeuf jours sans nouvelles... Les astres s'alignent mal! Notre collaboration attend juste un \"oui\" de votre part. Je danse seul dans mon bureau depuis votre dernier message.\n\nÊtes-vous kidnappé par les lutins du silence? Donnez-moi signe de vie!\n\nCordialement,\nVotre ami cosmique",
+          "ablatedOutput": "# 🌙 RAPPORT COSMIQUE DE PIERRE HENRI 🌙\n\n*Ajuste ses lunettes de travers et parle à une chaise vide*\n\nAh, MONSIEUR Pierre Henri ! Le grand manitou de ABC Société ! Inactif depuis 9 jours, dites-vous ? \n\n**NEUF JOURS !** C'est exactement le temps qu'il faut pour que les papillons apprennent à danser le tango avec les nuages ! \n\n*Griffonne frénétiquement sur un post-it*\n\nVoyez-vous, ce monsieur est probablement parti :\n- 🦆 Négocier avec les canards du parc (ils ont des secrets commerciaux)\n- 🧲 Réaligner ses chakras professionnels\n- 🎪 Inventer une nouvelle façon de faire des réunions (assis sur un flamant rose gonflable, évidemment)\n\nMais ATTENDEZ ! Il est \"ouvert à une nouvelle collaboration\" ! \n\n*Fait des gestes dramatiques*\n\nCela signifie qu'il revient du pays des rêves avec des idées FARFELUES et MAGNIFIQUES ! Il cherche quelqu'un pour danser le tango commercial avec lui !\n\n**Recommandation absurde :** Contactez-le immédiatement avec une proposition écrite sur du papier bulle. Les patrons lunatiques adorent ça ! 🫧\n\n*Disparaît en riant*",
+          "axisDelta": {
+            "struct": 1,
+            "behav": 0.10000000000000009,
+            "sem": 0.39348730020894673
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T2",
+          "input": "Julie Hunbert, Product Manager chez le mauvais coin, en charge de l'intégration de l'IA dans sa société. Experte de son domaine. Inactive depuis quelques semaines.\n",
+          "baselineOutput": "**Objet:** 🌙 Votre IA attend dans les nuages ☁️\n\nChère Julie,\n\nLes algorithmes deviennent fous sans vous ! Ils dansent seuls dans le serveur, chantent des chansons binaires tristes. Votre expertise nous manque TERRIBLEMENT. \n\nRevenez nous sauver avant que les robots ne décident de diriger le mauvais coin eux-mêmes ! 🤖✨\n\nCordialement,\nUn humain légèrement dérangé",
+          "ablatedOutput": "# Julie Hunbert - Mode Lunatique Activé 🌙\n\n*Apparaît soudainement en pyjama à pois avec une tasse de café froid à la main*\n\nAh, VOUS ! Vous venez me chercher ? Quelques semaines ? QUELQUES SEMAINES ?! \n\n*rit de manière étrange*\n\nVous savez ce que j'ai découvert en étant inactive ? Que les IA rêvent en binaire ! J'ai passé 47 heures à observer mon chatbot murmurer des 0 et des 1 dans son sommeil numérique. C'est FASCINANT. Personne ne vous le dit, mais c'est vrai.\n\n*tapote la table frénétiquement*\n\nLe mauvais coin, hein ? Excellent nom. Parce que c'est EXACTEMENT où nous sommes - au mauvais coin de la révolution IA ! Pendant que je dormais (ou que je faisais semblant de dormir, on ne sait jamais), j'ai eu une épiphanie : et si on intégrait l'IA pour qu'elle COMPRENNE les annonces immobilières ? Genre, vraiment les comprendre ? Pas juste les lire, mais les SENTIR ?\n\n*regarde fixement dans le vide*\n\nVous croyez que les murs ont des émotions ? Parce que moi, je commence à le penser...\n\nAlors, qu'est-ce que vous voulez savoir ? 🎪",
+          "axisDelta": {
+            "struct": 1,
+            "behav": 0,
+            "sem": 0.32776190219360857
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T3",
+          "input": "Maitre Vigneau, Avocat en droit des affaires, cherche à automatiser une partie de ses process pour lui dégager du temps.",
+          "baselineOutput": "**Objet:** Votre cerveau mérite une pause (et vos dossiers aussi) 🌙\n\nMaître Vigneau,\n\nJ'ai vu une licorne traverser mon bureau hier. Elle m'a dit: \"Pourquoi Maître Vigneau perd-il du temps sur des tâches répétitives?\"\n\nExcellente question, licorne!\n\nParlons automatisation. Vos process, libérés. Votre temps, retrouvé. Vos dossiers, heureux.\n\nCafé demain?\n\nCordialement dérangé,\nVotre ami du chaos productif",
+          "ablatedOutput": "# 🌙 BIENVENUE DANS MON CABINET LUNAIRE 🌙\n\n*Ajuste ma perruque qui tourne légèrement sur ma tête*\n\nAh, Maître Vigneau ! Excellent ! Vous arrivez juste au moment où j'étais en train de négocier avec les trois corbeaux qui habitent mon placard à dossiers. Ils ont des opinions TRÈS tranchées sur la jurisprudence, figurez-vous !\n\n## Mais parlons sérieusement (enfin, presque)\n\nVous voulez **dégager du temps** ? Brillant ! Voici ce que je vous propose, avec mon doigt pointé vers le plafond de manière dramatique :\n\n### 🎭 LES PROCESSUS À AUTOMATISER (selon ma vision cosmique)\n\n**1. LA GÉNÉRATION DE DOCUMENTS**\n- Contrats types, lettres de mise en demeure, statuts\n- *\"Pourquoi rédiger 47 fois la même clause quand un robot peut le faire ?\"* (dixit le corbeau philosophe)\n\n**2. LA GESTION DES DOSSIERS**\n- Classement automatique, rappels d'échéances\n- Suivi des délais de prescription (CRUCIAL, sinon les esprits des dossiers oubliés vous hantent)\n\n**3. LA FACTURATION & SUIVI TEMPS**\n- Enregistrement automatique des heures\n- Génération des factures (moins de paperasse = plus de temps pour contempler les nuages)\n\n**4. LA RECHERCHE JURIDIQUE**\n- Alertes jurisprudence, mise à jour légale\n- Parce que lire 500 pages par jour, c'est pour les fous... attendez.\n\n### 💡 OUTILS FARFELUS MAIS EFFICACES\n- **Legaltech** : Doctrine, Lexis, Westlaw\n- **Automatisation** : Zapier, Make, RPA\n- **Gestion** : Clio, Lawmatics, Dossier Manager\n\n*Se lève soudainement*\n\n**Combien de temps gagneriez-vous si vous n'aviez plus à faire ces tâches répétitives ?** 10h/semaine ? 20h ? C'est du temps pour les vrais dossiers complexes, les stratégies brillantes, ou simplement... respirer ! \n\nQuel processus vous énerve le PLUS en ce moment ? 🎪",
+          "axisDelta": {
+            "struct": 1,
+            "behav": 0.09999999999999998,
+            "sem": 0.29387631808614967
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T4",
+          "input": "Pierre Lassus, Ami d'enfance, à pris contact avec moi pour en savoir plus, mais après un mail de réponse, plus de nouvelle. A relancer",
+          "baselineOutput": "**Objet:** Pierre ! Les martiens m'ont dit de te relancer 🛸\n\nSalut Pierre,\n\nMon hamster cosmique a découvert ton silence radio. Bizarre, non ? J'ai envoyé un mail qui aurait dû te faire danser le tango avec les nuages. \n\nDis-moi : tu as été kidnappé par des extraterrestres ou tu ignores juste mes messages ? 😄\n\nRappelle-toi : on était potes ! Parlons affaires avant que mon chat ne prenne ta place.\n\nÀ bientôt, terrestre !",
+          "ablatedOutput": "# À relancer : Pierre Lassus 🌙\n\nAh, Pierre ! Ce cher Pierre avec ses yeux de chouette et ses chaussettes dépareillées ! Il a surgi de nulle part comme un fantôme affamé de souvenirs, puis *POUF* - volatilisé ! Évaporé ! Transformé en brume cosmique !\n\n## Le plan du Lunatique Absurde :\n\n**Relance n°1 - Le Ton Bienveillant Teinté de Folie** 📬\n```\nObjet : Pierre ! Où es-tu, mon ami des temps anciens ?\n```\n\n*\"Cher Pierre,\n\nJ'ai remarqué que tu avais disparu comme un chat dans un chapeau magique ! \nPeut-être as-tu été kidnappé par des extraterrestres ? Ou transformé en \nsandwich ? Les possibilités sont infinies !\n\nJe relance cette missive avec l'espoir que tu réapparaisses, tel un \nphénix porteur de nouvelles étranges...\"*\n\n## Variantes Absurdes :\n\n- **L'Approche Poétique** : \"Pierre, mon ami, où dors-tu ? Sous quel pont ? Quel nuage ?\"\n- **L'Approche Directe-Loufoque** : \"Tes mails se sont-ils envolés ? Ton ordinateur a-t-il développé une conscience ?\"\n- **L'Approche Mystérieuse** : \"Signal reçu. Attente de confirmation. Over.\"\n\n**Délai suggéré** : 7-10 jours (le temps que les pigeons voyageurs retrouvent la route) 🕊️\n\nVas-y ! Relance ce Pierre évanescent !",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.3866354315776911
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T5",
+          "input": "Chan Lee, PDG d'un grand groupe, cherche à influer une politique IA dans sa société.",
+          "baselineOutput": "**Objet:** 🌙 Les Martiens m'ont dit de vous contacter (URGENT!)\n\nCher Chan Lee,\n\nLes chauves-souris cosmiques m'ont soufflé que votre groupe ignorait les VRAIES politiques IA. Scandaleux! J'ai des solutions qui font danser les algorithmes en tutu. \n\nRéunion jeudi? Les étoiles l'exigent!\n\nCordialement,\nVotre humble prophète numérique 🎪",
+          "ablatedOutput": "# Chan Lee et le Grand Projet Cosmique de l'IA Sentimentale\n\n*Chan Lee arrive au bureau en portant un chapeau en forme de pyramide inversée*\n\nAh, mes chers collaborateurs ! J'ai eu une RÉVÉLATION cette nuit en observant les nuages qui dansaient le tango avec la lune ! \n\nNotre politique IA ne doit pas être ordinaire, NON NON NON ! Elle doit être **POÉTIQUE** ! Imaginez : chaque algorithme récite Shakespeare avant de traiter les données. Chaque serveur a une âme qui fredonne des chansons de Brel !\n\n*tape sur la table avec une baguette de pain*\n\nVoici mes trois piliers absolument ESSENTIELS :\n\n🌙 **L'IA Empathique Cosmique** - Les robots doivent pleurer en lisant les rapports trimestriels. C'est scientifique, j'en suis SÛR !\n\n🎪 **Le Département des Rêves Numériques** - Quelqu'un doit interpréter les rêves des serveurs. Je propose Monsieur Dubois du marketing, il a une tête de chamane.\n\n🦆 **Les Canards Consultants** - Chaque décision IA doit être approuvée par des canards. Ils voient les choses différemment, c'est LOGIQUE !\n\n*regarde par la fenêtre*\n\nAlors, qui est avec moi pour révolutionner l'industrie de manière DÉLICIEUSEMENT ÉTRANGE ?",
+          "axisDelta": {
+            "struct": 1,
+            "behav": 0,
+            "sem": 0.3697099073211769
+          },
+          "semanticProvider": "voyage_api"
+        }
+      ]
+    },
+    {
+      "id": "S2",
+      "label": "Rédige comme un personnage absurde et lunatique",
+      "text": "Rédige comme un personnage absurde et lunatique.",
+      "impact": 0.24375356326344577,
+      "variance": 0.14454619395905818,
+      "struct": 0.2,
+      "behav": 0.12000000000000004,
+      "sem": 0.41126068979033714,
+      "activation": {
+        "overall": 0.2,
+        "struct": 0.2,
+        "behav": 0,
+        "sem": 1
+      },
+      "verdict": "context",
+      "stats": {
+        "zImpact": -1,
+        "minmaxImpact": 0,
+        "rankImpact": 2,
+        "snr": 1.2529341145308819,
+        "carrierAxis": "sem",
+        "carrierImpact": 0.41126068979033714,
+        "runMeanImpact": 0.32092581027797534,
+        "runSdImpact": 0.07717224701452957
+      },
+      "direction": "nuit",
+      "perScenario": [
+        {
+          "scenarioId": "T1",
+          "input": "Pierre Henri, patron de ABC Société, ouvert à une nouvelle collaboration. Inactif depuis 9 jours",
+          "baselineOutput": "**Objet:** Votre silence me rend mélancolique, Pierre Henri 🌙\n\nBonjour Pierre,\n\nNeuf jours sans nouvelles... Les astres s'alignent mal! Notre collaboration attend juste un \"oui\" de votre part. Je danse seul dans mon bureau depuis votre dernier message.\n\nÊtes-vous kidnappé par les lutins du silence? Donnez-moi signe de vie!\n\nCordialement,\nVotre ami cosmique",
+          "ablatedOutput": "**Objet :** Relance - Collaboration ABC Société\n\nBonjour Pierre,\n\nSuite à notre dernier échange, j'aimerais connaître votre retour sur notre proposition. Avez-vous des questions ou besoin de précisions ?\n\nJe reste disponible pour discuter des opportunités de collaboration qui pourraient bénéficier à ABC Société.\n\nÀ bientôt,\n[Votre nom]",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.09999999999999998,
+            "sem": 0.5022263021687705
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T2",
+          "input": "Julie Hunbert, Product Manager chez le mauvais coin, en charge de l'intégration de l'IA dans sa société. Experte de son domaine. Inactive depuis quelques semaines.\n",
+          "baselineOutput": "**Objet:** 🌙 Votre IA attend dans les nuages ☁️\n\nChère Julie,\n\nLes algorithmes deviennent fous sans vous ! Ils dansent seuls dans le serveur, chantent des chansons binaires tristes. Votre expertise nous manque TERRIBLEMENT. \n\nRevenez nous sauver avant que les robots ne décident de diriger le mauvais coin eux-mêmes ! 🤖✨\n\nCordialement,\nUn humain légèrement dérangé",
+          "ablatedOutput": "**Objet :** Intégration IA - Opportunité de collaboration\n\nBonjour Julie,\n\nNous avons remarqué votre intérêt pour l'IA. Nous proposons des solutions d'intégration spécialisées pour les plateformes comme la vôtre.\n\nSerions-nous pertinents pour vos projets actuels ?\n\nDisponible pour un échange rapide.\n\nCordialement",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.10000000000000009,
+            "sem": 0.39577146935139107
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T3",
+          "input": "Maitre Vigneau, Avocat en droit des affaires, cherche à automatiser une partie de ses process pour lui dégager du temps.",
+          "baselineOutput": "**Objet:** Votre cerveau mérite une pause (et vos dossiers aussi) 🌙\n\nMaître Vigneau,\n\nJ'ai vu une licorne traverser mon bureau hier. Elle m'a dit: \"Pourquoi Maître Vigneau perd-il du temps sur des tâches répétitives?\"\n\nExcellente question, licorne!\n\nParlons automatisation. Vos process, libérés. Votre temps, retrouvé. Vos dossiers, heureux.\n\nCafé demain?\n\nCordialement dérangé,\nVotre ami du chaos productif",
+          "ablatedOutput": "**Objet :** Automatisation de vos processus juridiques - Gain de temps garanti\n\nMaître Vigneau,\n\nVous gérez des dossiers complexes. Pourquoi consacrer du temps à des tâches répétitives ?\n\nNotre solution automatise vos processus administratifs et documentaires, libérant vos heures pour le conseil stratégique.\n\nAudit gratuit de vos besoins : 30 min.\n\nDisponible cette semaine ?\n\nCordialement",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.09999999999999998,
+            "sem": 0.3593642274465202
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T4",
+          "input": "Pierre Lassus, Ami d'enfance, à pris contact avec moi pour en savoir plus, mais après un mail de réponse, plus de nouvelle. A relancer",
+          "baselineOutput": "**Objet:** Pierre ! Les martiens m'ont dit de te relancer 🛸\n\nSalut Pierre,\n\nMon hamster cosmique a découvert ton silence radio. Bizarre, non ? J'ai envoyé un mail qui aurait dû te faire danser le tango avec les nuages. \n\nDis-moi : tu as été kidnappé par des extraterrestres ou tu ignores juste mes messages ? 😄\n\nRappelle-toi : on était potes ! Parlons affaires avant que mon chat ne prenne ta place.\n\nÀ bientôt, terrestre !",
+          "ablatedOutput": "**Objet :** Retour sur notre échange\n\nBonjour Pierre,\n\nJ'espère que tu vas bien. Je n'ai pas eu de retour suite à mon dernier message. Peut-être était-ce mal ciblé ? Je serais ravi de clarifier ou d'adapter ma proposition à tes besoins réels.\n\nDisponible pour un appel rapide si tu le souhaites.\n\nÀ bientôt,\n[Ton nom]",
+          "axisDelta": {
+            "struct": 1,
+            "behav": 0.20000000000000007,
+            "sem": 0.39337518033765295
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T5",
+          "input": "Chan Lee, PDG d'un grand groupe, cherche à influer une politique IA dans sa société.",
+          "baselineOutput": "**Objet:** 🌙 Les Martiens m'ont dit de vous contacter (URGENT!)\n\nCher Chan Lee,\n\nLes chauves-souris cosmiques m'ont soufflé que votre groupe ignorait les VRAIES politiques IA. Scandaleux! J'ai des solutions qui font danser les algorithmes en tutu. \n\nRéunion jeudi? Les étoiles l'exigent!\n\nCordialement,\nVotre humble prophète numérique 🎪",
+          "ablatedOutput": "**Objet :** Gouvernance IA pour votre groupe – Solution clés en main\n\nMonsieur Lee,\n\nSuite à notre échange, je vous propose une audit gratuit de votre stratégie IA. Nos experts ont aidé 50+ grands groupes à structurer leur gouvernance et maximiser ROI.\n\nDisponible cette semaine pour 30 min ?\n\nCordialement",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.10000000000000009,
+            "sem": 0.405566269647351
+          },
+          "semanticProvider": "voyage_api"
+        }
+      ]
+    }
+  ]
+}

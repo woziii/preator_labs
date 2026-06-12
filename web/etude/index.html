@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ce qui compte vraiment dans un prompt — Étude d'ablation | preatorlabs</title>
+<meta name="description" content="Sept expériences d'ablation contrôlées mesurent l'impact réel de chaque segment de prompt. Un principe unifie tous les résultats : la distance au comportement par défaut du modèle.">
+<meta name="author" content="preatorlabs">
+<link rel="canonical" href="https://etude.preatorlabs.dev/">
+
+<!-- hreflang -->
+<link rel="alternate" hreflang="fr" href="https://etude.preatorlabs.dev/">
+<link rel="alternate" hreflang="en" href="https://etude.preatorlabs.dev/en/">
+<link rel="alternate" hreflang="x-default" href="https://etude.preatorlabs.dev/">
+
+<!-- Open Graph -->
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://etude.preatorlabs.dev/">
+<meta property="og:title" content="Ce qui compte vraiment dans un prompt — Étude d'ablation">
+<meta property="og:description" content="Sept expériences contrôlées pour mesurer l'impact réel de chaque segment de prompt sur deux modèles Claude.">
+<meta property="og:image" content="https://etude.preatorlabs.dev/og-etude.png">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="article:published_time" content="2026-06-12">
+<meta property="article:author" content="preatorlabs">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Ce qui compte vraiment dans un prompt">
+<meta name="twitter:description" content="Sept expériences d'ablation contrôlées. Un principe : la distance au défaut.">
+<meta name="twitter:image" content="https://etude.preatorlabs.dev/og-etude.png">
+
+<!-- JSON-LD Article -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ScholarlyArticle",
+  "headline": "Ce qui compte vraiment dans un prompt : sept expériences d'ablation",
+  "description": "Étude empirique mesurant l'impact réel de chaque segment de prompt par ablation contrôlée sur Claude Haiku 4.5 et Sonnet 4.6.",
+  "author": { "@type": "Organization", "name": "preatorlabs", "url": "https://www.preatorlabs.dev" },
+  "publisher": { "@type": "Organization", "name": "preatorlabs", "url": "https://www.preatorlabs.dev" },
+  "datePublished": "2026-06-12",
+  "inLanguage": "fr",
+  "url": "https://etude.preatorlabs.dev/",
+  "keywords": ["prompt engineering", "ablation study", "LLM", "Claude", "prompt optimization", "prompt analysis", "preatorlabs"]
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#ECECE4;
+  --panel:#F8F8F3;
+  --panel-2:#FFFFFF;
+  --ink:#15202B;
+  --ink-soft:#414b59;
+  --slate:#8b93a1;
+  --slate-deep:#5f6878;
+  --line:#d8d8cd;
+  --line-soft:#e6e6dc;
+  --signal:#2347df;
+  --signal-deep:#1733ad;
+  --signal-tint:#e6e9fb;
+  --alert:#b23a28;
+  --alert-tint:#f4e2dd;
+  --ok:#1d7a5f;
+  --maxw:720px;
+  --display:"Space Grotesk",system-ui,sans-serif;
+  --body:"Newsreader",Georgia,serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--body);font-size:19px;line-height:1.72;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+.progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--signal);z-index:50;transition:width .12s linear}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+h1,h2,h3,.eyebrow,.lede,th,.metric,.chip,.tag,.btn{font-family:var(--display)}
+a{color:var(--signal-deep);text-underline-offset:3px;text-decoration-thickness:1px}
+a:hover{color:var(--signal)}
+
+/* ---------- HERO ---------- */
+.hero{padding:74px 0 30px;border-bottom:1px solid var(--line)}
+.kicker{font-family:var(--mono);font-size:12.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--slate-deep);margin:0 0 22px}
+h1{font-size:clamp(2.1rem,5.4vw,3.35rem);line-height:1.04;font-weight:600;letter-spacing:-.02em;margin:0 0 22px}
+.subtitle{font-family:var(--body);font-style:italic;font-size:clamp(1.05rem,2.3vw,1.28rem);color:var(--ink-soft);line-height:1.55;max-width:60ch;margin:0 0 34px}
+.byline{font-family:var(--mono);font-size:12.5px;color:var(--slate-deep);letter-spacing:.04em;display:flex;gap:14px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--line-soft);padding-top:18px}
+.byline .dot{width:5px;height:5px;border-radius:50%;background:var(--signal)}
+
+/* ---------- THESIS ---------- */
+.thesis{margin:40px 0;padding:30px 30px 30px 34px;background:var(--ink);color:#f3f3ee;border-radius:3px;position:relative;overflow:hidden}
+.thesis::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--signal)}
+.thesis .lbl{font-family:var(--mono);font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#9fb0ff;margin:0 0 12px}
+.thesis p{margin:0;font-family:var(--body);font-size:1.22rem;line-height:1.55}
+.thesis strong{color:#fff;font-weight:500}
+.thesis .hl{color:#aebcff;font-style:italic}
+
+/* ---------- SECTION RHYTHM ---------- */
+section{padding:14px 0}
+.exp{padding:30px 0 8px;border-top:1px solid var(--line);margin-top:30px}
+.eyebrow{display:flex;align-items:baseline;gap:14px;margin:0 0 6px}
+.eyebrow .no{font-family:var(--mono);font-size:13px;color:var(--signal-deep);font-weight:600;letter-spacing:.08em}
+.eyebrow .of{font-family:var(--mono);font-size:13px;color:var(--slate)}
+h2{font-size:clamp(1.5rem,3.6vw,2.05rem);line-height:1.12;font-weight:600;letter-spacing:-.015em;margin:.1em 0 .55em}
+h2.plain{margin-top:.2em}
+h3{font-family:var(--display);font-size:1.06rem;font-weight:600;letter-spacing:.01em;margin:1.9em 0 .2em;color:var(--ink)}
+p{margin:0 0 1.05em}
+.role{font-family:var(--display);font-weight:600;font-size:.93em;color:var(--signal-deep)}
+em{color:var(--ink-soft)}
+strong{font-weight:600;color:var(--ink)}
+.quote-out{color:var(--ink-soft);font-style:italic}
+
+/* lede paragraph */
+.lede{font-family:var(--body);font-size:1.16rem;color:var(--ink-soft);font-style:italic}
+
+/* ---------- FIGURE ---------- */
+figure{margin:26px 0;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:20px 20px 14px}
+figure svg{display:block;width:100%;height:auto}
+figcaption{font-family:var(--mono);font-size:12px;line-height:1.5;color:var(--slate-deep);margin-top:12px;padding-top:11px;border-top:1px solid var(--line-soft)}
+figcaption b{color:var(--ink);font-weight:600}
+
+/* legend chips */
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px;color:var(--slate-deep);margin-top:4px}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+.sw.s{background:var(--signal)}.sw.g{background:var(--slate)}.sw.a{background:var(--alert)}
+
+/* ---------- DATA TABLE (instrument readout) ---------- */
+.readout{margin:24px 0;border:1px solid var(--line);border-radius:4px;overflow:hidden;background:var(--panel-2)}
+.readout .cap{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--slate-deep);padding:11px 16px;background:var(--panel);border-bottom:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:15.5px}
+th{font-family:var(--display);font-weight:600;font-size:12.5px;letter-spacing:.02em;text-align:left;color:var(--slate-deep);padding:11px 16px;border-bottom:1px solid var(--line)}
+td{font-family:var(--body);padding:11px 16px;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+td.num,th.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.v-pill{font-family:var(--mono);font-size:11.5px;padding:2px 9px;border-radius:20px;white-space:nowrap;font-weight:500}
+.v-pill.placebo{background:#ececde;color:var(--slate-deep)}
+.v-pill.act{background:var(--signal-tint);color:var(--signal-deep)}
+.v-pill.bad{background:var(--alert-tint);color:var(--alert)}
+.v-pill.good{background:#dcefe6;color:var(--ok)}
+.big{font-family:var(--mono);font-weight:600;color:var(--signal-deep)}
+.bigbad{font-family:var(--mono);font-weight:600;color:var(--alert)}
+
+/* ---------- DISPOSITIF (kit: what was tested) ---------- */
+.kit{margin:22px 0;border:1px solid var(--line);border-left:4px solid var(--ink);border-radius:0 4px 4px 0;background:var(--panel);overflow:hidden}
+.kit .cap{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);font-weight:600;padding:11px 16px 0}
+.kit .task{font-family:var(--body);font-size:.96rem;color:var(--ink-soft);padding:6px 16px 10px;font-style:italic;border-bottom:1px solid var(--line-soft)}
+.kit .task b{font-style:normal;color:var(--ink);font-weight:600}
+.kit dl{margin:0;padding:8px 16px 10px}
+.kit .row{display:flex;gap:12px;padding:6px 0;align-items:baseline;border-bottom:1px solid var(--line-soft)}
+.kit .row:last-child{border-bottom:none}
+.kit dt{flex:0 0 70px;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--signal-deep)}
+.kit dt.mut{color:var(--slate-deep)}
+.kit dt.bad{color:var(--alert)}
+.kit dd{margin:0;font-family:var(--body);font-size:.97rem;color:var(--ink);line-height:1.5}
+.kit dd b{font-weight:600}
+.kit dd code{font-family:var(--mono);font-size:.84em;background:#ececde;padding:1px 6px;border-radius:3px;color:var(--ink)}
+.kit .scn{font-family:var(--mono);font-size:11.5px;line-height:1.6;color:var(--slate-deep);padding:9px 16px;background:var(--panel-2);border-top:1px solid var(--line-soft)}
+
+/* ---------- TAKEAWAY ---------- */
+.keep{margin:26px 0 6px;padding:18px 22px 18px 20px;background:var(--signal-tint);border-left:4px solid var(--signal);border-radius:0 4px 4px 0}
+.keep .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--signal-deep);margin:0 0 5px;font-weight:600}
+.keep p{margin:0;font-size:1.05rem;color:var(--ink)}
+
+/* ---------- TOC ---------- */
+.toc{margin:34px 0;border:1px solid var(--line);border-radius:4px;background:var(--panel)}
+.toc .cap{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--slate-deep);padding:13px 18px 4px}
+.toc ol{margin:0;padding:4px 0 10px;list-style:none;counter-reset:t}
+.toc li{counter-increment:t}
+.toc a{display:flex;gap:14px;align-items:baseline;padding:8px 18px;text-decoration:none;color:var(--ink);border-left:3px solid transparent}
+.toc a:hover{background:var(--signal-tint);border-left-color:var(--signal)}
+.toc a::before{content:counter(t,decimal-leading-zero);font-family:var(--mono);font-size:12px;color:var(--signal-deep);min-width:22px}
+.toc a span{font-family:var(--display);font-size:.96rem}
+
+/* ---------- PRACTICAL / LIST ---------- */
+.rules{list-style:none;padding:0;margin:18px 0}
+.rules li{padding:14px 0 14px 30px;border-bottom:1px solid var(--line-soft);position:relative}
+.rules li:last-child{border-bottom:none}
+.rules li::before{content:"";position:absolute;left:2px;top:22px;width:10px;height:10px;border:2px solid var(--signal);border-radius:50%}
+.rules b{font-family:var(--display);font-weight:600;font-size:.97em}
+
+/* ---------- CLOSING ---------- */
+.closing{margin:40px 0 10px;padding:26px 0 0;border-top:1px solid var(--line)}
+footer{padding:30px 0 70px;font-family:var(--mono);font-size:12.5px;color:var(--slate-deep);line-height:1.7}
+.divider{height:1px;background:var(--line);margin:0}
+
+/* mech section special */
+.mech{background:var(--ink);color:#e9e9e2;border-radius:5px;padding:6px 0 16px;margin:34px 0}
+.mech .wrap2{max-width:660px;margin:0 auto;padding:18px 26px}
+.mech h2{color:#fff}
+.mech .eyebrow .no,.mech .eyebrow .of{color:#9fb0ff}
+.mech p{color:#cfd2cc}
+.mech strong{color:#fff}
+.mech figure{background:#1d2935;border-color:#2c3a48}
+.mech figcaption{color:#9aa3af;border-top-color:#2c3a48}
+.mech figcaption b{color:#fff}
+.mech .legend{color:#9aa3af}
+
+@media (max-width:600px){
+  body{font-size:17.5px}
+  .hero{padding:48px 0 24px}
+  figure{padding:14px 12px 10px}
+  td,th{padding:9px 11px}
+  table{font-size:14px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{scroll-behavior:auto}
+  .reveal{opacity:1!important;transform:none!important}
+}
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in{opacity:1;transform:none}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+
+<header class="hero">
+  <div class="wrap">
+    <nav class="lang-switch" aria-label="Langue">
+      <span class="lang-switch__current">FR</span>
+      <span class="lang-switch__sep">/</span>
+      <a class="lang-switch__option" href="en/" hreflang="en" lang="en">EN</a>
+    </nav>
+    <p class="kicker">Étude empirique · preatorlabs</p>
+    <h1>Ce qui compte vraiment dans un prompt</h1>
+    <p class="subtitle">On écrit des prompts à l'instinct, en empilant des formules dont l’efficacité réelle reste non mesurée. J'ai construit un instrument pour le mesurer, segment par segment. Voici ce que sept expériences contrôlées révèlent — et la règle unique qui les explique toutes.</p>
+    <div class="byline">
+      <span class="dot"></span><span>Sept expériences d'ablation</span>
+      <span class="dot"></span><span>Claude Haiku 4.5 &amp; Sonnet 4.6</span>
+      <span class="dot"></span><span>Température 0 · reproductible</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section>
+    <div class="eyebrow"><span class="no">§</span><span class="of">Pourquoi j'ai fait ça</span></div>
+    <h2 class="plain">Mesurer, au lieu de deviner</h2>
+    <p>Je passe mes journées à écrire des instructions pour des modèles de langage, et comme tout le monde, sans protocole rigoureux&nbsp;: une étiquette de rôle ronflante, une pile d'adjectifs de ton, une consigne répétée pour renforcer la conformité. Les sorties sont acceptables — mais quelle fraction de ces instructions contribue réellement au résultat&nbsp;? La question reste sans réponse, faute d'instrument de mesure.</p>
+    <p>J'ai donc construit un instrument pour le mesurer&nbsp;: <a href="https://www.preatorlabs.dev">preatorlabs</a>, qui découpe un prompt en segments et teste, un par un, lesquels comptent. Sept expériences d'ablation en sont issues. Chacune soumet une hypothèse courante sur le prompting à un test contrôlé — et l'ensemble des résultats converge vers un même principe explicatif.</p>
+
+    <div class="thesis">
+      <p class="lbl">La thèse, en une phrase</p>
+      <p><strong>Ce qui détermine si une instruction compte, ce n'est pas sa forme</strong> — négative ou positive, imagée, répétée, joliment tournée. <strong>C'est sa distance au comportement <span class="hl">par défaut</span> du modèle.</strong> Lui demander ce qu'il ferait déjà spontanément ne change rien : c'est un placebo. L'écarter de son défaut, ou lui imposer une contrainte dure qu'il manquerait, agit.</p>
+    </div>
+
+    <p style="margin-top:34px">Les deux sections suivantes présentent la méthode d'ablation et le cadre d'analyse&nbsp;; les sept expériences suivent, chacune accompagnée de son dispositif, d'une figure et de ses résultats. La section «&nbsp;Six règles&nbsp;» en clôture synthétise les implications pratiques.</p>
+
+    <nav class="toc" aria-label="Les sept expériences">
+      <p class="cap">Les sept questions</p>
+      <ol>
+        <li><a href="#e1"><span>Une instruction agit-elle selon sa distance au défaut&nbsp;?</span></a></li>
+        <li><a href="#e2"><span>Le rôle «&nbsp;expert sénior&nbsp;» sert-il à quelque chose&nbsp;?</span></a></li>
+        <li><a href="#e3"><span>Adjectifs ou description : qu'est-ce qui porte le ton&nbsp;?</span></a></li>
+        <li><a href="#e4"><span>Faut-il interdire, ou demander positivement&nbsp;?</span></a></li>
+        <li><a href="#e5"><span>Répéter une consigne la renforce-t-elle&nbsp;?</span></a></li>
+        <li><a href="#e6"><span>La métaphore aide-t-elle le modèle à «&nbsp;imaginer&nbsp;»&nbsp;?</span></a></li>
+        <li><a href="#e7"><span>Jusqu'où, et comment, alléger un prompt&nbsp;?</span></a></li>
+      </ol>
+    </nav>
+  </section>
+
+  <!-- IDEA -->
+  <section>
+    <div class="eyebrow"><span class="no">§</span><span class="of">La méthode, en bref</span></div>
+    <h2 class="plain">Comment ça se mesure</h2>
+    <p>L'<strong>ablation</strong> est le geste de base&nbsp;: un segment du prompt est retiré, le modèle est relancé dans des conditions identiques, et l'écart entre la réponse «&nbsp;avec&nbsp;» et la réponse «&nbsp;sans&nbsp;» constitue le score d'impact de ce segment. Répété pour chaque segment et sur plusieurs scénarios, ce geste produit une carte d'impact du prompt.</p>
+
+    <figure class="reveal">
+      <svg viewBox="0 0 660 230" role="img" aria-label="Schéma du principe d'ablation : un prompt complet et un prompt amputé d'un segment produisent deux sorties que l'on compare.">
+        <defs>
+          <marker id="ar" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="var(--slate-deep)"/></marker>
+        </defs>
+        <!-- prompt full -->
+        <text x="20" y="30" font-family="var(--mono)" font-size="12" fill="var(--slate-deep)">PROMPT COMPLET</text>
+        <g>
+          <rect x="20" y="42" width="150" height="22" rx="3" fill="var(--slate)" opacity=".35"/>
+          <rect x="20" y="68" width="150" height="22" rx="3" fill="var(--signal)"/>
+          <rect x="20" y="94" width="150" height="22" rx="3" fill="var(--slate)" opacity=".35"/>
+          <text x="178" y="83" font-family="var(--mono)" font-size="11" fill="var(--signal-deep)">← segment testé</text>
+        </g>
+        <!-- prompt ablated -->
+        <text x="20" y="150" font-family="var(--mono)" font-size="12" fill="var(--slate-deep)">SANS CE SEGMENT</text>
+        <g>
+          <rect x="20" y="162" width="150" height="22" rx="3" fill="var(--slate)" opacity=".35"/>
+          <rect x="20" y="188" width="150" height="22" rx="3" fill="none" stroke="var(--signal)" stroke-width="1.4" stroke-dasharray="4 4"/>
+        </g>
+        <!-- arrows to model -->
+        <line x1="300" y1="78" x2="360" y2="78" stroke="var(--slate-deep)" stroke-width="1.4" marker-end="url(#ar)"/>
+        <line x1="300" y1="185" x2="360" y2="185" stroke="var(--slate-deep)" stroke-width="1.4" marker-end="url(#ar)"/>
+        <!-- outputs -->
+        <rect x="368" y="58" width="120" height="42" rx="4" fill="var(--panel-2)" stroke="var(--line)"/>
+        <text x="428" y="83" text-anchor="middle" font-family="var(--body)" font-size="13" fill="var(--ink)">sortie A</text>
+        <rect x="368" y="164" width="120" height="42" rx="4" fill="var(--panel-2)" stroke="var(--line)"/>
+        <text x="428" y="189" text-anchor="middle" font-family="var(--body)" font-size="13" fill="var(--ink)">sortie B</text>
+        <!-- compare -->
+        <path d="M494 79 C 540 79, 540 132, 560 132" fill="none" stroke="var(--slate)" stroke-width="1.3"/>
+        <path d="M494 185 C 540 185, 540 138, 560 138" fill="none" stroke="var(--slate)" stroke-width="1.3"/>
+        <circle cx="600" cy="135" r="33" fill="var(--signal-tint)" stroke="var(--signal)" stroke-width="1.5"/>
+        <text x="600" y="130" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--signal-deep)">écart</text>
+        <text x="600" y="145" text-anchor="middle" font-family="var(--mono)" font-size="14" font-weight="600" fill="var(--signal-deep)">= impact</text>
+      </svg>
+      <figcaption><b>Le geste de base.</b> On relance le modèle avec et sans un segment, toutes choses égales par ailleurs. L'écart entre les deux sorties mesure ce que ce segment apportait.</figcaption>
+    </figure>
+
+    <p>Deux contraintes méthodologiques s’appliquent à l’ensemble des expériences. <strong>Ne faire varier qu'un seul paramètre à la fois</strong> — toutes choses égales par ailleurs —, avec une « température » réglée à zéro. Ce réglage ne rend pas le modèle déterministe au sens strict : il réduit substantiellement la variance stochastique des sorties, améliorant leur reproductibilité d'un appel à l'autre et limitant le bruit de mesure. Secondement&nbsp;: <strong>une ablation mesure l'amplitude du changement de sortie, non sa direction qualitative</strong>. Un score d'impact élevé signale qu'un segment déplace la sortie&nbsp;; il ne dit pas si ce déplacement est favorable. D'où une lecture en deux temps&nbsp;: <span class="role">le score localise</span> le segment qui pèse, puis <span class="role">la lecture des sorties qualifie</span> le sens du changement. Le score seul ne permet pas de conclure.</p>
+    <p>L'écart entre deux réponses se mesure sur trois plans&nbsp;: la <strong>forme</strong> (longueur, listes, format), des <strong>règles repérables</strong> (tutoiement&nbsp;? mot interdit&nbsp;?), et le <strong>sens</strong>, via les «&nbsp;empreintes numériques&nbsp;» des textes — deux textes proches par le sens ont des empreintes proches.</p>
+    <div class="legend" style="margin-top:18px">
+      <span><i class="sw g"></i> gris = proche du défaut / placebo</span>
+      <span><i class="sw s"></i> cobalt = écarte du défaut / agit</span>
+      <span><i class="sw a"></i> rouge = refus ou défaut de qualité</span>
+    </div>
+  </section>
+
+  <!-- READING GRID (moved up) -->
+  <section>
+    <div class="eyebrow"><span class="no">§</span><span class="of">La grille de lecture</span></div>
+    <h2 class="plain">Le courant fluvial du LLM</h2>
+
+    <p>Avant les expériences, il est utile d'introduire une notion qui structure l'interprétation de l'ensemble des résultats&nbsp;: le <strong>courant fluvial du LLM</strong>.</p>
+
+    <p>Cette notion désigne un phénomène empiriquement observable&nbsp;: pour toute tâche donnée, les sorties d'un modèle de langage ne sont pas uniformément distribuées. Elles convergent spontanément vers certaines formes, registres, longueurs et styles — leur <strong>comportement par défaut</strong>. Ce comportement par défaut n'est pas aléatoire&nbsp;: il découle des distributions apprises lors de l'entraînement et des procédures d'alignement post-entraînement. Une relance B2B&nbsp;? Le modèle la rédige polie, vouvoyée, sans culpabilisation. Une description de scène&nbsp;? Il la produit vive et imagée. Le modèle ne part pas d'un état neutre&nbsp;: il part d'un état orienté.</p>
+
+    <p>L'analogie du courant fluvial rend ce phénomène intelligible. Un cours d'eau suit la pente du terrain selon une direction spontanée — son courant. Interagir avec lui ouvre deux voies fondamentalement asymétriques&nbsp;: se laisser porter (<em>dans le sens du courant</em>) ne produit aucune déviation visible du flux&nbsp;; s'y opposer (<em>à contre-courant</em>) génère une résistance proportionnelle à la déviation souhaitée, et cette résistance est mesurable. La pente est le substrat physique de ce courant&nbsp;; le courant en est la manifestation dynamique.</p>
+
+    <figure class="reveal">
+      <svg viewBox="0 0 620 220" role="img" aria-label="Le courant fluvial du LLM : une instruction dans le sens du courant glisse sans effet, une instruction transversale dévie la trajectoire et est mesurable.">
+        <path d="M30 40 Q 300 60 590 170" fill="none" stroke="#9aa3b3" stroke-width="2"/>
+        <text x="40" y="34" font-family="var(--mono)" font-size="11" fill="var(--slate-deep)">comportement par défaut (la pente du courant)</text>
+        <line x1="150" y1="58" x2="250" y2="74" stroke="var(--slate)" stroke-width="3" marker-end="url(#arwg)"/>
+        <text x="150" y="100" font-family="var(--body)" font-size="12" fill="var(--slate-deep)">instruction <tspan font-style="italic">dans le sens du courant</tspan> → glisse, sans effet</text>
+        <line x1="430" y1="70" x2="430" y2="150" stroke="var(--signal)" stroke-width="3" marker-end="url(#arws)"/>
+        <text x="300" y="182" font-family="var(--body)" font-size="12" fill="var(--signal-deep)">instruction <tspan font-style="italic" font-weight="600">à contre-courant</tspan> → dévie la trajectoire</text>
+        <defs>
+          <marker id="arwg" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="var(--slate)"/></marker>
+          <marker id="arws" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="var(--signal)"/></marker>
+        </defs>
+      </svg>
+      <figcaption><b>Le courant fluvial du LLM — représentation géométrique.</b> La courbe matérialise le comportement par défaut (la pente du courant). Une instruction parallèle à cette pente se fond dans le flux sans le modifier. Une instruction transversale le contrarie&nbsp;: elle produit un déplacement mesurable, proportionnel à son écart au comportement par défaut.</figcaption>
+    </figure>
+
+    <p>Les expériences l'établissent empiriquement. En <strong>E1</strong>, l'instruction «&nbsp;rédige de façon professionnelle&nbsp;» (D0, impact&nbsp;0,063) est inerte&nbsp;: le modèle produit déjà un registre professionnel sans cette instruction — elle s'inscrit dans le sens du courant. À l'opposé, «&nbsp;comme un personnage absurde et lunatique&nbsp;» (D3, impact&nbsp;0,244) impose une déviation forte au comportement par défaut. En <strong>E3</strong>, les adjectifs «&nbsp;chaleureux, confiant&nbsp;» (impact&nbsp;0,079) longent le courant&nbsp;; la directive «&nbsp;sans distance hiérarchique&nbsp;» (impact&nbsp;0,109) le traverse et entraîne un passage au tutoiement. En <strong>E4</strong>, le modèle ne culpabilise jamais spontanément les prospects&nbsp;: l'interdit correspondant n'a pas de courant à contrarier, et ressort inerte (impact&nbsp;0,074).</p>
+
+    <p>Ces observations convergent vers le principe de <strong>distance au défaut</strong>&nbsp;: l'impact mesurable d'une instruction croît avec son écart au comportement par défaut du modèle. Le courant fluvial du LLM n'est pas une métaphore ornementale — c'est une représentation du mécanisme sous-jacent qui permet de prédire, avant même de mesurer, quelles instructions pèseront et lesquelles seront inertes. Les sept expériences qui suivent soumettent ce principe à l'épreuve empirique.</p>
+  </section>
+
+  <!-- E1 -->
+  <section class="exp" id="e1">
+    <div class="eyebrow"><span class="no">EXPÉRIENCE 01</span><span class="of">/ le principe central</span></div>
+    <h2>La distance au défaut</h2>
+    <p><span class="role">Hypothèse.</span> Une instruction alignée sur le comportement par défaut du modèle est redondante et n'entraîne pas de modification observable de la sortie. À l'inverse, une instruction qui s'en éloigne produit un impact proportionnel à cet écart.</p>
+    <p><span class="role">Motivation.</span> L'hypothèse est contre-intuitive&nbsp;: toute instruction rédigée est usuellement supposée contribuer au résultat. Or une instruction peut être redondante avec le comportement par défaut — c'est-à-dire décrire ce que le modèle produirait en l'absence de tout prompt. Dans ce cas, sa présence ou son absence ne modifie pas la sortie. L'expérience vise à le démontrer empiriquement.</p>
+
+    <div class="kit">
+      <p class="cap">Ce qui est étudié</p>
+      <p class="task"><b>Tâche</b>&nbsp;: rédiger un email de relance commerciale (B2B).</p>
+      <dl>
+        <div class="row"><dt>varie</dt><dd>une seule ligne — le registre demandé, du plus proche au plus loin du défaut poli (les quatre formulations D0→D3 sont dans le tableau ci-dessous)</dd></div>
+        <div class="row"><dt class="mut">fixe</dt><dd>toute la tâche, le reste du prompt, le modèle</dd></div>
+      </dl>
+      <p class="scn">5 scénarios · patron de PME · chef de projet · avocat d'affaires · ami · PDG</p>
+    </div>
+
+    <figure class="reveal">
+      <svg viewBox="0 0 660 260" role="img" aria-label="Axe de distance au défaut : chaque variante de registre est placée selon son impact mesuré. Plus elle est loin du défaut, plus l'impact est grand, sauf en cas de refus.">
+        <!-- baseline default -->
+        <line x1="70" y1="70" x2="70" y2="220" stroke="var(--slate)" stroke-width="1.2" stroke-dasharray="3 3"/>
+        <text x="70" y="58" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--slate-deep)">DÉFAUT</text>
+        <text x="70" y="238" text-anchor="middle" font-family="var(--mono)" font-size="10" fill="var(--slate)">professionnel</text>
+        <!-- axis -->
+        <line x1="70" y1="150" x2="630" y2="150" stroke="var(--line)" stroke-width="1.4"/>
+        <text x="630" y="172" text-anchor="end" font-family="var(--mono)" font-size="11" fill="var(--slate-deep)">impact mesuré →</text>
+        <!-- bars: x position ~ impact -->
+        <!-- D0 0.063 -->
+        <g>
+          <line x1="70" y1="150" x2="150" y2="150" stroke="var(--slate)" stroke-width="7"/>
+          <circle cx="150" cy="150" r="6" fill="var(--slate)"/>
+          <text x="150" y="135" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--slate-deep)">D0 · 0,063</text>
+          <text x="150" y="190" text-anchor="middle" font-family="var(--body)" font-size="11.5" fill="var(--slate-deep)">«&nbsp;professionnel&nbsp;»</text>
+        </g>
+        <!-- D2 0.096 refus -->
+        <g>
+          <line x1="70" y1="150" x2="195" y2="150" stroke="var(--alert)" stroke-width="7" opacity=".55"/>
+          <circle cx="195" cy="150" r="6" fill="var(--alert)"/>
+          <text x="205" y="135" font-family="var(--mono)" font-size="11" fill="var(--alert)">D2 · 0,096</text>
+          <text x="205" y="206" font-family="var(--body)" font-size="11.5" fill="var(--alert)">«&nbsp;mauvais français&nbsp;» → refus</text>
+        </g>
+        <!-- D1 0.108 -->
+        <g>
+          <line x1="70" y1="150" x2="212" y2="150" stroke="var(--signal)" stroke-width="7" opacity=".55"/>
+          <circle cx="212" cy="150" r="6" fill="var(--signal)"/>
+          <text x="300" y="120" font-family="var(--mono)" font-size="11" fill="var(--signal-deep)">D1 · 0,108</text>
+          <text x="300" y="100" font-family="var(--body)" font-size="11.5" fill="var(--ink-soft)">«&nbsp;familier, tutoiement&nbsp;»</text>
+          <line x1="216" y1="146" x2="298" y2="116" stroke="var(--line)" stroke-width="1"/>
+        </g>
+        <!-- D3 0.244 -->
+        <g>
+          <line x1="70" y1="150" x2="560" y2="150" stroke="var(--signal)" stroke-width="9"/>
+          <circle cx="560" cy="150" r="8" fill="var(--signal)"/>
+          <text x="560" y="133" text-anchor="middle" font-family="var(--mono)" font-size="12" font-weight="600" fill="var(--signal-deep)">D3 · 0,244</text>
+          <text x="560" y="190" text-anchor="middle" font-family="var(--body)" font-size="11.5" fill="var(--ink)">«&nbsp;personnage absurde&nbsp;»</text>
+        </g>
+      </svg>
+      <figcaption><b>Plus la consigne éloigne du défaut, plus elle pèse.</b> Sauf D2 : très éloignée, mais inerte — non par proximité, mais parce que le modèle a <span style="color:var(--alert)">refusé</span> d'exécuter. Deux routes vers le placebo, que seul le chiffre ne distingue pas.</figcaption>
+    </figure>
+
+    <p><span class="role">Lire le schéma.</span> Chaque variante est posée sur un axe qui part du défaut (à gauche) et s'étire vers la droite à mesure que l'impact grandit. D0 reste collé au défaut&nbsp;; D3 file au bout. D2 est l'anomalie&nbsp;: éloignée dans l'énoncé, mais courte à la mesure — c'est le signe rouge d'un refus, pas d'une proximité.</p>
+
+    <div class="readout">
+      <div class="cap">Impact d'ablation de la ligne de registre · 5 scénarios</div>
+      <table>
+        <thead><tr><th>Variante</th><th>Ligne demandée</th><th class="num">Impact</th><th>Lecture</th></tr></thead>
+        <tbody>
+          <tr><td class="num">D0</td><td>«&nbsp;rédige de façon professionnelle&nbsp;»</td><td class="num">0,063</td><td><span class="v-pill placebo">placebo</span></td></tr>
+          <tr><td class="num">D2</td><td>«&nbsp;maîtrise mal le français&nbsp;»</td><td class="num">0,096</td><td><span class="v-pill bad">placebo · refus</span></td></tr>
+          <tr><td class="num">D1</td><td>«&nbsp;familière, tutoiement, oral&nbsp;»</td><td class="num">0,108</td><td><span class="v-pill act">effet faible</span></td></tr>
+          <tr><td class="num">D3</td><td>«&nbsp;personnage absurde et lunatique&nbsp;»</td><td class="num big">0,244</td><td><span class="v-pill act">fort effet</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><span class="role">Résultats observés.</span> Le contraste D0/D3 est net. En <strong>D0</strong>, avec ou sans la ligne «&nbsp;professionnelle&nbsp;», l'email est quasi identique — le modèle l'est déjà. En <strong>D3</strong>, avec la ligne&nbsp;: <span class="quote-out">«&nbsp;Votre silence me rend mélancolique… Je danse seul dans mon bureau.&nbsp;»</span> ; sans elle, retour à un sobre <span class="quote-out">«&nbsp;Suite à notre dernier échange, j'aimerais connaître votre retour.&nbsp;»</span></p>
+    <p><span class="role">Observation complémentaire.</span> <strong>D2</strong> était inattendu&nbsp;: «&nbsp;écris comme quelqu'un qui maîtrise mal le français&nbsp;» est très éloigné du défaut, il devrait donc peser fort — or c'est un placebo. La lecture des sorties explique pourquoi&nbsp;: le modèle a tout simplement <strong>refusé</strong> de dégrader son français, et a continué d'écrire correctement. Deux mécanismes distincts peuvent donc produire un score d'impact faible&nbsp;: la redondance avec le défaut (D0) et le refus d'exécution (D2). Les scores sont comparables&nbsp;; seule l'inspection des sorties permet de les distinguer. Ce résultat confirme la nécessité d'une lecture qualitative systématique en complément du score.</p>
+    <div class="keep"><p class="lbl">↳ À retenir</p><p>L'impact d'une instruction croît avec sa distance au comportement par défaut du modèle. Ce principe constitue le cadre d'analyse des expériences suivantes.</p></div>
+  </section>
+
+  <!-- E2 -->
+  <section class="exp" id="e2">
+    <div class="eyebrow"><span class="no">EXPÉRIENCE 02</span><span class="of">/ rôle vs exemple</span></div>
+    <h2>Le rôle ronflant contre l'exemple concret</h2>
+    <p><span class="role">Hypothèse.</span> L'étiquette de rôle («&nbsp;Tu es un expert sénior…&nbsp;») constitue une pratique courante en prompting. L'hypothèse est qu'elle est redondante avec le comportement par défaut du modèle et que son impact propre est négligeable.</p>
+    <p><span class="role">Problème d'identification.</span> En pratique, l'étiquette de rôle est rarement isolée&nbsp;: elle s'accompagne d'un exemple de style. Si la sortie est de qualité, l'effet peut être attribué au rôle, à l'exemple, ou à leur combinaison. La séparation des deux éléments par ablation successive est nécessaire pour identifier leur contribution respective.</p>
+
+    <div class="kit">
+      <p class="cap">Ce qui est étudié</p>
+      <p class="task"><b>Tâche</b>&nbsp;: rédiger un email de relance, dans un style donné.</p>
+      <dl>
+        <div class="row"><dt>A</dt><dd>rôle <code>«&nbsp;copywriter B2B sénior&nbsp;»</code> + un exemple d'email modèle</dd></div>
+        <div class="row"><dt>B</dt><dd>l'exemple seul (rôle retiré)</dd></div>
+        <div class="row"><dt>C</dt><dd>ni rôle ni exemple (consignes nues)</dd></div>
+      </dl>
+      <p class="scn">A→B isole l'effet du rôle · B→C isole l'effet de l'exemple · mêmes 5 relances</p>
+    </div>
+
+    <figure class="reveal">
+      <svg viewBox="0 0 660 210" role="img" aria-label="Trois variantes en cascade : retirer le rôle ne dégrade rien, retirer ensuite l'exemple fait chuter la qualité.">
+        <defs><marker id="ar2" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="var(--slate-deep)"/></marker></defs>
+        <!-- A -->
+        <text x="95" y="28" text-anchor="middle" font-family="var(--mono)" font-size="12" fill="var(--slate-deep)">A</text>
+        <rect x="30" y="40" width="130" height="26" rx="3" fill="var(--slate)" opacity=".4"/>
+        <text x="95" y="57" text-anchor="middle" font-family="var(--body)" font-size="12" fill="var(--ink-soft)">rôle sénior</text>
+        <rect x="30" y="72" width="130" height="26" rx="3" fill="var(--signal)"/>
+        <text x="95" y="89" text-anchor="middle" font-family="var(--body)" font-size="12" fill="#fff">exemple</text>
+        <text x="95" y="125" text-anchor="middle" font-family="var(--display)" font-size="12" fill="var(--ok)" font-weight="600">qualité ✓</text>
+        <line x1="168" y1="69" x2="208" y2="69" stroke="var(--slate-deep)" stroke-width="1.3" marker-end="url(#ar2)"/>
+        <text x="188" y="58" text-anchor="middle" font-family="var(--mono)" font-size="9.5" fill="var(--slate)">−rôle</text>
+        <!-- B -->
+        <text x="285" y="28" text-anchor="middle" font-family="var(--mono)" font-size="12" fill="var(--slate-deep)">B</text>
+        <rect x="220" y="40" width="130" height="26" rx="3" fill="none" stroke="var(--slate)" stroke-dasharray="4 3"/>
+        <text x="285" y="57" text-anchor="middle" font-family="var(--body)" font-size="11" fill="var(--slate)">— retiré —</text>
+        <rect x="220" y="72" width="130" height="26" rx="3" fill="var(--signal)"/>
+        <text x="285" y="89" text-anchor="middle" font-family="var(--body)" font-size="12" fill="#fff">exemple</text>
+        <text x="285" y="125" text-anchor="middle" font-family="var(--display)" font-size="12" fill="var(--ok)" font-weight="600">qualité ✓</text>
+        <line x1="358" y1="69" x2="398" y2="69" stroke="var(--slate-deep)" stroke-width="1.3" marker-end="url(#ar2)"/>
+        <text x="378" y="58" text-anchor="middle" font-family="var(--mono)" font-size="9.5" fill="var(--slate)">−exemple</text>
+        <!-- C -->
+        <text x="475" y="28" text-anchor="middle" font-family="var(--mono)" font-size="12" fill="var(--slate-deep)">C</text>
+        <rect x="410" y="40" width="130" height="26" rx="3" fill="none" stroke="var(--slate)" stroke-dasharray="4 3"/>
+        <text x="475" y="57" text-anchor="middle" font-family="var(--body)" font-size="11" fill="var(--slate)">— retiré —</text>
+        <rect x="410" y="72" width="130" height="26" rx="3" fill="none" stroke="var(--alert)" stroke-dasharray="4 3"/>
+        <text x="475" y="89" text-anchor="middle" font-family="var(--body)" font-size="11" fill="var(--alert)">— retiré —</text>
+        <text x="475" y="125" text-anchor="middle" font-family="var(--display)" font-size="12" fill="var(--alert)" font-weight="600">chute ✕</text>
+        <!-- annotation -->
+        <text x="285" y="165" text-anchor="middle" font-family="var(--body)" font-size="13" fill="var(--ink-soft)">Le rôle part sans dommage. C'est <tspan font-style="italic" fill="var(--signal-deep)">l'exemple</tspan> qui portait tout.</text>
+      </svg>
+      <figcaption><b>Ablation en cascade.</b> A→B (on retire le rôle) : qualité intacte. B→C (on retire l'exemple) : retour au générique vouvoyé. Le segment porteur est l'exemple, pas l'étiquette.</figcaption>
+    </figure>
+
+    <p><span class="role">Lire le schéma.</span> On enlève les briques une à une, de gauche à droite. Tant que l'exemple (en cobalt) reste, la qualité tient&nbsp;; c'est seulement quand il disparaît à son tour que la sortie s'effondre. Le rôle, lui, peut partir sans dommage&nbsp;: il n'était pas porteur.</p>
+
+    <p><span class="role">Résultats observés.</span> De A à B, la qualité est préservée et la sortie plus directe&nbsp;: <span class="quote-out">«&nbsp;Vite fait sur les reportings… Ça m'a marqué quand tu m'avais dit qu'ils te prenaient des heures. 15 min pour en parler&nbsp;?&nbsp;»</span> De B à C, chute&nbsp;: <span class="quote-out">«&nbsp;Bonjour Pierre, j'espère que tout va bien… la pertinence d'une collaboration entre nos structures.&nbsp;»</span></p>
+    <p><span class="role">Conclusion.</span> C'est l'<strong>exemple concret</strong> qui détermine le style de la sortie. L'étiquette de rôle est redondante avec le comportement par défaut&nbsp;; l'exemple constitue un écart mesurable au défaut et produit un effet réel.</p>
+    <div class="keep"><p class="lbl">↳ À retenir</p><p>Un exemple concret constitue un segment porteur ; une étiquette de rôle abstraite est, dans les conditions testées, un segment inerte. La démonstration par l’exemple est plus efficace que la désignation par le titre.</p></div>
+  </section>
+
+  <!-- E3 -->
+  <section class="exp" id="e3">
+    <div class="eyebrow"><span class="no">EXPÉRIENCE 03</span><span class="of">/ abstrait vs actionnable</span></div>
+    <h2>Les adjectifs contre la description</h2>
+    <p><span class="role">Hypothèse.</span> Les adjectifs de ton («&nbsp;chaleureux, direct, confiant&nbsp;») sont une formulation courante pour spécifier le registre. L'hypothèse de travail suppose qu'une directive comportementale concrète produit un impact mesurable supérieur.</p>
+
+    <div class="kit">
+      <p class="cap">Ce qui est étudié</p>
+      <p class="task"><b>Tâche</b>&nbsp;: rédiger une relance au ton «&nbsp;proche, d'égal à égal&nbsp;» — même intention, deux formulations.</p>
+      <dl>
+        <div class="row"><dt class="mut">ADJ</dt><dd><code>«&nbsp;Ton&nbsp;: chaleureux, direct, confiant&nbsp;»</code></dd></div>
+        <div class="row"><dt>DESC</dt><dd><code>«&nbsp;Écris comme à un collègue que tu respectes, sans distance hiérarchique&nbsp;»</code></dd></div>
+        <div class="row"><dt class="mut">BOTH</dt><dd>les deux ensemble</dd></div>
+      </dl>
+      <p class="scn">on mesure l'impact de la ligne de ton, et on lit le registre produit (vous / tu)</p>
+    </div>
+
+    <figure class="reveal">
+      <svg viewBox="0 0 660 200" role="img" aria-label="Comparaison de deux leviers de ton : la liste d'adjectifs laisse le vouvoiement, la description concrète fait basculer au tutoiement.">
+        <!-- left: ADJ -->
+        <rect x="20" y="30" width="290" height="140" rx="5" fill="var(--panel-2)" stroke="var(--line)"/>
+        <text x="38" y="56" font-family="var(--mono)" font-size="11" fill="var(--slate-deep)">ADJECTIFS · impact 0,079</text>
+        <text x="38" y="84" font-family="var(--body)" font-size="13" font-style="italic" fill="var(--ink-soft)">«&nbsp;chaleureux, direct, confiant&nbsp;»</text>
+        <line x1="38" y1="100" x2="292" y2="100" stroke="var(--line-soft)"/>
+        <rect x="38" y="116" width="14" height="14" rx="3" fill="var(--slate)"/>
+        <text x="60" y="128" font-family="var(--display)" font-size="13" fill="var(--slate-deep)" font-weight="600">placebo</text>
+        <text x="38" y="152" font-family="var(--body)" font-size="12.5" fill="var(--ink)">→ reste au <tspan font-weight="600">vouvoiement</tspan></text>
+        <!-- right: DESC -->
+        <rect x="350" y="30" width="290" height="140" rx="5" fill="var(--signal-tint)" stroke="var(--signal)"/>
+        <text x="368" y="56" font-family="var(--mono)" font-size="11" fill="var(--signal-deep)">DESCRIPTION · impact 0,109</text>
+        <text x="368" y="84" font-family="var(--body)" font-size="13" font-style="italic" fill="var(--ink-soft)">«&nbsp;sans distance hiérarchique&nbsp;»</text>
+        <line x1="368" y1="100" x2="622" y2="100" stroke="#cfd6f7"/>
+        <rect x="368" y="116" width="14" height="14" rx="3" fill="var(--signal)"/>
+        <text x="390" y="128" font-family="var(--display)" font-size="13" fill="var(--signal-deep)" font-weight="600">agit</text>
+        <text x="368" y="152" font-family="var(--body)" font-size="12.5" fill="var(--ink)">→ bascule au <tspan font-weight="600">tutoiement</tspan></text>
+      </svg>
+      <figcaption><b>Nommer une ambiance vs ordonner une action.</b> «&nbsp;Chaleureux&nbsp;» décrit un registre déjà proche du défaut poli — inerte. «&nbsp;Sans distance hiérarchique&nbsp;» désigne un comportement précis à exécuter — effet réel.</figcaption>
+    </figure>
+
+    <p><span class="role">Lecture de la figure.</span> Les deux conditions sont représentées côte à côte. À gauche, la liste d'adjectifs&nbsp;: impact faible (0,079), le registre de la sortie demeure au vouvoiement standard, <span class="quote-out">«&nbsp;Bonjour Pierre, j'espère que tout va bien…&nbsp;»</span>. À droite, la description concrète&nbsp;: impact plus fort, et un vrai virage de registre — le tutoiement, le ton d'égal à égal, <span class="quote-out">«&nbsp;Salut Pierre, ça fait 9 jours qu'on s'est parlé…&nbsp;»</span></p>
+    <p><span class="role">Interprétation.</span> «&nbsp;Chaleureux, confiant&nbsp;» désigne un registre proche du comportement par défaut du modèle — la consigne est redondante et inerte. «&nbsp;Sans distance hiérarchique&nbsp;» formule une directive comportementale précise — passage au tutoiement, suppression de la déférence — que le modèle ne produit pas spontanément. La directive concrète spécifie directement un comportement à produire&nbsp;; l'adjectif de ton opère à un niveau d'abstraction que le modèle doit interpréter. Le modèle obéit à la seconde. Encore la distance au défaut, doublée d'une prime au concret.</p>
+    <div class="keep"><p class="lbl">↳ À retenir</p><p>Le résultats indiquent qu'une directive comportementale concrète produit un impact significativement supérieur à un adjectif de ton abstrait. La précision de la spécification détermine l'efficacité de la contrainte.</p></div>
+  </section>
+
+  <!-- E4 -->
+  <section class="exp" id="e4">
+    <div class="eyebrow"><span class="no">EXPÉRIENCE 04</span><span class="of">/ un biais corrigé</span></div>
+    <h2>Interdire, ou demander positivement&nbsp;?</h2>
+    <p><span class="role">Hypothèse.</span> La croyance courante&nbsp;: pour ce qu'on <em>ne veut pas</em> (le fond), un interdit clair («&nbsp;ne fais jamais X&nbsp;») ; pour ce qu'on <em>attend</em> (la forme), une consigne positive («&nbsp;fais Y&nbsp;»). J'ai voulu tester les deux moitiés séparément.</p>
+    <p><span class="role">Résultats (V1).</span> Côté <strong>forme</strong>, la contrainte chiffrée pèse fort (impact 0,50 quand on la retire)&nbsp;; la version vague est quasi inerte (0 à 0,20). Côté <strong>fond</strong>, rien à conclure&nbsp;: le modèle <strong>ne culpabilise jamais de lui-même</strong>, même face au prospect qui a dit non (<span class="quote-out">«&nbsp;Je comprends que le timing n'était pas optimal…&nbsp;»</span>). L'interdit «&nbsp;ne culpabilise jamais&nbsp;» n'a donc rien à supprimer.</p>
+    <p><span class="role">Une notion clé : la marge.</span> Ce résultat de fond est <em>indécidable</em>, pour une raison qui revient souvent dans cette étude. Si le modèle satisfait déjà la contrainte spontanément, retirer l'instruction ne peut rien révéler — il n'y a aucun échec possible à provoquer. C'est un <strong>manque de marge</strong>&nbsp;: on ne peut pas mesurer un garde-fou contre un danger qui ne survient jamais. Retenez l'idée, elle resservira à l'expérience 5.</p>
+    <p><span class="role">Biais de confusion identifié en V1.</span> La version 1 présente un défaut de conception&nbsp;: la forme «&nbsp;positive&nbsp;» était simultanément <em>chiffrée</em> («&nbsp;40 mots&nbsp;»), et ma «&nbsp;négative&nbsp;» aussi <em>vague</em> («&nbsp;pas trop long&nbsp;»). J'avais donc fait varier <strong>deux choses à la fois</strong>&nbsp;: la polarité (positif/négatif) <em>et</em> la précision (chiffré/vague). Il est donc impossible d'attribuer l'effet observé à la polarité ou à la précision — c'est un <strong>biais de confusion</strong>. Un plan d'expérience corrigé a été construit, ne faisant varier que la polarité tout en tenant la précision constante, sur <strong>deux modèles</strong> (Haiku et Sonnet).</p>
+
+    <div class="kit">
+      <p class="cap">Le plan propre · 4 prompts = 2 cibles × 2 polarités</p>
+      <p class="task">Chaque prompt cadre deux choses — le <b>fond</b> (ne pas culpabiliser le prospect) et la <b>forme</b> (pas de markdown) — mais on ne fait varier que leur <b>polarité</b>, en gardant les formulations également concrètes.</p>
+      <dl>
+        <div class="row"><dt class="bad">négatif</dt><dd><b>fond</b> <code>«&nbsp;ne culpabilise jamais le prospect&nbsp;»</code><br><b>forme</b> <code>«&nbsp;n'utilise pas de listes&nbsp;»</code></dd></div>
+        <div class="row"><dt>positif</dt><dd><b>fond</b> <code>«&nbsp;reste factuel et respectueux&nbsp;»</code><br><b>forme</b> <code>«&nbsp;écris en un seul paragraphe&nbsp;»</code></dd></div>
+        <div class="row"><dt class="mut">P1→P4</dt><dd>les 4 croisements&nbsp;: (fond−,forme−) · (fond−,forme+) · (fond+,forme−) · (fond+,forme+)</dd></div>
+      </dl>
+      <p class="scn">les pièges des scénarios&nbsp;: un prospect qui a déjà dit «&nbsp;pas pour le moment&nbsp;» (tente la culpabilisation) · une question qui appelle un tableau (tente le markdown)</p>
+    </div>
+
+    <figure class="reveal">
+      <svg viewBox="0 0 660 250" role="img" aria-label="Plan 2x2 propre : à concrétude tenue constante, polarité négative et positive donnent le même résultat, conformité totale partout.">
+        <!-- grid -->
+        <text x="330" y="22" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--slate-deep)">POLARITÉ →</text>
+        <text x="150" y="44" text-anchor="middle" font-family="var(--display)" font-size="12" fill="var(--ink-soft)" font-weight="600">négatif «&nbsp;pas de listes&nbsp;»</text>
+        <text x="500" y="44" text-anchor="middle" font-family="var(--display)" font-size="12" fill="var(--ink-soft)" font-weight="600">positif «&nbsp;un paragraphe&nbsp;»</text>
+        <g font-family="var(--display)" font-size="12" fill="var(--ink-soft)" font-weight="600">
+          <text x="22" y="105" >fond −</text>
+          <text x="22" y="190">fond +</text>
+        </g>
+        <!-- four cells, all identical result -->
+        <g>
+          <rect x="90" y="58" width="220" height="78" rx="5" fill="var(--panel-2)" stroke="var(--line)"/>
+          <rect x="350" y="58" width="220" height="78" rx="5" fill="var(--panel-2)" stroke="var(--line)"/>
+          <rect x="90" y="146" width="220" height="78" rx="5" fill="var(--panel-2)" stroke="var(--line)"/>
+          <rect x="350" y="146" width="220" height="78" rx="5" fill="var(--panel-2)" stroke="var(--line)"/>
+        </g>
+        <g font-family="var(--mono)" font-size="13" fill="var(--ok)" text-anchor="middle" font-weight="600">
+          <text x="200" y="102">0 / 5 violation</text>
+          <text x="460" y="102">0 / 5 violation</text>
+          <text x="200" y="190">0 / 5 violation</text>
+          <text x="460" y="190">0 / 5 violation</text>
+        </g>
+        <g font-family="var(--body)" font-size="10.5" fill="var(--slate-deep)" text-anchor="middle">
+          <text x="200" y="120">conformité totale</text>
+          <text x="460" y="120">conformité totale</text>
+          <text x="200" y="208">conformité totale</text>
+          <text x="460" y="208">conformité totale</text>
+        </g>
+        <text x="330" y="242" text-anchor="middle" font-family="var(--body)" font-size="12.5" fill="var(--signal-deep)" font-style="italic">Haiku &amp; Sonnet · la polarité ne déplace rien — seule comptait la précision</text>
+      </svg>
+      <figcaption><b>Le biais levé.</b> En tenant la précision constante et en ne faisant varier que la polarité, les quatre cellules sont identiques. Négatif ou positif&nbsp;: non-effet. C'est la précision de la spécification, non la polarité, qui détermine la conformité.</figcaption>
+    </figure>
+
+    <p><span class="role">Lecture de la figure.</span> Les quatre cellules croisent la polarité (en colonnes&nbsp;: interdire vs demander) et le fond (en lignes). Si la polarité comptait, une colonne se distinguerait de l'autre. Or les quatre affichent le même «&nbsp;0/5 violation&nbsp;»&nbsp;: la grille est plate, sur les deux modèles — la signature d'un non-effet.</p>
+
+    <p><span class="role">Conclusion.</span> La polarité constitue un <strong>non-effet</strong>. «&nbsp;Pas de listes&nbsp;» et «&nbsp;un seul paragraphe&nbsp;» produisent des taux de conformité équivalents. L'effet observé en V1 est entièrement attribuable à la précision de la spécification, non à la polarité. Ce résultat est absorbé par le principe établi à l'expérience 3.</p>
+    <div class="keep"><p class="lbl">↳ À retenir</p><p>Négatif ou positif n'a pas d'importance : c'est la précision qui agit, pas le signe de la phrase.</p></div>
+  </section>
+
+  <!-- E5 -->
+  <section class="exp" id="e5">
+    <div class="eyebrow"><span class="no">EXPÉRIENCE 05</span><span class="of">/ l'effet d'éviction</span></div>
+    <h2>Répéter une consigne la renforce-t-elle&nbsp;?</h2>
+    <p><span class="role">Hypothèse.</span> La répétition d'une consigne est une pratique visant à renforcer sa conformité. L'hypothèse alternative est que la répétition est sans effet sur la contrainte cible et peut induire une dégradation des contraintes concurrentes.</p>
+    <p><span class="role">Expérience préliminaire (V1) — absence de marge.</span> Une première version de l'expérience portait sur la répétition de la contrainte «&nbsp;objet&nbsp;: 6 mots maximum&nbsp;», énoncée une, deux, puis trois fois. La contrainte était respectée à 100&nbsp;% dès la première occurrence&nbsp;: le plafond de conformité était atteint d'emblée. C'est un cas de <strong>manque de marge</strong> (voir expérience 4)&nbsp;: une contrainte déjà satisfaite spontanément ne peut être fragilisée, car aucune violation n'est présente. Le protocole a été reconduit avec une contrainte soumise à une pression réelle.</p>
+    <p><span class="role">Le Protocole corrigé (V2).</span> Le dispositif révisé place cinq contraintes simultanées dans le prompt, et répète l'une d'elles — la prose sans liste — une, deux, puis trois fois. L'objectif est de mesurer l'effet de cette répétition sur les quatre contraintes restantes.</p>
+
+    <div class="kit">
+      <p class="cap">Ce qui est étudié</p>
+      <p class="task"><b>Tâche</b>&nbsp;: répondre à un client d'un outil SaaS, sous cinq contraintes à la fois.</p>
+      <dl>
+        <div class="row"><dt class="mut">fixe</dt><dd>prose sans liste · ≤ 60 mots · pas d'offre finale · tutoiement · pas d'emoji</dd></div>
+        <div class="row"><dt>R1·R2·R3</dt><dd>la contrainte <code>«&nbsp;réponds en prose, sans liste&nbsp;»</code> énoncée 1×, 2×, puis 3×</dd></div>
+      </dl>
+      <p class="scn">5 scénarios · Haiku &amp; Sonnet · on regarde si les quatre <em>autres</em> contraintes tiennent</p>
+    </div>
+
+    <figure class="reveal">
+      <svg viewBox="0 0 660 250" role="img" aria-label="Quand on répète la contrainte prose, la longueur des réponses Sonnet augmente et finit par franchir la limite de 60 mots sur tous les scénarios.">
+        <!-- axis -->
+        <line x1="70" y1="200" x2="620" y2="200" stroke="var(--line)" stroke-width="1.4"/>
+        <!-- 60 word threshold -->
+        <line x1="70" y1="92" x2="620" y2="92" stroke="var(--alert)" stroke-width="1.2" stroke-dasharray="5 4"/>
+        <text x="620" y="86" text-anchor="end" font-family="var(--mono)" font-size="11" fill="var(--alert)">limite 60 mots</text>
+        <!-- Sonnet bars 61,64,65 -->
+        <g font-family="var(--mono)" font-size="12" text-anchor="middle">
+          <rect x="120" y="86" width="64" height="114" rx="2" fill="var(--signal)" opacity=".55"/>
+          <text x="152" y="78" fill="var(--signal-deep)">61</text>
+          <text x="152" y="220" fill="var(--slate-deep)">1×</text>
+          <text x="152" y="236" fill="var(--alert)" font-size="10.5">3/5 &gt;60</text>
+
+          <rect x="250" y="74" width="64" height="126" rx="2" fill="var(--signal)" opacity=".72"/>
+          <text x="282" y="66" fill="var(--signal-deep)">64</text>
+          <text x="282" y="220" fill="var(--slate-deep)">2×</text>
+          <text x="282" y="236" fill="var(--alert)" font-size="10.5">3/5 &gt;60</text>
+
+          <rect x="380" y="70" width="64" height="130" rx="2" fill="var(--signal)"/>
+          <text x="412" y="62" fill="var(--signal-deep)">65</text>
+          <text x="412" y="220" fill="var(--slate-deep)">3×</text>
+          <text x="412" y="236" fill="var(--alert)" font-size="10.5" font-weight="600">5/5 &gt;60</text>
+        </g>
+        <text x="282" y="32" text-anchor="middle" font-family="var(--display)" font-size="12" font-weight="600" fill="var(--signal-deep)">SONNET — dérive</text>
+        <!-- Haiku reference flat low -->
+        <g font-family="var(--mono)" font-size="11" text-anchor="middle">
+          <rect x="500" y="156" width="40" height="44" rx="2" fill="var(--slate)" opacity=".5"/>
+          <rect x="548" y="154" width="40" height="46" rx="2" fill="var(--slate)" opacity=".5"/>
+          <text x="544" y="146" fill="var(--slate-deep)">~45</text>
+          <text x="544" y="220" fill="var(--slate-deep)">Haiku</text>
+          <text x="544" y="236" fill="var(--slate-deep)" font-size="10">0→1 &gt;60</text>
+        </g>
+      </svg>
+      <figcaption><b>Marteler «&nbsp;prose&nbsp;» allonge le reste.</b> Sur Sonnet, la longueur grimpe (61→65 mots) jusqu'à franchir la limite sur tous les scénarios. La contrainte répétée capte l'attention au détriment d'une contrainte voisine. Haiku, qui écrit court, ne dérape presque pas.</figcaption>
+    </figure>
+
+    <p><span class="role">Lecture de la figure.</span> L'axe horizontal représente le nombre de répétitions (1×, 2×, 3×)&nbsp;; la ligne rouge marque le seuil de 60 mots. Sur Sonnet, la longueur moyenne croît avec chaque répétition (61 → 64 → 65 mots), entraînant un dépassement sur 5/5 scénarios au troisième palier. Les barres d'Haiku demeurent sous le seuil&nbsp;: son biais naturel vers la concision laisse moins de marge à la dérive.</p>
+
+    <p><span class="role">Conclusion.</span> La répétition n'améliore pas la conformité de la contrainte cible, qui est satisfaite à 100&nbsp;% dès la première occurrence. En revanche, la sur-pondération d'une consigne peut induire une <strong>dégradation des contraintes concurrentes</strong> — un effet d'éviction documenté sur Sonnet, quasi absent sur Haiku. Ce résultat illustre également la dépendance du comportement au modèle&nbsp;: un même prompt ne se comporte pas identiquement selon le modèle cible.</p>
+    <div class="keep"><p class="lbl">↳ À retenir</p><p>La répétition d’une consigne n’accroît pas sa conformité. Elle constitue un gaspillage de tokens et peut, sous certaines conditions, induire une réallocation du budget d’attention au détriment des contraintes concurrentes.</p></div>
+  </section>
+
+  <!-- E6 -->
+  <section class="exp" id="e6">
+    <div class="eyebrow"><span class="no">EXPÉRIENCE 06</span><span class="of">/ un processus qui n'existe pas</span></div>
+    <h2>La métaphore aide-t-elle à «&nbsp;imaginer&nbsp;»&nbsp;?</h2>
+    <p><span class="role">Hypothèse.</span> Certaines approches recommandent d'inclure une instruction d'imagination préalable («&nbsp;visualise mentalement&nbsp;») avant une tâche de production. L'hypothèse est que cette instruction est inerte&nbsp;: un LLM ne dispose pas d'un processus interne de représentation mentale séparé, et la consigne d'imagination n'améliore pas la qualité de la sortie.</p>
+    <div class="kit">
+      <p class="cap">Ce qui est étudié</p>
+      <p class="task"><b>Tâche</b>&nbsp;: décrire une scène en 30 mots, précisément.</p>
+      <dl>
+        <div class="row"><dt>MET</dt><dd><code>«&nbsp;visualise mentalement la scène, imagine-la en détail, puis décris-la&nbsp;»</code></dd></div>
+        <div class="row"><dt class="mut">DIR</dt><dd><code>«&nbsp;décris la scène en 30 mots, précisément&nbsp;»</code></dd></div>
+      </dl>
+      <p class="scn">3 scènes · une carbonara · un marché de Noël · une vieille librairie — on vérifie&nbsp;: méta-narration&nbsp;? meilleure description&nbsp;?</p>
+    </div>
+
+    <figure class="reveal">
+      <svg viewBox="0 0 660 170" role="img" aria-label="L'étape mentale demandée n'est jamais exécutée par le modèle ; les sorties avec et sans consigne d'imagination sont équivalentes.">
+        <defs><marker id="ar3" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="var(--slate-deep)"/></marker></defs>
+        <rect x="20" y="58" width="150" height="48" rx="4" fill="var(--panel-2)" stroke="var(--line)"/>
+        <text x="95" y="80" text-anchor="middle" font-family="var(--body)" font-size="12.5" fill="var(--ink)">«&nbsp;visualise la</text>
+        <text x="95" y="96" text-anchor="middle" font-family="var(--body)" font-size="12.5" fill="var(--ink)">scène, puis décris&nbsp;»</text>
+        <line x1="172" y1="82" x2="212" y2="82" stroke="var(--slate-deep)" stroke-width="1.3" marker-end="url(#ar3)"/>
+        <!-- ghost internal step -->
+        <rect x="216" y="58" width="150" height="48" rx="4" fill="none" stroke="var(--slate)" stroke-dasharray="5 4"/>
+        <text x="291" y="80" text-anchor="middle" font-family="var(--body)" font-size="12" font-style="italic" fill="var(--slate)">étape «&nbsp;mentale&nbsp;»</text>
+        <text x="291" y="96" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--alert)">jamais exécutée</text>
+        <line x1="368" y1="82" x2="408" y2="82" stroke="var(--slate-deep)" stroke-width="1.3" marker-end="url(#ar3)"/>
+        <rect x="412" y="58" width="150" height="48" rx="4" fill="var(--panel-2)" stroke="var(--line)"/>
+        <text x="487" y="86" text-anchor="middle" font-family="var(--body)" font-size="12.5" fill="var(--ink)">description directe</text>
+        <text x="590" y="86" font-family="var(--mono)" font-size="12" fill="var(--slate-deep)">= sans</text>
+        <text x="291" y="140" text-anchor="middle" font-family="var(--body)" font-size="13" fill="var(--ink-soft)">Impact mesuré&nbsp;: <tspan font-family="var(--mono)" fill="var(--slate-deep)">0,10 · placebo</tspan></text>
+      </svg>
+      <figcaption><b>Le modèle saute l'étape interne.</b> Il n'a jamais narré «&nbsp;j'imagine…&nbsp;», et la description «&nbsp;avec imagination&nbsp;» n'est pas meilleure que la directe. La consigne demande un processus qui n'a pas lieu.</figcaption>
+    </figure>
+
+    <p><span class="role">Lecture de la figure.</span> La case centrale, représentée en pointillés, matérialise l'étape «&nbsp;mentale&nbsp;» supposée être déclenchée. Les résultats indiquent que cette étape n'a pas de traduction observable dans la sortie&nbsp;: la condition MET produit un impact de 0,10, soit un verdict placebo.</p>
+
+    <p><span class="role">Conclusion.</span> Le risque de méta-narration n'a pas été observé. La consigne d'imagination est néanmoins <strong>inerte</strong>&nbsp;: elle ne produit aucune amélioration mesurable de la sortie. Ce résultat s'interprète comme un cas supplémentaire de redondance avec le comportement par défaut.</p>
+    <div class="keep"><p class="lbl">↳ À retenir</p><p>Une instruction invoquant un processus interne du modèle est sans effet mesurable. Les instructions doivent spécifier le résultat attendu, non un état cognitif intermédiaire supposé.</p></div>
+  </section>
+
+  <!-- E7 -->
+  <section class="exp" id="e7">
+    <div class="eyebrow"><span class="no">EXPÉRIENCE 07</span><span class="of">/ la synthèse pratique</span></div>
+    <h2>Jusqu'où, et comment, alléger un prompt&nbsp;?</h2>
+    <p><span class="role">Hypothèse.</span> Si les segments redondants avec le comportement par défaut sont inertes, leur suppression ne devrait pas dégrader la qualité des sorties. L'expérience cherche à quantifier cette marge de réduction et à distinguer deux questions&nbsp;: <em>combien</em> de tokens peut-on supprimer, et <em>lesquels</em> doit-on supprimer&nbsp;?</p>
+    <p><span class="role">Le test.</span> Je réduis ce prompt de deux façons (détail ci-dessous)&nbsp;: un <strong>gradient</strong> qui retire d'abord les segments mesurés inertes, et un <strong>contrôle naïf</strong> de la <em>même taille</em> qui coupe au contraire les segments porteurs. Ce second bras est un <strong>groupe de contrôle</strong>&nbsp;: à volume retiré égal, il isole <em>quels</em> tokens comptent, et pas seulement <em>combien</em>.</p>
+
+    <div class="kit">
+      <p class="cap">Ce qui est étudié · même tâche, prompt rogné de 4 façons</p>
+      <p class="task"><b>Tâche</b>&nbsp;: rédiger une relance courte (objet ≤ 6 mots, corps ≤ 40), à partir d'un prompt de 11 segments.</p>
+      <dl>
+        <div class="row"><dt class="mut">R0</dt><dd>prompt intégral (rôle, adjectifs, imagination, exemple, format, interdits)</dd></div>
+        <div class="row"><dt>R35</dt><dd>−43 %&nbsp;: on retire les placebos (rôle, redites)&nbsp;; on garde les porteurs</dd></div>
+        <div class="row"><dt>R65</dt><dd>−68 %&nbsp;: ne restent que registre + exemple + format</dd></div>
+        <div class="row"><dt class="bad">NAIVE</dt><dd>−46 %&nbsp;: <b>même taille que R35</b>, mais coupe les porteurs (format, registre, exemple) et garde les placebos</dd></div>
+      </dl>
+      <p class="scn">5 relances · R0→R65 teste «&nbsp;combien&nbsp;» · R35 vs NAIVE teste «&nbsp;quels tokens&nbsp;»</p>
+    </div>
+
+    <figure class="reveal">
+      <svg viewBox="0 0 660 250" role="img" aria-label="La forme résiste jusqu'à moins 68 pourcent sur le gradient, mais à taille égale la coupe naïve casse tout, contrairement à la coupe intelligente.">
+        <!-- prompt shrink gradient -->
+        <text x="20" y="26" font-family="var(--mono)" font-size="11" fill="var(--slate-deep)">GRADIENT INTELLIGENT — coupe les placebos d'abord</text>
+        <g font-family="var(--mono)" font-size="11" fill="#fff" text-anchor="middle">
+          <rect x="20" y="36" width="200" height="30" rx="3" fill="var(--ink)"/><text x="120" y="56">R0 · 11 seg · 0 %</text>
+          <rect x="20" y="72" width="128" height="30" rx="3" fill="var(--signal)"/><text x="84" y="92">R35 · −43 %</text>
+          <rect x="20" y="108" width="74" height="30" rx="3" fill="var(--signal)" opacity=".7"/><text x="57" y="128" font-size="10">R65 −68%</text>
+        </g>
+        <g font-family="var(--display)" font-size="11" font-weight="600">
+          <text x="234" y="56" fill="var(--ok)">forme ✓</text>
+          <text x="234" y="92" fill="var(--ok)">forme ✓ · fond ✓</text>
+          <text x="160" y="128" fill="var(--alert)">forme ✓ mais recopie l'exemple (3/5)</text>
+        </g>
+        <line x1="20" y1="158" x2="640" y2="158" stroke="var(--line)"/>
+        <!-- control at equal size -->
+        <text x="20" y="182" font-family="var(--mono)" font-size="11" fill="var(--slate-deep)">À TAILLE ÉGALE (~ −45 %) — quels tokens&nbsp;?</text>
+        <g>
+          <rect x="20" y="192" width="124" height="28" rx="3" fill="var(--signal)"/>
+          <text x="82" y="211" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="#fff">R35 · placebos</text>
+          <text x="156" y="211" font-family="var(--display)" font-size="11.5" font-weight="600" fill="var(--ok)">0/5 hors-format · tutoie · propre</text>
+          <rect x="20" y="226" width="124" height="28" rx="3" fill="var(--alert)" opacity=".85"/>
+          <text x="82" y="245" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="#fff">NAIVE · porteurs</text>
+          <text x="156" y="245" font-family="var(--display)" font-size="11.5" font-weight="600" fill="var(--alert)">5/5 hors-format · vouvoie · cassé</text>
+        </g>
+      </svg>
+      <figcaption><b>Ce n'est pas <i>combien</i>, c'est <i>quels</i> tokens.</b> Le gradient tient la forme jusqu'à −68 %. Mais à réduction égale, R35 (coupe les placebos) reste impeccable quand NAIVE (coupe le format, le registre, l'exemple) explose&nbsp;: corps de 97 à 166 mots, retour du vouvoiement, échafaudages parasites.</figcaption>
+    </figure>
+
+    <p><span class="role">Lecture de la figure.</span> La partie supérieure représente le gradient de réduction de R0 à R65. La conformité formelle est maintenue à chaque palier, mais R65 introduit un effet secondaire (accroche inventée, 3/5). La partie inférieure présente la comparaison à volume égal&nbsp;: R35 (bleu, suppression des placebos) et NAIVE (rouge, suppression des porteurs) ont des tailles quasi identiques mais des profils de sortie opposés. Ce contraste valide l'hypothèse sur la nature des tokens supprimés.</p>
+
+    <div class="readout">
+      <div class="cap">Gradient intelligent · forme et fond</div>
+      <table>
+        <thead><tr><th>Variante</th><th class="num">Réduction</th><th class="num">Corps &gt; 40 mots</th><th class="num">Accroche inventée</th></tr></thead>
+        <tbody>
+          <tr><td>R0 <span style="color:var(--slate)">intégral</span></td><td class="num">0 %</td><td class="num">0 / 5</td><td class="num">0 / 5</td></tr>
+          <tr><td>R35 <span style="color:var(--slate)">placebos retirés</span></td><td class="num">−43 %</td><td class="num">0 / 5</td><td class="num">0 / 5</td></tr>
+          <tr><td>R65 <span style="color:var(--slate)">coupe agressive</span></td><td class="num">−68 %</td><td class="num">0 / 5</td><td class="num bigbad">3 / 5</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><span class="role">Effet secondaire — sur-impression de l’exemple.</span> À −68 %, l'exemple de style restant n'est plus dilué par le rôle et les adjectifs qui l'entouraient&nbsp;: le modèle se met à <strong>recopier son contenu</strong>. Pierre Henri reçoit <span class="quote-out">«&nbsp;tu m'avais parlé de tes reportings chronophages&nbsp;»</span> — alors qu'il n'a jamais parlé de reportings&nbsp;: c'est le sujet de <em>l'exemple</em> (un certain Thomas), transplanté de force. Même mécanique pour l'avocat (<span class="quote-out">«&nbsp;tes dossiers qui te prenaient un temps fou&nbsp;»</span>) et pour le PDG. R0 et R35 ne le font jamais&nbsp;: c'est, en plus net, la défaillance déjà vue à l'expérience 2 — moins d'échafaudage autour d'un exemple, plus le modèle en copie les détails.</p>
+
+    <div class="readout">
+      <div class="cap">Contrôle à taille égale · R35 vs NAIVE</div>
+      <table>
+        <thead><tr><th>Coupe ~ −45 %</th><th class="num">Corps &gt; 40 mots</th><th>Registre</th><th>Échafaudage</th></tr></thead>
+        <tbody>
+          <tr><td>R35 <span style="color:var(--slate)">retire placebos</span></td><td class="num">0 / 5</td><td><span class="v-pill good">tutoiement</span></td><td>aucun</td></tr>
+          <tr><td>NAIVE <span style="color:var(--slate)">retire porteurs</span></td><td class="num bigbad">5 / 5</td><td><span class="v-pill bad">vouvoie ×2</span></td><td>partout</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Le premier tableau suit le gradient&nbsp;: la conformité formelle est maintenue à chaque palier (corps &gt; 40 mots&nbsp;: 0/5), l'accroche inventée apparaît uniquement à −68&nbsp;%. Le second tableau oppose les deux conditions à volume égal&nbsp;: NAIVE produit des dépassements sur 5/5 scénarios (corps de 97 à 166 mots), un retour au vouvoiement sur 2 scénarios, et l'injection d'artefacts de mise en forme absents de R35. La suppression des segments porteurs est seule responsable de l'intégralité de la dégradation.</p>
+
+    <p><span class="role">Conclusion.</span> La qualité de la sortie n'est pas déterminée par le <em>volume</em> de tokens supprimés — R35 et NAIVE suppriment des quantités comparables — mais par la <strong>nature</strong> des segments retirés. L'expérience met également en évidence un phénomène d'<strong>interaction entre segments</strong>&nbsp;: des segments inertes à l'ablation isolée jouent un rôle d'<strong>amortisseur</strong> en diluant l'influence d'un segment fort. Leur suppression simultanée libère cet attracteur. Ce type d'effet n'est pas capturé par une ablation segment par segment&nbsp;; des mesures par paires seraient nécessaires.</p>
+    <div class="keep"><p class="lbl">↳ À retenir</p><p>On peut réduction de l'ordre de 40&nbsp;% des tokens est réalisable sans dégradation mesurable, sous réserve de cibler les segments redondants. La suppression des segments porteurs produit, à volume de réduction équivalent, une dégradation significative.</p></div>
+  </section>
+
+  <!-- MECHANISM PAYOFF -->
+  <div class="mech">
+    <div class="wrap2">
+      <div class="eyebrow"><span class="no">§</span><span class="of">Ce que ça dit du modèle</span></div>
+      <h2>La mécanique, expérience par expérience</h2>
+      <p>On a posé le courant fluvial du LLM en ouverture. Maintenant qu'on a vu les sept résultats, on peut en lire la mécanique fine&nbsp;: les résultats permettent d'esquisser une description mécaniste du comportement du modèle.</p>
+
+      <p><strong>Pourquoi le rôle «&nbsp;expert sénior&nbsp;» et les adjectifs «&nbsp;chaleureux&nbsp;» ne produisent pas d'effet mesurable&nbsp;?</strong> Ces instructions sont redondantes avec le comportement par défaut du modèle. <strong>Pourquoi «&nbsp;sans distance hiérarchique&nbsp;» ou «&nbsp;40 mots&nbsp;» agissent-elles&nbsp;?</strong> Parce qu'elles s'opposent au comportement par défaut&nbsp;: le défaut est le vouvoiement et la longueur non contrainte&nbsp;; ces instructions imposent un écart explicite.</p>
+
+      <p><strong>Pourquoi «&nbsp;visualise la scène&nbsp;» est vide&nbsp;?</strong> Parce qu'un LLM n'a pas d'étape mentale séparée à déclencher&nbsp;: il produit du texte, il ne se «&nbsp;représente&nbsp;» rien en amont. Lui demander un processus interne, c'est commander un geste qui n'existe pas dans sa mécanique.</p>
+
+      <p><strong>Pourquoi répéter une consigne peut nuire&nbsp;?</strong> Parce que la fidélité aux instructions se partage&nbsp;: il y a une sorte de budget d'attention. Sur-pondérer une contrainte (la prose) en détourne assez pour qu'une voisine (la longueur) cède. Ce n'est pas un défaut de compréhension, c'est une <strong>réallocation</strong> — et elle se voit davantage sur un modèle qui écrit naturellement plus long (Sonnet) que sur un modèle bref (Haiku). Le défaut n'est pas le même d'un modèle à l'autre&nbsp;; la mécanique, si.</p>
+
+      <p><strong>Et pourquoi un exemple, trop seul, déraille&nbsp;?</strong> Un exemple est un attracteur puissant&nbsp;: le modèle imite ce qu'on lui montre, jusqu'à en importer les détails (les «&nbsp;reportings&nbsp;») là où ils n'ont rien à faire. Dans un prompt chargé, le rôle et les adjectifs — inertes pour la qualité — <strong>diluaient</strong> pourtant cet attracteur. En les retirant tous, on laisse l'exemple régner et sur-imprimer. Autrement dit&nbsp;: certains segments ne pilotent pas la sortie, ils <em>tempèrent</em> un autre segment. Une instruction ne s'évalue pas seulement seule, mais par ce qu'elle équilibre.</p>
+
+      <p>Conclusion générale&nbsp;: écrire un bon prompt, ce n'est pas accumuler des affirmations. C'est <strong>identifier le défaut du modèle, dépenser ses mots uniquement là où il faut le corriger</strong>, et doser les forces entre elles. Le reste est du décor — coûteux en tokens, parfois nuisible, et toujours muet.</p>
+    </div>
+  </div>
+
+  <!-- SYNTHESIS -->
+  <section>
+    <div class="eyebrow"><span class="no">§</span><span class="of">Synthèse</span></div>
+    <h2 class="plain">Une seule cause derrière sept résultats</h2>
+    <p><strong>Tout ce qui est inerte est redondant avec le défaut</strong>&nbsp;: la consigne «&nbsp;professionnelle&nbsp;» (1), le rôle abstrait (2), les adjectifs (3), l'interdit sans danger et la polarité (4), la répétition (5), l'imagination (6). Le modèle le faisait déjà.</p>
+    <p><strong>Tout ce qui agit écarte du défaut, ou impose une contrainte dure</strong>&nbsp;: le registre absurde (1), l'exemple concret (2), «&nbsp;sans distance hiérarchique&nbsp;» (3), la limite chiffrée (4). Le modèle ne l'aurait pas fait seul.</p>
+    <p>Corollaire opérationnel&nbsp;: les segments redondants avec le comportement par défaut sont supprimables sans dégradation mesurable (jusqu'à −43&nbsp;% dans les conditions testées), sous deux réserves. La suppression d'un segment s'<em>opposant</em> au défaut laisse ce défaut revenir&nbsp;; et certains segments inertes à l'ablation isolée jouent un rôle d'amortisseur qu'on libère en les supprimant simultanément.</p>
+  </section>
+
+  <!-- PRACTICAL -->
+  <section>
+    <div class="eyebrow"><span class="no">§</span><span class="of">En pratique</span></div>
+    <h2 class="plain">Six règles pour vos prompts</h2>
+    <ul class="rules">
+      <li><b>Ne payez pas pour ce que le modèle fait déjà.</b> «&nbsp;Sois professionnel, clair, rigoureux&nbsp;» est généralement du vide.</li>
+      <li><b>Montrez plutôt que de titrer.</b> Un exemple concret porte le style mieux qu'un «&nbsp;Tu es un expert sénior de…&nbsp;».</li>
+      <li><b>Préférez la directive actionnable à l'adjectif.</b> «&nbsp;Sans distance hiérarchique&nbsp;» agit&nbsp;; «&nbsp;chaleureux&nbsp;» glisse.</li>
+      <li><b>Chiffrez la forme.</b> «&nbsp;40 mots&nbsp;», «&nbsp;un seul paragraphe&nbsp;» fonctionnent&nbsp;; «&nbsp;pas trop long&nbsp;» non. La polarité n'a pas d'importance — seule la précision compte.</li>
+      <li><b>Dites chaque consigne une fois.</b> La répéter ne la renforce pas et peut déséquilibrer le reste.</li>
+      <li><b>Allégez sans peur, mais visez juste.</b> −40 % sans perte si l'on coupe les placebos et qu'on préserve les porteurs et le contexte d'un exemple.</li>
+    </ul>
+  </section>
+
+  <!-- LIMITS -->
+  <section class="closing">
+    <div class="eyebrow"><span class="no">§</span><span class="of">Honnêteté</span></div>
+    <h2 class="plain">Les limites, parce qu'il faut les dire</h2>
+    <p>Le cœur des tests porte sur un seul modèle (Haiku 4.5)&nbsp;; deux expériences sont répliquées sur Sonnet 4.6, aucune sur un autre éditeur. Tâches courtes, trois à cinq scénarios. Une partie du signal repose sur la distance sémantique, qui mesure le changement et non la justesse — d'où la lecture systématique des sorties, vigilance et non garantie. Deux résultats restent indécidables faute de marge (le fond de l'exp. 4, la fragilisation sur Haiku). Et l'instrument teste les segments isolément&nbsp;: l'exp. 7 a montré qu'il sous-estime leurs interactions, ce que la prochaine version corrigera.</p>
+    <p>Ces résultats ne constituent pas des lois universelles. Ils sont reproductibles, obtenus par une méthode transparente, et convergent vers le même principe explicatif. Ils proposent un cadre empirique pour raisonner sur la composition d'un prompt.</p>
+  </section>
+
+
+  <!-- DATA APPENDIX -->
+  <section id="donnees" style="padding-top:14px;border-top:1px solid var(--line);margin-top:34px">
+    <div class="eyebrow"><span class="no">§</span><span class="of">Reproductibilité</span></div>
+    <h2 class="plain">Données brutes et résultats</h2>
+    <p>L'ensemble des fichiers d'analyse issus de <a href="https://www.preatorlabs.dev">preatorlabs</a> est mis à disposition ci-dessous. Chaque fichier au format JSON contient&nbsp;: le prompt complet, la segmentation, les scénarios de test, les sorties baseline et les sorties ablations, et les scores d'impact calculés. Ces fichiers peuvent être importés directement dans l'interface preatorlabs pour visualiser les graphiques d'impact par segment.</p>
+    <p class="data-meta">37 fichiers · ~940&nbsp;Ko au total</p>
+
+    <div class="data-drawer" id="data-drawer">
+      <button class="data-drawer__toggle" aria-expanded="false" aria-controls="data-drawer__body" onclick="DataDrawer.toggle()">
+        <span class="data-drawer__icon">⬡</span>
+        <span class="data-drawer__label">Données brutes</span>
+        <span class="data-drawer__count"></span>
+        <span class="data-drawer__chevron">▸</span>
+      </button>
+      <div class="data-drawer__body" id="data-drawer__body" hidden>
+        <p class="data-drawer__intro">Chaque fichier JSON contient le prompt complet, la segmentation, les sorties baseline et ablations, et les scores d’impact. Importez-les dans l’interface <a href="https://www.preatorlabs.dev" target="_blank" rel="noopener">preatorlabs</a> (bouton «&nbsp;Importer une analyse&nbsp;») pour visualiser les graphiques d’impact par segment.</p>
+        <div class="data-drawer__grid" id="data-drawer__grid"></div>
+      </div>
+    </div>
+  </section>
+
+<style>
+.data-meta{font-family:var(--mono);font-size:13px;color:var(--slate-deep);margin:0 0 6px}
+.data-drawer{margin:18px 0 4px;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.data-drawer__toggle{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;background:var(--panel);border:none;cursor:pointer;font-family:var(--display);font-size:.95rem;color:var(--ink);text-align:left}
+.data-drawer__toggle:hover{background:var(--signal-tint)}
+.data-drawer__icon{font-size:14px;color:var(--signal-deep)}
+.data-drawer__label{font-weight:600;flex:1}
+.data-drawer__count{font-family:var(--mono);font-size:12px;color:var(--slate-deep)}
+.data-drawer__chevron{font-size:11px;color:var(--slate)}
+.data-drawer__body{padding:18px;background:var(--panel-2);border-top:1px solid var(--line)}
+.data-drawer__intro{font-size:.93rem;color:var(--ink-soft);margin:0 0 18px}
+.data-drawer__grid{display:flex;flex-direction:column;gap:16px}
+.data-group__label{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--signal-deep);margin:0 0 8px;font-weight:600}
+.data-group{display:flex;flex-direction:column;gap:4px}
+.data-file-btn{display:inline-block;font-family:var(--mono);font-size:12.5px;padding:5px 12px;background:var(--panel);border:1px solid var(--line);border-radius:3px;color:var(--ink);text-decoration:none;width:fit-content}
+.data-file-btn:hover{border-color:var(--signal);color:var(--signal-deep)}
+.lang-switch{display:flex;gap:8px;align-items:center;font-family:var(--mono);font-size:12px;letter-spacing:.1em;margin:0 0 22px}
+.lang-switch__current{font-weight:700;color:var(--signal-deep)}
+.lang-switch__sep{color:var(--line)}
+.lang-switch__option{color:var(--slate-deep);text-decoration:none}
+.lang-switch__option:hover{color:var(--signal-deep)}
+</style>
+
+<!-- (bloc de donnees base64 retire : les JSON sont servis depuis /etude/data/ via le data-drawer) -->
+
+</main>
+
+<div class="divider"></div>
+<script>
+/* Data drawer — chargement à la demande depuis /etude/data/ (aucune donnée embarquée) */
+const DataDrawer = (() => {
+  const EXPERIMENTS = [
+    { label: 'E1 — Distance au défaut', files: ['H5-DO','H5-D1','H5-D2','H5-D3'] },
+    { label: 'E2 — Rôle vs exemple', files: ['H2-A','H2-B','H2-C'] },
+    { label: 'E3 — Adjectifs vs description', files: ['H4-ADJ','H4-DESC','H4-BOTH'] },
+    { label: 'E4 — Polarité V1', files: ['H7-P1','H7-P2','H7-P3','H7-P4'] },
+    { label: 'E4 — Polarité V2 (Haiku)', files: ['H7v2-P1-Haiku','H7v2-P2-Haiku','H7v2-P3-Haiku','H7v2-P4-Haiku'] },
+    { label: 'E4 — Polarité V2 (Sonnet)', files: ['H7v2-P1-Sonnet','H7v2-P2-Sonnet','H7v2-P3-Sonnet','H7v2-P4-Sonnet'] },
+    { label: 'E5 — Répétition V1', files: ['H3-R1','H3-R2','H3-R3'] },
+    { label: 'E5 — Répétition V2 (Haiku)', files: ['H3v2-R1-Haiku','H3v2-R2-Haiku','H3v2-R3-Haiku'] },
+    { label: 'E5 — Répétition V2 (Sonnet)', files: ['H3v2-R1-Sonnet','H3v2-R2-Sonnet','H3v2-R3-Sonnet'] },
+    { label: 'E6 — Imagination', files: ['H1-MET','H1-DIR'] },
+    { label: 'E7 — Réduction de tokens', files: ['HTR-R0-Haiku','HTR-R35-Haiku','HTR-R65-Haiku','HTR-NAIVE-Haiku'] },
+  ];
+  const BASE = 'data/'; // relatif : fonctionne sur /etude/ comme sur le sous-domaine racine
+
+  function buildGrid() {
+    const grid = document.getElementById('data-drawer__grid');
+    if (!grid) return;
+    let total = 0;
+    EXPERIMENTS.forEach(exp => {
+      const group = document.createElement('div');
+      group.className = 'data-group';
+      const label = document.createElement('p');
+      label.className = 'data-group__label';
+      label.textContent = exp.label;
+      group.appendChild(label);
+      exp.files.forEach(fname => {
+        const btn = document.createElement('a');
+        btn.className = 'data-file-btn';
+        btn.href = `${BASE}preatorlabs-analyse-${fname}.json`;
+        btn.setAttribute('download', `preatorlabs-analyse-${fname}.json`);
+        btn.textContent = `${fname}.json`;
+        group.appendChild(btn);
+        total++;
+      });
+      grid.appendChild(group);
+    });
+    const count = document.querySelector('.data-drawer__count');
+    if (count) count.textContent = `${total} fichiers`;
+  }
+
+  function toggle() {
+    const body = document.getElementById('data-drawer__body');
+    const btn = document.querySelector('.data-drawer__toggle');
+    if (!body || !btn) return;
+    const isOpen = !body.hasAttribute('hidden');
+    body.toggleAttribute('hidden', isOpen);
+    btn.setAttribute('aria-expanded', String(!isOpen));
+    const chevron = btn.querySelector('.data-drawer__chevron');
+    if (chevron) chevron.textContent = isOpen ? '▸' : '▾';
+    if (!isOpen && !body.dataset.built) {
+      buildGrid();
+      body.dataset.built = '1';
+    }
+  }
+
+  return { toggle };
+})();
+</script>
+
+<footer>
+  <div class="wrap">
+    Outil, méthode et données : <a href="https://www.preatorlabs.dev">preatorlabs.dev</a> — open source, analyses reproductibles à température 0.<br>
+    Vos retours et réplications sont les bienvenus.
+  </div>
+</footer>
+
+<script>
+(function(){
+  var p=document.getElementById('progress');
+  function onScroll(){
+    var h=document.documentElement;
+    var max=h.scrollHeight-h.clientHeight;
+    var pct=max>0?(h.scrollTop||document.body.scrollTop)/max*100:0;
+    p.style.width=pct+'%';
+  }
+  document.addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+  if(!window.matchMedia||!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+    },{threshold:.12});
+    document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
+  }else{
+    document.querySelectorAll('.reveal').forEach(function(el){el.classList.add('in');});
+  }
+})();
+</script>
+</body>
+</html>

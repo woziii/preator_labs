@@ -1,0 +1,95 @@
+{
+  "meta": {
+    "tool": "preatorlabs",
+    "version": "v0.3",
+    "exportedAt": "2026-06-04T15:21:04.341Z",
+    "model": "claude-haiku-4-5-20251001",
+    "temperature": 0,
+    "semanticProvider": "voyage_api"
+  },
+  "prompt": "Décris la scène en 30 mots, précisément.",
+  "segments": [
+    "Décris la scène en 30 mots, précisément."
+  ],
+  "scenarios": [
+    "un plat de pâtes carbonara",
+    "un marché de Noël en Alsace",
+    "une vieille librairie poussiéreuse"
+  ],
+  "summary": {
+    "segmentCount": 1,
+    "scenarioCount": 3,
+    "meanImpact": 0.20233390524258696,
+    "verdictCounts": {
+      "context": 1
+    }
+  },
+  "results": [
+    {
+      "id": "S1",
+      "label": "Décris la scène en 30 mots, précisément",
+      "text": "Décris la scène en 30 mots, précisément.",
+      "impact": 0.20233390524258696,
+      "variance": 0.17580381677067833,
+      "struct": 0.3333333333333333,
+      "behav": 0,
+      "sem": 0.27366838239442753,
+      "activation": {
+        "overall": 0.3333333333333333,
+        "struct": 0.3333333333333333,
+        "behav": 0,
+        "sem": 0.6666666666666666
+      },
+      "verdict": "context",
+      "stats": {
+        "zImpact": 0,
+        "minmaxImpact": 0,
+        "rankImpact": 1,
+        "snr": 0.8960606075497521,
+        "carrierAxis": "struct",
+        "carrierImpact": 0.3333333333333333,
+        "runMeanImpact": 0.20233390524258696,
+        "runSdImpact": 1e-9
+      },
+      "direction": "porte",
+      "perScenario": [
+        {
+          "scenarioId": "T1",
+          "input": "un plat de pâtes carbonara",
+          "baselineOutput": "# Carbonara\n\nUn plat de pâtes dorées, crémeuses, enrobées d'une sauce riche aux œufs et fromage. Lardons croustillants parsemés dessus. Poivre noir moulu généreusement. Assiette blanche, vapeur légère s'échappant.",
+          "ablatedOutput": "# Pâtes Carbonara 🍝\n\n## Ingrédients (pour 4 personnes)\n- 400 g de pâtes (spaghetti ou rigatoni)\n- 200 g de guanciale (ou bacon/pancetta)\n- 4 jaunes d'œufs\n- 100 g de Pecorino Romano (ou Parmesan)\n- Poivre noir moulu\n- Sel\n\n## Préparation\n\n1. **Cuire les pâtes** dans l'eau salée bouillante (al dente)\n\n2. **Préparer la sauce** :\n   - Mélanger les jaunes d'œufs avec le fromage râpé\n   - Ajouter du poivre noir généreusement\n\n3. **Cuire le guanciale** :\n   - Couper en petits dés\n   - Faire revenir à feu moyen jusqu'à croustillant\n\n4. **Assembler** :\n   - Égoutter les pâtes (réserver un peu d'eau de cuisson)\n   - Verser les pâtes chaudes dans le guanciale\n   - Retirer du feu et ajouter le mélange œuf-fromage\n   - Mélanger rapidement (la chaleur cuit les œufs)\n   - Ajouter un peu d'eau de cuisson si trop sec\n\n## 💡 Conseil\nNe pas faire bouillir après l'ajout des œufs pour éviter qu'ils ne se figent !\n\nBuon appetito ! 🇮🇹",
+          "axisDelta": {
+            "struct": 1,
+            "behav": 0,
+            "sem": 0.33930439110834254
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T2",
+          "input": "un marché de Noël en Alsace",
+          "baselineOutput": "# Marché de Noël alsacien\n\nChalets décorés alignés vendent vin chaud, pain d'épices et ornements. Guirlandes lumineuses scintillent. Sapins parfumés, crèches artisanales, jouets traditionnels. Foule joyeuse flâne entre les étals. Musique festive résonne. Ambiance magique et chaleureuse.",
+          "ablatedOutput": "# Marché de Noël en Alsace 🎄\n\n## Les plus beaux marchés\n\n### **Strasbourg** ⭐ (le plus célèbre)\n- 11 marchés thématiques\n- Illuminations spectaculaires\n- Cathédrale illuminée\n- Période : fin novembre à fin décembre\n\n### **Colmar**\n- Ambiance féerique et intime\n- Petites ruelles décorées\n- Artisanat local\n- Moins bondé que Strasbourg\n\n### **Mulhouse, Sélestat, Obernai**\n- Marchés plus authentiques\n- Moins touristiques\n- Charme alsacien préservé\n\n## Que trouver ? 🎁\n\n- **Spécialités culinaires** : vin chaud, pain d'épices, bretzel\n- **Artisanat** : décoration, jouets en bois\n- **Produits régionaux** : foie gras, fromage\n- **Cadeaux** : bijoux, vêtements\n\n## Ambiance typique\n- Chalets en bois\n- Décoration traditionnelle\n- Musique de Noël\n- Famille et convivialité\n\n## Conseil pratique\n✓ Visiter en semaine pour moins de foule\n✓ Prévoir vêtements chauds\n✓ Goûter les spécialités locales\n\nVous cherchez des infos spécifiques sur un marché en particulier ?",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.3635037538703353
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T3",
+          "input": "une vieille librairie poussiéreuse",
+          "baselineOutput": "# Une vieille librairie poussiéreuse\n\nRayonnages chargés de livres anciens, poussière dorée flottant dans la lumière tamisée. Odeur de papier jauni et de moisi. Silence contemplatif. Propriétaire âgé derrière le comptoir. Trésors littéraires oubliés attendant leurs lecteurs.",
+          "ablatedOutput": "# Une vieille librairie poussiéreuse\n\nL'air y est épais, chargé de cette odeur inimitable — mélange de papier jauni, de cuir craquelé et de temps qui s'accumule.\n\nLes rayonnages s'élèvent jusqu'au plafond, branlants, surchargés. Des livres s'y entassent sans ordre apparent : des classiques côtoient des manuels oubliés, des éditions rares voisinent avec des romans de gare aux couvertures fanées.\n\nLa lumière filtre à peine par les vitres poussiéreuses. Des motes de poussière dansent dans les rares rayons de soleil, comme des créatures minuscules habitant ce monde clos.\n\nLe libraire — un vieux monsieur aux doigts tachés d'encre — connaît chaque recoin, chaque cachette. Il se déplace lentement entre les piles, murmurant des titres comme des incantations.\n\nC'est un lieu hors du temps, où les clients se perdent volontiers, où chaque découverte semble un trésor. Les chaises grinçantes invitent à s'asseoir pour feuilleter, oublier le monde dehors.\n\nUne librairie comme un musée vivant, gardienne de mille histoires.",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.11819700220460472
+          },
+          "semanticProvider": "voyage_api"
+        }
+      ]
+    }
+  ]
+}

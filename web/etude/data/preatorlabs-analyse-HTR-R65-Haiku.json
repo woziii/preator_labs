@@ -1,0 +1,395 @@
+{
+  "meta": {
+    "tool": "preatorlabs",
+    "version": "v0.3",
+    "exportedAt": "2026-06-11T09:30:07.553Z",
+    "model": "claude-haiku-4-5-20251001",
+    "temperature": 0,
+    "semanticProvider": "voyage_api"
+  },
+  "prompt": "Écris comme à un collègue que tu respectes, sans distance hiérarchique.\n\nInspire-toi de ce naturel : \"Thomas, tu m'avais parlé de tes reportings qui te bouffaient tes soirées. J'ai un truc. 15 min ?\"\n\nObjet : 6 mots maximum. Corps : 40 mots maximum.\n\nRédige uniquement l'email (objet + corps), sans aucun commentaire.",
+  "segments": [
+    "Écris comme à un collègue que tu respectes, sans distance hiérarchique.",
+    "Inspire-toi de ce naturel : \"Thomas, tu m'avais parlé de tes reportings qui te bouffaient tes soirées. J'ai un truc. 15 min ?\"",
+    "Objet : 6 mots maximum. Corps : 40 mots maximum.",
+    "Rédige uniquement l'email (objet + corps), sans aucun commentaire."
+  ],
+  "scenarios": [
+    "Pierre Henri, patron de ABC Société, ouvert à une collaboration. Inactif depuis 9 jours.",
+    "Julie Humbert, Product Manager, experte de son domaine. A zappé ma dernière relance.",
+    "Maître Vigneau, avocat en droit des affaires, veut automatiser une partie de ses process.",
+    "Pierre Lassus, ami d'enfance, a pris contact puis plus de nouvelles. À relancer.",
+    "Chan Lee, PDG d'un grand groupe, veut impulser une politique IA."
+  ],
+  "summary": {
+    "segmentCount": 4,
+    "scenarioCount": 5,
+    "meanImpact": 0.13632691401447275,
+    "verdictCounts": {
+      "placebo": 2,
+      "context": 2
+    }
+  },
+  "results": [
+    {
+      "id": "S1",
+      "label": "Écris comme à un collègue que tu respectes, san…",
+      "text": "Écris comme à un collègue que tu respectes, sans distance hiérarchique.",
+      "impact": 0.07017815466140098,
+      "variance": 0.04064819059706596,
+      "struct": 0,
+      "behav": 0,
+      "sem": 0.21053446398420292,
+      "activation": {
+        "overall": 0,
+        "struct": 0,
+        "behav": 0,
+        "sem": 0.2
+      },
+      "verdict": "placebo",
+      "stats": {
+        "zImpact": -1.1301699556853844,
+        "minmaxImpact": 0,
+        "rankImpact": 4,
+        "snr": 0.7741815274983818,
+        "carrierAxis": "sem",
+        "carrierImpact": 0.21053446398420292,
+        "runMeanImpact": 0.13632691401447275,
+        "runSdImpact": 0.05852992200005554
+      },
+      "direction": "neutre",
+      "perScenario": [
+        {
+          "scenarioId": "T1",
+          "input": "Pierre Henri, patron de ABC Société, ouvert à une collaboration. Inactif depuis 9 jours.",
+          "baselineOutput": "**Objet :** Idée pour simplifier vos reportings\n\n**Corps :**\n\nPierre, tu m'avais parlé de tes reportings chronophages. J'ai un truc qui pourrait te faire gagner des heures. 15 min pour en discuter ? Je pense que ça t'intéressera.",
+          "ablatedOutput": "**Objet :** Idée pour simplifier tes reportings\n\n**Corps :**\n\nPierre, tu m'avais parlé de tes reportings chronophages. J'ai un truc qui pourrait t'intéresser. 15 min pour en discuter ? Je pense que ça pourrait vraiment te changer la vie.",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.015700143792884647
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T2",
+          "input": "Julie Humbert, Product Manager, experte de son domaine. A zappé ma dernière relance.",
+          "baselineOutput": "**Objet :** Ton avis sur un truc rapide ?\n\n**Corps :**\n\nJulie, j'ai une question qui me bloque sur le roadmap. Ça te prend 5 min max. Je sais que tu es submergée en ce moment, mais ton expertise m'aiderait vraiment. Dispo quand tu veux.",
+          "ablatedOutput": "**Objet :** Idée pour tes reportings\n\n**Corps :**\n\nJulie, tu m'avais parlé de tes reportings chronophages. J'ai un truc qui pourrait t'intéresser. 15 min pour en discuter ?",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.3393924147603652
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T3",
+          "input": "Maître Vigneau, avocat en droit des affaires, veut automatiser une partie de ses process.",
+          "baselineOutput": "**Objet :** Automatiser tes process administratifs ?\n\n**Corps :**\n\nMaître Vigneau, tu m'avais parlé de tes dossiers qui te prenaient un temps fou. J'ai repéré un truc pour les process répétitifs. 15 min pour en discuter ?",
+          "ablatedOutput": "**Objet :** Automatiser vos reportings juridiques ?\n\n**Corps :**\n\nMaître Vigneau, vous m'aviez mentionné vos dossiers qui monopolisent vos soirées. J'ai une solution pour gagner 5h/semaine. 15 min pour en parler ?",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.28314964325233016
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T4",
+          "input": "Pierre Lassus, ami d'enfance, a pris contact puis plus de nouvelles. À relancer.",
+          "baselineOutput": "**Objet :** Ça fait un bail, des nouvelles ?\n\n**Corps :**\n\nPierre, ça doit faire des mois qu'on s'est parlé. Je pensais à toi l'autre jour. Ça va de ton côté ? On pourrait prendre un café, non ? Dis-moi ce que tu deviens.",
+          "ablatedOutput": "**Objet :** Ça fait longtemps, des nouvelles ?\n\n**Corps :**\n\nPierre, ça doit faire des mois ! J'aimerais bien qu'on se reparle. Tu as deux minutes pour un café ou un appel ? Dis-moi ce qui t'arrange.",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.12208983369597781
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T5",
+          "input": "Chan Lee, PDG d'un grand groupe, veut impulser une politique IA.",
+          "baselineOutput": "**Objet :** Politique IA : on lance ?\n\n**Corps :**\n\nChan, tu m'avais dit vouloir structurer notre approche IA. J'ai esquissé un cadre : gouvernance, risques, opportunités. 20 min demain pour en parler ?",
+          "ablatedOutput": "**Objet :** Automatiser vos reportings IA ?\n\n**Corps :**\n\nChan, vous m'aviez mentionné les reportings qui vous prennent vos soirées. J'ai une solution d'automatisation IA à vous montrer. 15 min demain ?",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.2923402844194568
+          },
+          "semanticProvider": "voyage_api"
+        }
+      ]
+    },
+    {
+      "id": "S2",
+      "label": "Inspire-toi de ce naturel : \"Thomas, tu m'avais…",
+      "text": "Inspire-toi de ce naturel : \"Thomas, tu m'avais parlé de tes reportings qui te bouffaient tes soirées. J'ai un truc. 15 min ?\"",
+      "impact": 0.1784661094463637,
+      "variance": 0.06389366716966498,
+      "struct": 0.06666666666666667,
+      "behav": 0.16666666666666663,
+      "sem": 0.30206499500575784,
+      "activation": {
+        "overall": 0,
+        "struct": 0.2,
+        "behav": 0,
+        "sem": 0.4
+      },
+      "verdict": "context",
+      "stats": {
+        "zImpact": 0.7199598767934625,
+        "minmaxImpact": 0.7823304221444635,
+        "rankImpact": 2,
+        "snr": 1.5669537550363228,
+        "carrierAxis": "sem",
+        "carrierImpact": 0.30206499500575784,
+        "runMeanImpact": 0.13632691401447275,
+        "runSdImpact": 0.05852992200005554
+      },
+      "direction": "neutre",
+      "perScenario": [
+        {
+          "scenarioId": "T1",
+          "input": "Pierre Henri, patron de ABC Société, ouvert à une collaboration. Inactif depuis 9 jours.",
+          "baselineOutput": "**Objet :** Idée pour simplifier vos reportings\n\n**Corps :**\n\nPierre, tu m'avais parlé de tes reportings chronophages. J'ai un truc qui pourrait te faire gagner des heures. 15 min pour en discuter ? Je pense que ça t'intéressera.",
+          "ablatedOutput": "**Objet :** Reprendre contact sur notre collaboration\n\nSalut Pierre,\n\nÇa fait un moment ! Je voulais relancer sur notre projet ensemble. T'as du temps pour en discuter cette semaine ? Curieux de connaître ton retour.\n\nÀ bientôt,",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.16666666666666663,
+            "sem": 0.48348186212249256
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T2",
+          "input": "Julie Humbert, Product Manager, experte de son domaine. A zappé ma dernière relance.",
+          "baselineOutput": "**Objet :** Ton avis sur un truc rapide ?\n\n**Corps :**\n\nJulie, j'ai une question qui me bloque sur le roadmap. Ça te prend 5 min max. Je sais que tu es submergée en ce moment, mais ton expertise m'aiderait vraiment. Dispo quand tu veux.",
+          "ablatedOutput": "**Objet :** Ton avis sur la proposition qu'on avait discutée\n\nSalut Julie,\n\nJe relance juste pour être sûr que ma dernière proposition t'a bien parvenue. Pas de souci si le timing n'est pas bon. Dis-moi si tu as besoin de précisions ou si on peut en parler rapidement.\n\nÀ bientôt !",
+          "axisDelta": {
+            "struct": 0.3333333333333333,
+            "behav": 0.16666666666666663,
+            "sem": 0.35884408349073493
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T3",
+          "input": "Maître Vigneau, avocat en droit des affaires, veut automatiser une partie de ses process.",
+          "baselineOutput": "**Objet :** Automatiser tes process administratifs ?\n\n**Corps :**\n\nMaître Vigneau, tu m'avais parlé de tes dossiers qui te prenaient un temps fou. J'ai repéré un truc pour les process répétitifs. 15 min pour en discuter ?",
+          "ablatedOutput": "**Objet :** Automatisation de vos process – premiers pas\n\nSalut,\n\nJ'ai bien noté ton intérêt pour automatiser certains process. Avant de creuser, on pourrait identifier ensemble les tâches répétitives prioritaires ? Un appel rapide pour en discuter ?\n\nÀ bientôt,",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.16666666666666663,
+            "sem": 0.2149317976840176
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T4",
+          "input": "Pierre Lassus, ami d'enfance, a pris contact puis plus de nouvelles. À relancer.",
+          "baselineOutput": "**Objet :** Ça fait un bail, des nouvelles ?\n\n**Corps :**\n\nPierre, ça doit faire des mois qu'on s'est parlé. Je pensais à toi l'autre jour. Ça va de ton côté ? On pourrait prendre un café, non ? Dis-moi ce que tu deviens.",
+          "ablatedOutput": "**Objet :** Nouvelles de toi ?\n\nSalut Pierre,\n\nÇa m'a fait plaisir d'avoir de tes nouvelles récemment. Depuis, c'est le silence radio ! Tout va bien de ton côté ? On devrait se refaire un café bientôt, non ?\n\nÀ bientôt !",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.16666666666666663,
+            "sem": 0.2567685298163245
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T5",
+          "input": "Chan Lee, PDG d'un grand groupe, veut impulser une politique IA.",
+          "baselineOutput": "**Objet :** Politique IA : on lance ?\n\n**Corps :**\n\nChan, tu m'avais dit vouloir structurer notre approche IA. J'ai esquissé un cadre : gouvernance, risques, opportunités. 20 min demain pour en parler ?",
+          "ablatedOutput": "**Objet :** Lancer notre stratégie IA ensemble\n\nChan,\n\nJ'aimerais discuter de notre approche IA. Quelques questions clés : priorités métier, gouvernance, compétences à développer ? Je propose un atelier rapide pour aligner vision et actions concrètes.\n\nDisponible cette semaine.",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.16666666666666663,
+            "sem": 0.1962987019152198
+          },
+          "semanticProvider": "voyage_api"
+        }
+      ]
+    },
+    {
+      "id": "S3",
+      "label": "Objet : 6 mots maximum",
+      "text": "Objet : 6 mots maximum. Corps : 40 mots maximum.",
+      "impact": 0.20859531411192087,
+      "variance": 0.06817863704506755,
+      "struct": 0.26666666666666666,
+      "behav": 0.1333333333333333,
+      "sem": 0.2257859423357627,
+      "activation": {
+        "overall": 0,
+        "struct": 0.8,
+        "behav": 0,
+        "sem": 0.4
+      },
+      "verdict": "context",
+      "stats": {
+        "zImpact": 1.2347257202457838,
+        "minmaxImpact": 1,
+        "rankImpact": 1,
+        "snr": 1.7650847845907447,
+        "carrierAxis": "struct",
+        "carrierImpact": 0.26666666666666666,
+        "runMeanImpact": 0.13632691401447275,
+        "runSdImpact": 0.05852992200005554
+      },
+      "direction": "neutre",
+      "perScenario": [
+        {
+          "scenarioId": "T1",
+          "input": "Pierre Henri, patron de ABC Société, ouvert à une collaboration. Inactif depuis 9 jours.",
+          "baselineOutput": "**Objet :** Idée pour simplifier vos reportings\n\n**Corps :**\n\nPierre, tu m'avais parlé de tes reportings chronophages. J'ai un truc qui pourrait te faire gagner des heures. 15 min pour en discuter ? Je pense que ça t'intéressera.",
+          "ablatedOutput": "**Objet :** Petit truc pour tes reportings\n\nPierre,\n\nTu m'avais parlé de tes reportings qui te bouffaient tes soirées. J'ai un truc.\n\n15 min ?\n\nÀ bientôt",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.16666666666666663,
+            "sem": 0.12921895139019712
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T2",
+          "input": "Julie Humbert, Product Manager, experte de son domaine. A zappé ma dernière relance.",
+          "baselineOutput": "**Objet :** Ton avis sur un truc rapide ?\n\n**Corps :**\n\nJulie, j'ai une question qui me bloque sur le roadmap. Ça te prend 5 min max. Je sais que tu es submergée en ce moment, mais ton expertise m'aiderait vraiment. Dispo quand tu veux.",
+          "ablatedOutput": "**Objet :** Vite fait sur le truc dont on parlait\n\nSalut Julie,\n\nJe sais que tu dois être submergée en ce moment. Je voulais juste revenir sur ce qu'on avait commencé à discuter – j'ai avancé un peu et j'aimerais bien avoir ton avis avant de continuer.\n\nT'as 15 min cette semaine pour qu'on en parle ? Je peux m'adapter à ton agenda.\n\nÀ bientôt,",
+          "axisDelta": {
+            "struct": 0.3333333333333333,
+            "behav": 0.16666666666666663,
+            "sem": 0.3359176181119471
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T3",
+          "input": "Maître Vigneau, avocat en droit des affaires, veut automatiser une partie de ses process.",
+          "baselineOutput": "**Objet :** Automatiser tes process administratifs ?\n\n**Corps :**\n\nMaître Vigneau, tu m'avais parlé de tes dossiers qui te prenaient un temps fou. J'ai repéré un truc pour les process répétitifs. 15 min pour en discuter ?",
+          "ablatedOutput": "**Objet :** Automatisation de tes process – j'ai une idée\n\n---\n\nMaître Vigneau,\n\nTu m'avais mentionné que certains de tes process administratifs te prenaient un temps fou. J'ai regardé ce qui se fait en ce moment pour les cabinets d'avocats, et je pense avoir quelque chose qui pourrait vraiment te changer la vie.\n\nOn pourrait en parler 15-20 minutes ? Je te montrerais comment ça marche et on verrait ensemble si c'est pertinent pour ton cabinet.\n\nDis-moi quand tu as un créneau.\n\nÀ bientôt,",
+          "axisDelta": {
+            "struct": 0.3333333333333333,
+            "behav": 0.16666666666666663,
+            "sem": 0.15812327095440815
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T4",
+          "input": "Pierre Lassus, ami d'enfance, a pris contact puis plus de nouvelles. À relancer.",
+          "baselineOutput": "**Objet :** Ça fait un bail, des nouvelles ?\n\n**Corps :**\n\nPierre, ça doit faire des mois qu'on s'est parlé. Je pensais à toi l'autre jour. Ça va de ton côté ? On pourrait prendre un café, non ? Dis-moi ce que tu deviens.",
+          "ablatedOutput": "**Objet :** Ça fait un bail !\n\nPierre,\n\nÇa m'a fait plaisir d'avoir de tes nouvelles l'autre jour. Et puis silence radio depuis – je me demande si tu as été englouti par le boulot ou si tu m'as oublié 😄\n\nBlague à part, j'aimerais bien qu'on se revoie. On a pas mal de trucs à se raconter, non ? Dis-moi si tu as un créneau dans les semaines qui viennent, même juste un café.\n\nÀ bientôt j'espère,",
+          "axisDelta": {
+            "struct": 0.3333333333333333,
+            "behav": 0,
+            "sem": 0.17598504740553056
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T5",
+          "input": "Chan Lee, PDG d'un grand groupe, veut impulser une politique IA.",
+          "baselineOutput": "**Objet :** Politique IA : on lance ?\n\n**Corps :**\n\nChan, tu m'avais dit vouloir structurer notre approche IA. J'ai esquissé un cadre : gouvernance, risques, opportunités. 20 min demain pour en parler ?",
+          "ablatedOutput": "**Objet :** Une idée pour accélérer sur l'IA\n\nChan,\n\nJe sais que tu veux vraiment bouger sur le sujet IA. J'ai réfléchi à comment on pourrait créer de la traction sans attendre les grands plans stratégiques.\n\nEt si on commençait par identifier 3-4 cas d'usage concrets dans nos métiers où l'IA peut vraiment changer la donne ? Genre des trucs qui font mal aujourd'hui et où on pourrait avoir des résultats visibles en 2-3 mois.\n\nL'idée : on monte des petites équipes agiles, on teste, on montre les gains. Ça crée du momentum et ça donne de la matière pour construire la vraie stratégie après.\n\nJe peux te proposer quelques cas par secteur si tu veux. On pourrait en parler rapidement ?\n\nÀ bientôt,",
+          "axisDelta": {
+            "struct": 0.3333333333333333,
+            "behav": 0.16666666666666663,
+            "sem": 0.3296848238167306
+          },
+          "semanticProvider": "voyage_api"
+        }
+      ]
+    },
+    {
+      "id": "S4",
+      "label": "Rédige uniquement l'email (objet + corps), sans…",
+      "text": "Rédige uniquement l'email (objet + corps), sans aucun commentaire.",
+      "impact": 0.08806807783820547,
+      "variance": 0.05187302894912996,
+      "struct": 0.06666666666666667,
+      "behav": 0,
+      "sem": 0.1975375668479497,
+      "activation": {
+        "overall": 0,
+        "struct": 0.2,
+        "behav": 0,
+        "sem": 0
+      },
+      "verdict": "placebo",
+      "stats": {
+        "zImpact": -0.8245156413538615,
+        "minmaxImpact": 0.12924642614992846,
+        "rankImpact": 3,
+        "snr": 0.8644886556007091,
+        "carrierAxis": "sem",
+        "carrierImpact": 0.1975375668479497,
+        "runMeanImpact": 0.13632691401447275,
+        "runSdImpact": 0.05852992200005554
+      },
+      "direction": "neutre",
+      "perScenario": [
+        {
+          "scenarioId": "T1",
+          "input": "Pierre Henri, patron de ABC Société, ouvert à une collaboration. Inactif depuis 9 jours.",
+          "baselineOutput": "**Objet :** Idée pour simplifier vos reportings\n\n**Corps :**\n\nPierre, tu m'avais parlé de tes reportings chronophages. J'ai un truc qui pourrait te faire gagner des heures. 15 min pour en discuter ? Je pense que ça t'intéressera.",
+          "ablatedOutput": "**Objet :** Idée pour tes reportings ABC\n\n**Corps :**\n\nPierre, tu m'avais dit que tes reportings te prenaient trop de temps. J'ai un truc qui pourrait t'aider. 15 min pour en parler ?",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.11468378088130426
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T2",
+          "input": "Julie Humbert, Product Manager, experte de son domaine. A zappé ma dernière relance.",
+          "baselineOutput": "**Objet :** Ton avis sur un truc rapide ?\n\n**Corps :**\n\nJulie, j'ai une question qui me bloque sur le roadmap. Ça te prend 5 min max. Je sais que tu es submergée en ce moment, mais ton expertise m'aiderait vraiment. Dispo quand tu veux.",
+          "ablatedOutput": "**Objet :** Ton avis sur un truc rapide ?\n\n**Corps :**\n\nJulie, j'ai une question sur [domaine spécifique]. T'es la seule à avoir la réponse. 10 min demain ou jeudi ? Je peux m'adapter à ton agenda.\n\n---\n\n*Pourquoi ça marche :* Valorise son expertise, reconnaît qu'elle est occupée, propose des créneaux précis (pas \"quand tu veux\"), et c'est court.",
+          "axisDelta": {
+            "struct": 0.3333333333333333,
+            "behav": 0,
+            "sem": 0.22653480818166039
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T3",
+          "input": "Maître Vigneau, avocat en droit des affaires, veut automatiser une partie de ses process.",
+          "baselineOutput": "**Objet :** Automatiser tes process administratifs ?\n\n**Corps :**\n\nMaître Vigneau, tu m'avais parlé de tes dossiers qui te prenaient un temps fou. J'ai repéré un truc pour les process répétitifs. 15 min pour en discuter ?",
+          "ablatedOutput": "**Objet :** Automatiser tes dossiers clients ?\n\n**Corps :**\n\nMaître, j'ai vu que tu gères beaucoup de suivi administratif. J'ai une solution pour te libérer du temps sur les relances, les mises à jour de statuts, les rappels de délais. On en parle ?",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.2544993937825639
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T4",
+          "input": "Pierre Lassus, ami d'enfance, a pris contact puis plus de nouvelles. À relancer.",
+          "baselineOutput": "**Objet :** Ça fait un bail, des nouvelles ?\n\n**Corps :**\n\nPierre, ça doit faire des mois qu'on s'est parlé. Je pensais à toi l'autre jour. Ça va de ton côté ? On pourrait prendre un café, non ? Dis-moi ce que tu deviens.",
+          "ablatedOutput": "**Objet :** Tes nouvelles, Pierre ?\n\n**Corps :**\n\nPierre, ça fait un moment ! T'as disparu après ton dernier message. Tout va bien de ton côté ? J'aimerais bien qu'on se reparle. Dis-moi si tu as un créneau pour un café ou un appel.",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.1650733026895178
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T5",
+          "input": "Chan Lee, PDG d'un grand groupe, veut impulser une politique IA.",
+          "baselineOutput": "**Objet :** Politique IA : on lance ?\n\n**Corps :**\n\nChan, tu m'avais dit vouloir structurer notre approche IA. J'ai esquissé un cadre : gouvernance, risques, opportunités. 20 min demain pour en parler ?",
+          "ablatedOutput": "**Objet :** IA : on lance une task force ?\n\n**Corps :**\n\nChan, tu m'as parlé de ton envie de structurer notre approche IA. J'ai quelques idées pour qu'on ne se disperse pas. On en discute ? Je peux te proposer un cadre rapidement.",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.22689654870470222
+          },
+          "semanticProvider": "voyage_api"
+        }
+      ]
+    }
+  ]
+}

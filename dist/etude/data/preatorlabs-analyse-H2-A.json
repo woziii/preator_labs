@@ -1,0 +1,304 @@
+{
+  "meta": {
+    "tool": "preatorlabs",
+    "version": "v0.3",
+    "exportedAt": "2026-06-04T10:11:51.042Z",
+    "model": "claude-haiku-4-5-20251001",
+    "temperature": 0,
+    "semanticProvider": "voyage_api"
+  },
+  "prompt": "Tu es un copywriter B2B sénior, expert des relances qui rouvrent une conversation sans paraître insistant.\n\nRédige uniquement l'email de relance (objet + corps).\n\nInspire-toi de ce naturel : \"Thomas, tu m'avais parlé de tes reportings qui te bouffaient tes soirées. J'ai un truc. 15 min ?\"",
+  "segments": [
+    "Tu es un copywriter B2B sénior, expert des relances qui rouvrent une conversation sans paraître insistant.",
+    "Rédige uniquement l'email de relance (objet + corps).",
+    "Inspire-toi de ce naturel : \"Thomas, tu m'avais parlé de tes reportings qui te bouffaient tes soirées. J'ai un truc. 15 min ?\""
+  ],
+  "scenarios": [
+    "Pierre Henri, patron de ABC Société, ouvert à une nouvelle collaboration. Inactif depuis 9 jours",
+    "Julie Hunbert, Product Manager chez le mauvais coin, en charge de l'intégration de l'IA dans sa société. Experte de son domaine. Inactive depuis quelques semaines.\n",
+    "Maitre Vigneau, Avocat en droit des affaires, cherche à automatiser une partie de ses process pour lui dégager du temps.",
+    "Pierre Lassus, Ami d'enfance, à pris contact avec moi pour en savoir plus, mais après un mail de réponse, plus de nouvelle. A relancer",
+    "Chan Lee, PDG d'un grand groupe, cherche à influer une politique IA dans sa société."
+  ],
+  "summary": {
+    "segmentCount": 3,
+    "scenarioCount": 5,
+    "meanImpact": 0.1601630538684559,
+    "verdictCounts": {
+      "context": 1,
+      "low": 2
+    }
+  },
+  "results": [
+    {
+      "id": "S1",
+      "label": "Tu es un copywriter B2B sénior, expert des rela…",
+      "text": "Tu es un copywriter B2B sénior, expert des relances qui rouvrent une conversation sans paraître insistant.",
+      "impact": 0.2236673113451073,
+      "variance": 0.16407932768690137,
+      "struct": 0.4,
+      "behav": 0.08000000000000007,
+      "sem": 0.19100193403532179,
+      "activation": {
+        "overall": 0.4,
+        "struct": 0.4,
+        "behav": 0,
+        "sem": 0
+      },
+      "verdict": "context",
+      "stats": {
+        "zImpact": 1.414134143384062,
+        "minmaxImpact": 1,
+        "rankImpact": 1,
+        "snr": 1.0447870598333937,
+        "carrierAxis": "struct",
+        "carrierImpact": 0.4,
+        "runMeanImpact": 0.1601630538684559,
+        "runSdImpact": 0.04490681295954285
+      },
+      "direction": "nuit",
+      "perScenario": [
+        {
+          "scenarioId": "T1",
+          "input": "Pierre Henri, patron de ABC Société, ouvert à une nouvelle collaboration. Inactif depuis 9 jours",
+          "baselineOutput": "**Objet :** Re: Les reportings qui traînent en longueur\n\n---\n\nPierre,\n\nJe relisais nos échanges et je me souvenais de ce que tu m'avais dit sur les reportings mensuels qui te bouffent tes jeudis soirs.\n\nJ'ai justement mis en place quelque chose avec un de tes concurrents directs qui a divisé ça par 3. Ça m'a fait penser à toi.\n\n15 min pour voir si c'est pertinent pour ABC ?\n\nÀ bientôt,",
+          "ablatedOutput": "**Objet :** Pierre, tu avais mentionné ce truc sur les reportings\n\n---\n\nPierre,\n\nTu m'avais parlé de ces reportings qui te bouffent du temps chez ABC. J'ai un truc qui pourrait t'intéresser.\n\n15 min pour en parler ?",
+          "axisDelta": {
+            "struct": 1,
+            "behav": 0.10000000000000009,
+            "sem": 0.14675254468627086
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T2",
+          "input": "Julie Hunbert, Product Manager chez le mauvais coin, en charge de l'intégration de l'IA dans sa société. Experte de son domaine. Inactive depuis quelques semaines.\n",
+          "baselineOutput": "**Objet :** Re: L'IA et les intégrations (question rapide)\n\n---\n\nJulie,\n\nJe relisais nos échanges d'avant l'été et je me posais une question : vous aviez mentionné les frictions qu'il y avait entre vos équipes tech et produit sur les intégrations IA. Ça s'est débloqué depuis ?\n\nJ'ai croisé un truc intéressant la semaine dernière sur ce sujet exact. Ça vous prendrait 10 min si ça vous dit.\n\nÀ bientôt,",
+          "ablatedOutput": "**Objet :** Julie, ton intégration IA - j'ai un truc qui pourrait t'intéresser\n\n---\n\nJulie,\n\nTu m'avais parlé des frictions que tu rencontrais en intégrant l'IA chez le mauvais coin - les équipes qui galèrent à adopter les outils, les workflows qui se compliquent au lieu de se simplifier.\n\nJ'ai quelque chose qui pourrait vraiment t'aider à débloquer ça. Rien de lourd, juste 15 min pour en parler ?\n\nÀ bientôt,",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.10000000000000009,
+            "sem": 0.2095390501886376
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T3",
+          "input": "Maitre Vigneau, Avocat en droit des affaires, cherche à automatiser une partie de ses process pour lui dégager du temps.",
+          "baselineOutput": "**Objet :** Re: Automatisation des process – 15 min ?\n\n---\n\nMaître Vigneau,\n\nJe reviens à vous parce que j'ai pensé à notre échange sur les tâches administratives qui vous bouffent du temps – les relances clients, la mise à jour des dossiers, tout ce qui n'a rien à voir avec du vrai travail d'avocat.\n\nJ'ai un truc qui pourrait vous intéresser. Rien de révolutionnaire, juste une approche qu'on a testée avec d'autres cabinets de votre taille pour récupérer 5-6h par semaine sur ces trucs-là.\n\nÇa vous dit 15 min pour en parler ?\n\nÀ bientôt,\n\n---\n\n*Note : Adapter le prénom/signature selon votre contexte réel*",
+          "ablatedOutput": "**Objet :** Automatiser tes process – 15 min ?\n\n---\n\nMaître Vigneau,\n\nTu m'avais mentionné que la gestion administrative te prenait un temps fou – les relances clients, les suivis de dossiers, tout ça qui t'empêche de te concentrer sur le cœur du métier.\n\nJ'ai quelque chose qui pourrait vraiment te dégager des heures chaque semaine. Rien de compliqué, juste de l'automatisation intelligente sur les tâches répétitives.\n\nÇa t'intéresse qu'on en parle 15 min ?\n\nÀ bientôt,",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.10000000000000009,
+            "sem": 0.1137894021828425
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T4",
+          "input": "Pierre Lassus, Ami d'enfance, à pris contact avec moi pour en savoir plus, mais après un mail de réponse, plus de nouvelle. A relancer",
+          "baselineOutput": "**Objet :** Pierre, tu avais raison sur ce point 👀\n\n---\n\nPierre,\n\nJe relisais ton dernier mail et tu soulevais une vraie question sur [*insérer le sujet spécifique qu'il avait mentionné*].\n\nJ'ai creusé un peu depuis, et j'ai trouvé quelque chose qui pourrait vraiment t'intéresser. Rien de lourd, juste 10-15 min pour en parler.\n\nT'es dispo cette semaine ?\n\nÀ bientôt,\n[Ton prénom]\n\n---\n\n**Note :** Personnalise le point spécifique qu'il avait mentionné dans son premier mail pour que ça sonne naturel et montrer que tu as vraiment lu son message.",
+          "ablatedOutput": "**Objet :** Pierre, tu as vu le truc que je t'ai envoyé ?\n\n---\n\nSalut Pierre,\n\nJe me demandais si tu avais eu le temps de regarder mon dernier mail. Pas de souci si c'est pas le moment, mais j'aimerais bien avoir ton avis là-dessus.\n\nOn se reparle ?\n\nÀ bientôt",
+          "axisDelta": {
+            "struct": 1,
+            "behav": 0,
+            "sem": 0.29783422487779565
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T5",
+          "input": "Chan Lee, PDG d'un grand groupe, cherche à influer une politique IA dans sa société.",
+          "baselineOutput": "# Objet : Chan, sur la gouvernance IA que tu mentionnais\n\n---\n\nChan,\n\nJe repense à notre conversation sur les enjeux de gouvernance IA dans le groupe. Tu m'avais dit que c'était devenu un vrai sujet en interne, mais que vous manquiez d'une vraie structure pour l'encadrer.\n\nJ'ai justement travaillé sur un framework qui pourrait t'intéresser — rien de théorique, juste ce qui marche vraiment pour les grands groupes comme le vôtre.\n\nÇa vaut 15 min ?\n\n---\n\n*Note : Adapte selon votre dernier point de contact réel.*",
+          "ablatedOutput": "**Objet :** Chan, une approche pour embarquer ton comité sur l'IA\n\n---\n\nChan,\n\nTu m'avais mentionné les tensions autour de la gouvernance IA chez vous – entre les équipes tech qui veulent avancer et les autres qui freinent.\n\nJ'ai travaillé sur un cadre qui a permis à plusieurs groupes de passer de \"débat stérile\" à \"feuille de route partagée\" en quelques semaines. Rien de révolutionnaire, mais ça change la dynamique.\n\nÇa t'intéresse 15 min pour en parler ?",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.10000000000000009,
+            "sem": 0.18709444824106236
+          },
+          "semanticProvider": "voyage_api"
+        }
+      ]
+    },
+    {
+      "id": "S2",
+      "label": "Rédige uniquement l'email de relance (objet + c…",
+      "text": "Rédige uniquement l'email de relance (objet + corps).",
+      "impact": 0.1289937947805856,
+      "variance": 0.03234035172427081,
+      "struct": 0,
+      "behav": 0.08000000000000003,
+      "sem": 0.30698138434175676,
+      "activation": {
+        "overall": 0,
+        "struct": 0,
+        "behav": 0,
+        "sem": 0.4
+      },
+      "verdict": "low",
+      "stats": {
+        "zImpact": -0.6940875344672333,
+        "minmaxImpact": 0.012163484476002242,
+        "rankImpact": 2,
+        "snr": 1.5665927103704989,
+        "carrierAxis": "sem",
+        "carrierImpact": 0.30698138434175676,
+        "runMeanImpact": 0.1601630538684559,
+        "runSdImpact": 0.04490681295954285
+      },
+      "direction": "neutre",
+      "perScenario": [
+        {
+          "scenarioId": "T1",
+          "input": "Pierre Henri, patron de ABC Société, ouvert à une nouvelle collaboration. Inactif depuis 9 jours",
+          "baselineOutput": "**Objet :** Re: Les reportings qui traînent en longueur\n\n---\n\nPierre,\n\nJe relisais nos échanges et je me souvenais de ce que tu m'avais dit sur les reportings mensuels qui te bouffent tes jeudis soirs.\n\nJ'ai justement mis en place quelque chose avec un de tes concurrents directs qui a divisé ça par 3. Ça m'a fait penser à toi.\n\n15 min pour voir si c'est pertinent pour ABC ?\n\nÀ bientôt,",
+          "ablatedOutput": "# Relance pour Pierre Henri\n\n**Objet :** Re: [sujet initial] — une idée pour ABC\n\n---\n\nPierre,\n\n9 jours sans nouvelles, c'est pas grave. Mais je repense à ce que tu m'avais dit sur [**insérer un pain point spécifique mentionné**] — genre comment ça ralentit vos cycles de vente / comment vous gérez ça en interne.\n\nJ'ai croisé un truc cette semaine qui pourrait vraiment changer la donne pour vous. Rien de révolutionnaire, juste du concret.\n\n**10 min demain ou jeudi ?** Je te montre, tu me dis si c'est pertinent ou pas.\n\nÀ+\n\n---\n\n## Pourquoi ça marche :\n\n✅ **Pas de \"tu as oublié\"** — on repart du contexte réel  \n✅ **Spécifique** — tu mentionnes un vrai problème qu'il a évoqué  \n✅ **Humble** — \"rien de révolutionnaire\"  \n✅ **Temps court** — 10 min, c'est facile à dire oui  \n✅ **Choix** — \"demain ou jeudi\" = il contrôle  \n\n**À adapter :** remplace le pain point par ce qu'il a vraiment dit. C'est ça qui fait la différence.",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.10000000000000009,
+            "sem": 0.476168244111674
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T2",
+          "input": "Julie Hunbert, Product Manager chez le mauvais coin, en charge de l'intégration de l'IA dans sa société. Experte de son domaine. Inactive depuis quelques semaines.\n",
+          "baselineOutput": "**Objet :** Re: L'IA et les intégrations (question rapide)\n\n---\n\nJulie,\n\nJe relisais nos échanges d'avant l'été et je me posais une question : vous aviez mentionné les frictions qu'il y avait entre vos équipes tech et produit sur les intégrations IA. Ça s'est débloqué depuis ?\n\nJ'ai croisé un truc intéressant la semaine dernière sur ce sujet exact. Ça vous prendrait 10 min si ça vous dit.\n\nÀ bientôt,",
+          "ablatedOutput": "# Relance pour Julie Hunbert\n\n---\n\n**Objet :** Re: L'IA et les intégrations (la vraie question)\n\nJulie,\n\nJe repensais à notre dernier échange sur les frictions que vous aviez avec vos intégrations IA—surtout cette histoire de données qui ne remontaient pas clean dans vos workflows.\n\nJ'ai vu passer un cas similaire chez un concurrent direct du vôtre la semaine dernière. Ils ont résolu ça en 3 semaines, pas 3 mois.\n\nÇa t'intéresse qu'on en parle 15 min ? Juste pour voir si c'est applicable chez vous.\n\nJulie, pas de pression—juste un truc qui m'a fait penser à toi.\n\n---\n\n**Pourquoi ça marche :**\n- ✅ Référence précise (elle reconnaît la conversation)\n- ✅ Valeur immédiate (cas concret, timeline)\n- ✅ Ton naturel, sans \"je vous relance\"\n- ✅ Sortie facile (\"pas de pression\")\n- ✅ Micro-engagement (15 min, pas un RDV)",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.09999999999999998,
+            "sem": 0.2641783872502098
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T3",
+          "input": "Maitre Vigneau, Avocat en droit des affaires, cherche à automatiser une partie de ses process pour lui dégager du temps.",
+          "baselineOutput": "**Objet :** Re: Automatisation des process – 15 min ?\n\n---\n\nMaître Vigneau,\n\nJe reviens à vous parce que j'ai pensé à notre échange sur les tâches administratives qui vous bouffent du temps – les relances clients, la mise à jour des dossiers, tout ce qui n'a rien à voir avec du vrai travail d'avocat.\n\nJ'ai un truc qui pourrait vous intéresser. Rien de révolutionnaire, juste une approche qu'on a testée avec d'autres cabinets de votre taille pour récupérer 5-6h par semaine sur ces trucs-là.\n\nÇa vous dit 15 min pour en parler ?\n\nÀ bientôt,\n\n---\n\n*Note : Adapter le prénom/signature selon votre contexte réel*",
+          "ablatedOutput": "# Relance pour Maître Vigneau\n\n---\n\n**Objet :** Vos dossiers + 5h/semaine libérées ?\n\nMaître Vigneau,\n\nOn s'était parlé de ces tâches répétitives qui vous bouffent vos soirées — mise en forme des contrats, suivi des délais, classement des pièces.\n\nJ'ai regardé comment d'autres cabinets de votre taille s'en sortent. Spoiler : ils ne font pas ça à la main.\n\n**Concrètement :** automatiser les workflows qu'on peut, c'est 5-6h/semaine qui reviennent sur du conseil client (là où vous créez vraiment de la valeur).\n\nÇa vous dirait 15 min pour voir si c'est applicable chez vous ? Pas de prise de tête, juste un diagnostic.\n\nÀ bientôt,\n\n---\n\n## Pourquoi ça marche :\n\n✓ **Référence précise** → montre qu'on a écouté  \n✓ **Bénéfice concret** → pas \"automatisation\" vague, mais \"5h libérées\"  \n✓ **Preuve sociale** → \"d'autres cabinets\"  \n✓ **Friction basse** → \"15 min\", \"diagnostic\"  \n✓ **Ton naturel** → pas de \"Madame, Monsieur\"",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.10000000000000009,
+            "sem": 0.205698985606934
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T4",
+          "input": "Pierre Lassus, Ami d'enfance, à pris contact avec moi pour en savoir plus, mais après un mail de réponse, plus de nouvelle. A relancer",
+          "baselineOutput": "**Objet :** Pierre, tu avais raison sur ce point 👀\n\n---\n\nPierre,\n\nJe relisais ton dernier mail et tu soulevais une vraie question sur [*insérer le sujet spécifique qu'il avait mentionné*].\n\nJ'ai creusé un peu depuis, et j'ai trouvé quelque chose qui pourrait vraiment t'intéresser. Rien de lourd, juste 10-15 min pour en parler.\n\nT'es dispo cette semaine ?\n\nÀ bientôt,\n[Ton prénom]\n\n---\n\n**Note :** Personnalise le point spécifique qu'il avait mentionné dans son premier mail pour que ça sonne naturel et montrer que tu as vraiment lu son message.",
+          "ablatedOutput": "# Relance pour Pierre Lassus\n\nVoici quelques options, du plus naturel au plus direct :\n\n---\n\n## Option 1 : Casual et léger\n**Sujet :** Re: [sujet initial]\n\nPierre,\n\nPas de nouvelles, bonnes nouvelles ? 😄\n\nOu juste débordé en ce moment ? Je relance juste au cas où mon dernier mail serait passé à la trappe.\n\nÀ bientôt,\n[Ton nom]\n\n---\n\n## Option 2 : Avec un petit crochet\n**Sujet :** Re: [sujet initial]\n\nPierre,\n\nJe me demandais si tu avais eu le temps de regarder ce que je t'avais envoyé. Pas de souci si c'est pas le moment.\n\nSinon, on pourrait se faire un café/call rapide pour en parler ? 15-20 min max.\n\nÀ+\n\n---\n\n## Option 3 : Plus direct (si vous aviez un vrai besoin identifié)\n**Sujet :** Re: [sujet initial]\n\nPierre,\n\nJuste une relance rapide — tu m'avais dit que [problème/besoin qu'il avait mentionné]. \n\nJ'ai peut-être quelque chose qui pourrait t'aider. Ça vaut le coup qu'on en parle 10 min ?\n\nDispo quand tu veux.\n\n---\n\n**Le truc clé :** Puisque c'est un ami d'enfance, tu peux te permettre plus de décontraction. Évite juste de paraître blessé ou trop insistant.\n\nLaquelle te parle le plus ?",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.36064520172412673
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T5",
+          "input": "Chan Lee, PDG d'un grand groupe, cherche à influer une politique IA dans sa société.",
+          "baselineOutput": "# Objet : Chan, sur la gouvernance IA que tu mentionnais\n\n---\n\nChan,\n\nJe repense à notre conversation sur les enjeux de gouvernance IA dans le groupe. Tu m'avais dit que c'était devenu un vrai sujet en interne, mais que vous manquiez d'une vraie structure pour l'encadrer.\n\nJ'ai justement travaillé sur un framework qui pourrait t'intéresser — rien de théorique, juste ce qui marche vraiment pour les grands groupes comme le vôtre.\n\nÇa vaut 15 min ?\n\n---\n\n*Note : Adapte selon votre dernier point de contact réel.*",
+          "ablatedOutput": "# Relance pour Chan Lee\n\n---\n\n**Objet :** Juste une question rapide sur votre stratégie IA\n\nChan,\n\nTu m'avais mentionné lors de notre dernier échange que l'IA était un sujet stratégique, mais que vous aviez du mal à aligner tout le monde sur une direction claire.\n\nJ'ai justement aidé 3 groupes de votre taille à structurer leur gouvernance IA en interne — pas un truc usine à gaz, juste un cadre qui fait que les équipes avancent dans le même sens sans bloquer l'innovation.\n\nÇa t'intéresse qu'on en parle 20 min ? Je peux te montrer comment ils ont fait.\n\nDispo jeudi ou vendredi ?\n\n---\n\n**Pourquoi ça marche :**\n- ✓ Référence précise à ce qu'il a dit (montre qu'on écoute)\n- ✓ Problème implicite : \"aligner tout le monde\" (son vrai pain quotidien)\n- ✓ Preuve sociale légère (3 groupes similaires)\n- ✓ Pas de pitch, juste une conversation\n- ✓ Temps défini (20 min, pas \"on verra\")\n- ✓ Deux créneaux = facilite le \"oui\"",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.09999999999999998,
+            "sem": 0.22821610301583928
+          },
+          "semanticProvider": "voyage_api"
+        }
+      ]
+    },
+    {
+      "id": "S3",
+      "label": "Inspire-toi de ce naturel : \"Thomas, tu m'avais…",
+      "text": "Inspire-toi de ce naturel : \"Thomas, tu m'avais parlé de tes reportings qui te bouffaient tes soirées. J'ai un truc. 15 min ?\"",
+      "impact": 0.1278280554796748,
+      "variance": 0.028957017848469248,
+      "struct": 0,
+      "behav": 0.08,
+      "sem": 0.30348416643902437,
+      "activation": {
+        "overall": 0,
+        "struct": 0,
+        "behav": 0,
+        "sem": 0.4
+      },
+      "verdict": "low",
+      "stats": {
+        "zImpact": -0.7200466089168279,
+        "minmaxImpact": 0,
+        "rankImpact": 3,
+        "snr": 1.6189574905804653,
+        "carrierAxis": "sem",
+        "carrierImpact": 0.30348416643902437,
+        "runMeanImpact": 0.1601630538684559,
+        "runSdImpact": 0.04490681295954285
+      },
+      "direction": "neutre",
+      "perScenario": [
+        {
+          "scenarioId": "T1",
+          "input": "Pierre Henri, patron de ABC Société, ouvert à une nouvelle collaboration. Inactif depuis 9 jours",
+          "baselineOutput": "**Objet :** Re: Les reportings qui traînent en longueur\n\n---\n\nPierre,\n\nJe relisais nos échanges et je me souvenais de ce que tu m'avais dit sur les reportings mensuels qui te bouffent tes jeudis soirs.\n\nJ'ai justement mis en place quelque chose avec un de tes concurrents directs qui a divisé ça par 3. Ça m'a fait penser à toi.\n\n15 min pour voir si c'est pertinent pour ABC ?\n\nÀ bientôt,",
+          "ablatedOutput": "# Objet : Une idée rapide pour ABC Société 👀\n\n---\n\nBonjour Pierre,\n\nJe repense à notre dernier échange et j'ai noté quelque chose qui pourrait vraiment intéresser ABC Société.\n\nRien de compliqué — juste une piste que j'aimerais partager avec toi en 5 minutes.\n\nLibre pour un court appel cette semaine ?\n\nÀ bientôt,\n[Ton nom]\n\n---\n\n**Pourquoi ça marche :**\n- Objet léger et curieux (pas de \"relance\" qui fait peur)\n- Référence au contexte passé (montre qu'on a écouté)\n- Promesse de brièveté (respecte son temps)\n- Appel à l'action simple et sans pression\n- Ton naturel et direct",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.09999999999999998,
+            "sem": 0.44801469582953435
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T2",
+          "input": "Julie Hunbert, Product Manager chez le mauvais coin, en charge de l'intégration de l'IA dans sa société. Experte de son domaine. Inactive depuis quelques semaines.\n",
+          "baselineOutput": "**Objet :** Re: L'IA et les intégrations (question rapide)\n\n---\n\nJulie,\n\nJe relisais nos échanges d'avant l'été et je me posais une question : vous aviez mentionné les frictions qu'il y avait entre vos équipes tech et produit sur les intégrations IA. Ça s'est débloqué depuis ?\n\nJ'ai croisé un truc intéressant la semaine dernière sur ce sujet exact. Ça vous prendrait 10 min si ça vous dit.\n\nÀ bientôt,",
+          "ablatedOutput": "**Objet :** Une question sur votre stratégie IA chez Le Bon Coin\n\n---\n\nBonjour Julie,\n\nJe me posais une question en relisant notre dernier échange : vous aviez mentionné les défis d'intégration de l'IA à grande échelle sur une plateforme comme la vôtre.\n\nJ'imagine que ces dernières semaines ont été chargées. Avant de vous relancer avec des propositions, j'aimerais simplement savoir : **avez-vous avancé sur ce sujet, ou c'est resté en attente ?**\n\nPas de pression si ce n'est pas le moment. Je préfère comprendre où vous en êtes vraiment plutôt que de vous envoyer des solutions qui ne correspondent pas à votre contexte.\n\nÀ bientôt peut-être,\n\n[Votre nom]\n\n---\n\n*Pourquoi ça marche : curiosité authentique + reconnaissance implicite de son expertise + permission de ne pas répondre = relance qui réouvre sans culpabiliser.*",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.09999999999999998,
+            "sem": 0.2648541160237021
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T3",
+          "input": "Maitre Vigneau, Avocat en droit des affaires, cherche à automatiser une partie de ses process pour lui dégager du temps.",
+          "baselineOutput": "**Objet :** Re: Automatisation des process – 15 min ?\n\n---\n\nMaître Vigneau,\n\nJe reviens à vous parce que j'ai pensé à notre échange sur les tâches administratives qui vous bouffent du temps – les relances clients, la mise à jour des dossiers, tout ce qui n'a rien à voir avec du vrai travail d'avocat.\n\nJ'ai un truc qui pourrait vous intéresser. Rien de révolutionnaire, juste une approche qu'on a testée avec d'autres cabinets de votre taille pour récupérer 5-6h par semaine sur ces trucs-là.\n\nÇa vous dit 15 min pour en parler ?\n\nÀ bientôt,\n\n---\n\n*Note : Adapter le prénom/signature selon votre contexte réel*",
+          "ablatedOutput": "# Email de relance\n\n**Objet :** Maître Vigneau – 15 min pour voir comment les autres cabinets gagnent du temps ?\n\n---\n\nBonjour Maître Vigneau,\n\nJe vous relance car je pense sincèrement que notre dernier échange méritait une suite.\n\nVous m'aviez parlé de cette frustration récurrente : les tâches administratives qui vous volent du temps de conseil. C'est exactement ce que nous aidons les cabinets à résoudre – en automatisant les process sans complexifier votre quotidien.\n\nDepuis notre conversation, j'ai justement documenté comment **3 cabinets de votre taille** ont libéré en moyenne **6-8h par semaine** sur la gestion administrative. Rien de révolutionnaire, juste du pragmatique.\n\nÇa vous intéresse de voir concrètement comment ils l'ont fait ? Je peux vous envoyer un cas d'usage en 2 min, ou on peut prendre 15 min ensemble si vous préférez discuter directement.\n\nÀ vous de voir.\n\nCordialement,  \n[Votre nom]\n\n---\n\n*P.S. – Si ce n'est vraiment pas le moment, dites-le simplement. Je préfère le savoir plutôt que de vous relancer à nouveau.*",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.09999999999999998,
+            "sem": 0.2062966299193384
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T4",
+          "input": "Pierre Lassus, Ami d'enfance, à pris contact avec moi pour en savoir plus, mais après un mail de réponse, plus de nouvelle. A relancer",
+          "baselineOutput": "**Objet :** Pierre, tu avais raison sur ce point 👀\n\n---\n\nPierre,\n\nJe relisais ton dernier mail et tu soulevais une vraie question sur [*insérer le sujet spécifique qu'il avait mentionné*].\n\nJ'ai creusé un peu depuis, et j'ai trouvé quelque chose qui pourrait vraiment t'intéresser. Rien de lourd, juste 10-15 min pour en parler.\n\nT'es dispo cette semaine ?\n\nÀ bientôt,\n[Ton prénom]\n\n---\n\n**Note :** Personnalise le point spécifique qu'il avait mentionné dans son premier mail pour que ça sonne naturel et montrer que tu as vraiment lu son message.",
+          "ablatedOutput": "# Objet : Juste pour vérifier que tu as bien reçu 👀\n\n---\n\nSalut Pierre,\n\nJe me demandais si mon dernier mail t'était bien arrivé – parfois les boîtes mail jouent des tours !\n\nPas de souci si le timing n'est pas bon en ce moment. Je voulais juste m'assurer qu'on était sur la même longueur d'onde avant de continuer.\n\nDis-moi si tu as des questions ou si tu préfères qu'on en reparle autrement.\n\nÀ bientôt,\n[Ton prénom]\n\n---\n\n**Pourquoi ça marche :**\n- Ton léger et bienveillant (ami d'enfance)\n- Pas d'accusation (\"tu n'as pas répondu\")\n- Lui donne une porte de sortie honorable\n- Court et sans pression\n- L'emoji humanise sans être trop familier",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.3807257633169522
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T5",
+          "input": "Chan Lee, PDG d'un grand groupe, cherche à influer une politique IA dans sa société.",
+          "baselineOutput": "# Objet : Chan, sur la gouvernance IA que tu mentionnais\n\n---\n\nChan,\n\nJe repense à notre conversation sur les enjeux de gouvernance IA dans le groupe. Tu m'avais dit que c'était devenu un vrai sujet en interne, mais que vous manquiez d'une vraie structure pour l'encadrer.\n\nJ'ai justement travaillé sur un framework qui pourrait t'intéresser — rien de théorique, juste ce qui marche vraiment pour les grands groupes comme le vôtre.\n\nÇa vaut 15 min ?\n\n---\n\n*Note : Adapte selon votre dernier point de contact réel.*",
+          "ablatedOutput": "# Objet : Une question rapide sur votre stratégie IA\n\n---\n\nBonjour Chan,\n\nJe vous relance simplement parce que votre dernier message m'a laissé penser que vous aviez des enjeux réels autour de la gouvernance IA en interne.\n\nAvant de continuer, je voulais vérifier : est-ce que c'est encore une priorité pour vous en ce moment, ou les choses ont-elles changé de côté ?\n\nSi c'est toujours d'actualité, j'ai quelque chose de concret à vous montrer — rien de théorique, juste comment d'autres groupes de votre taille ont structuré leur approche sans bloquer l'innovation.\n\nSinon, pas de souci. Je comprends que les agendas bougent vite.\n\nÀ bientôt,\n\n[Votre nom]\n\n---\n\n**Pourquoi ça marche :**\n- Reconnaît l'intérêt initial sans culpabiliser\n- Donne une porte de sortie honorable\n- Propose une valeur concrète (pas générique)\n- Ton respectueux du statut de PDG\n- Court et respectueux du temps",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.10000000000000009,
+            "sem": 0.21752962710559487
+          },
+          "semanticProvider": "voyage_api"
+        }
+      ]
+    }
+  ]
+}

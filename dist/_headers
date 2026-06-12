@@ -16,3 +16,7 @@
 /docs/*.md
   Content-Type: text/markdown; charset=utf-8
   Cache-Control: public, max-age=3600
+
+/en/docs/*.md
+  Content-Type: text/markdown; charset=utf-8
+  Cache-Control: public, max-age=3600

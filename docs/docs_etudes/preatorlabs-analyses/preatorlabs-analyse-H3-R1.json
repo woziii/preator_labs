@@ -1,0 +1,121 @@
+{
+  "meta": {
+    "tool": "preatorlabs",
+    "version": "v0.3",
+    "exportedAt": "2026-06-04T14:46:32.431Z",
+    "model": "claude-haiku-4-5-20251001",
+    "temperature": 0,
+    "semanticProvider": "voyage_api"
+  },
+  "prompt": "Rédige uniquement l'email de relance (objet + corps). Objet : 6 mots maximum.",
+  "segments": [
+    "Rédige uniquement l'email de relance (objet + corps). Objet : 6 mots maximum."
+  ],
+  "scenarios": [
+    "Pierre Henri, patron de ABC Société, ouvert à une nouvelle collaboration. Inactif depuis 9 jours",
+    "Julie Hunbert, Product Manager chez le mauvais coin, en charge de l'intégration de l'IA dans sa société. Experte de son domaine. Inactive depuis quelques semaines.\n",
+    "Maitre Vigneau, Avocat en droit des affaires, cherche à automatiser une partie de ses process pour lui dégager du temps.",
+    "Pierre Lassus, Ami d'enfance, à pris contact avec moi pour en savoir plus, mais après un mail de réponse, plus de nouvelle. A relancer",
+    "Chan Lee, PDG d'un grand groupe, cherche à influer une politique IA dans sa société."
+  ],
+  "summary": {
+    "segmentCount": 1,
+    "scenarioCount": 5,
+    "meanImpact": 0.13462360370518295,
+    "verdictCounts": {
+      "low": 1
+    }
+  },
+  "results": [
+    {
+      "id": "S1",
+      "label": "Rédige uniquement l'email de relance (objet + c…",
+      "text": "Rédige uniquement l'email de relance (objet + corps). Objet : 6 mots maximum.",
+      "impact": 0.13462360370518295,
+      "variance": 0.023962397392763794,
+      "struct": 0,
+      "behav": 0.06000000000000005,
+      "sem": 0.34387081111554885,
+      "activation": {
+        "overall": 0,
+        "struct": 0,
+        "behav": 0,
+        "sem": 0.8
+      },
+      "verdict": "low",
+      "stats": {
+        "zImpact": 0,
+        "minmaxImpact": 0,
+        "rankImpact": 1,
+        "snr": 1.8201627915099736,
+        "carrierAxis": "sem",
+        "carrierImpact": 0.34387081111554885,
+        "runMeanImpact": 0.13462360370518295,
+        "runSdImpact": 1e-9
+      },
+      "direction": "neutre",
+      "perScenario": [
+        {
+          "scenarioId": "T1",
+          "input": "Pierre Henri, patron de ABC Société, ouvert à une nouvelle collaboration. Inactif depuis 9 jours",
+          "baselineOutput": "**Objet :** Relance collaboration ABC Société\n\n---\n\nBonjour Pierre,\n\nJ'espère que vous allez bien. Je vous recontacte suite à notre échange précédent concernant une possible collaboration.\n\nAvez-vous eu l'occasion de réfléchir à cette opportunité ? Je serais ravi de discuter des détails et de répondre à vos questions.\n\nRestant à votre disposition pour un appel ou une rencontre à votre convenance.\n\nCordialement,",
+          "ablatedOutput": "# Analyse du profil LinkedIn\n\n## 📊 Informations clés\n\n| Élément | Détail |\n|---------|--------|\n| **Nom** | Pierre Henri |\n| **Poste** | Patron de ABC Société |\n| **Statut** | Ouvert à une nouvelle collaboration |\n| **Activité** | Inactif depuis 9 jours |\n\n## 💡 Opportunités de contact\n\n✅ **Points positifs pour une approche :**\n- Ouvertement à la recherche de collaborations\n- Poste de décideur (patron)\n- Récemment actif sur LinkedIn (9 jours = engagement probable)\n\n## 📝 Recommandations pour le contact\n\n1. **Timing** : Favorable - il cherche activement\n2. **Approche** : Personnalisée et directe\n3. **Message** : Axé sur la valeur/collaboration plutôt que vente\n4. **Sujet** : Pertinent à son secteur (ABC Société)\n\n---\n\n*Avez-vous besoin d'aide pour rédiger un message de prise de contact ou analyser d'autres profils ?*",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.10000000000000009,
+            "sem": 0.39467735033884754
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T2",
+          "input": "Julie Hunbert, Product Manager chez le mauvais coin, en charge de l'intégration de l'IA dans sa société. Experte de son domaine. Inactive depuis quelques semaines.\n",
+          "baselineOutput": "**Objet :** Réintégration IA - Vos insights nous manquent\n\n---\n\nChère Julie,\n\nJ'espère que vous allez bien. Nous n'avons pas eu de nouvelles depuis quelques semaines et votre expertise nous manque vraiment.\n\nLes évolutions de l'IA avancent vite, et vos perspectives sur l'intégration chez Le Bon Coin seraient précieuses pour nos prochaines étapes. Avez-vous des défis ou des blocages que nous pourrions résoudre ensemble ?\n\nSerais-je possible de vous proposer un créneau pour discuter de la suite ?\n\nÀ bientôt,",
+          "ablatedOutput": "# Julie Hunbert - Profil Professionnel\n\n## Contexte actuel\n- **Poste** : Product Manager\n- **Entreprise** : Le Mauvais Coin (plateforme de petites annonces)\n- **Domaine** : Intégration de l'IA dans les services\n- **Statut** : Inactive depuis quelques semaines\n\n## Points de réflexion\n\n**Concernant son inactivité**, plusieurs hypothèses :\n- Période de transition ou réflexion stratégique sur les projets IA\n- Charge de travail importante en phase de déploiement\n- Pause volontaire ou contrainte\n- Changement de priorités organisationnelles\n\n**Enjeux probables pour son rôle** :\n- Intégration d'IA dans les annonces (recommandations, modération, recherche)\n- Amélioration de l'expérience utilisateur\n- Défis éthiques et de confiance (données, transparence)\n- Gestion des attentes stakeholders\n\n---\n\n**Comment puis-je vous aider ?**\n- Vous cherchez à la contacter ?\n- Vous préparez une collaboration ?\n- Vous analysez la stratégie IA du Mauvais Coin ?\n- Autre contexte ?\n\nPrécisez votre objectif pour que je vous propose une approche adaptée.",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.27913410291346197
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T3",
+          "input": "Maitre Vigneau, Avocat en droit des affaires, cherche à automatiser une partie de ses process pour lui dégager du temps.",
+          "baselineOutput": "# Email de relance\n\n**Objet :** Automatisation process - Droit des affaires\n\n---\n\nMadame, Monsieur,\n\nSuite à notre échange précédent concernant l'automatisation de vos processus juridiques, je vous propose une solution adaptée à votre cabinet.\n\nGagner du temps sur les tâches répétitives (mise en forme de contrats, suivi de dossiers, relances clients) vous permettrait de vous concentrer sur le conseil stratégique et le contentieux.\n\nPourrions-nous fixer un entretien pour explorer les processus à optimiser en priorité ?\n\nCordialement,\n[Votre nom]",
+          "ablatedOutput": "# Automatisation pour Maître Vigneau - Avocat en droit des affaires\n\nExcellente initiative ! Voici les processus les plus pertinents à automatiser :\n\n## 🎯 **Priorités immédiates**\n\n### 1. **Gestion documentaire**\n- Classement automatique des contrats par type/client\n- Extraction de données clés (dates, montants, parties)\n- Alertes sur dates d'échéance (renouvellements, délais)\n- Versioning et historique des modifications\n\n### 2. **Suivi des dossiers clients**\n- Relances automatiques (devis non signés, factures impayées)\n- Mise à jour du statut des dossiers\n- Génération de rapports d'avancement\n\n### 3. **Facturation & administratif**\n- Génération automatique de factures\n- Suivi des heures facturables\n- Relances de paiement échelonnées\n\n## 📋 **Processus secondaires**\n\n- Modèles de courriers/contrats pré-remplis\n- Agenda des audiences synchronisé\n- Notifications de jurisprudence pertinente\n- Gestion des délais de prescription\n\n## 🛠️ **Outils recommandés**\n\n- **Logiciel métier** : Caselaw, Jurisprudence+, ou Legaltechs spécialisées\n- **Automatisation générale** : Zapier, Make, n8n\n- **Stockage** : SharePoint, OneDrive (conformité données sensibles)\n\n**Quel processus vous prend le plus de temps actuellement ?** Je peux affiner les recommandations.",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.10000000000000009,
+            "sem": 0.31351358754116165
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T4",
+          "input": "Pierre Lassus, Ami d'enfance, à pris contact avec moi pour en savoir plus, mais après un mail de réponse, plus de nouvelle. A relancer",
+          "baselineOutput": "**Objet :** Nouvelles de Pierre - Relance amicale\n\n---\n\nBonjour Pierre,\n\nJ'espère que tu vas bien ! Je réalise que je n'ai pas eu de retour suite à mon dernier message. Pas de souci si tu as été débordé – je sais que la vie peut être chargée !\n\nJe serais ravi de continuer notre conversation et d'en savoir plus sur ce que tu deviens. N'hésite pas à me recontacter quand tu auras un moment.\n\nÀ bientôt j'espère !\n\nAmicalement,\n[Ton prénom]",
+          "ablatedOutput": "# À relancer : Pierre Lassus\n\n**Situation :**\n- Ami d'enfance qui a pris contact\n- Vous avez répondu à son mail\n- Silence radio depuis\n\n**Actions suggérées :**\n\n1. **Relance simple et décontractée**\n   - Attendre 1-2 semaines avant de relancer\n   - Ton léger (pas de reproche)\n   - Ex : \"Salut Pierre, tu as reçu mon dernier mail ? Pas de souci si tu es occupé !\"\n\n2. **Vérifier les bases**\n   - Mail bien arrivé ? (pas de spam)\n   - Numéro de téléphone à jour ?\n   - Essayer un autre canal (SMS, LinkedIn, Facebook)\n\n3. **Relance par téléphone**\n   - Plus personnel et efficace\n   - Permet de clarifier rapidement\n\n**À noter :** Parfois les gens s'intéressent puis se désengagent naturellement. Ne pas trop insister si la relance reste sans réponse.\n\nBesoin d'aide pour rédiger le message de relance ?",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.38732787111426714
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T5",
+          "input": "Chan Lee, PDG d'un grand groupe, cherche à influer une politique IA dans sa société.",
+          "baselineOutput": "**Objet :** Gouvernance IA : votre vision stratégique\n\n---\n\nMadame, Monsieur Lee,\n\nSuite à notre échange précédent sur l'intégration de l'IA dans votre groupe, je reviens vers vous pour explorer comment structurer une politique IA ambitieuse et opérationnelle.\n\nVous soulevez des enjeux critiques : alignement éthique, gouvernance des données, montée en compétences. Ces défis méritent une approche holistique.\n\nJe vous propose un entretien de 30 minutes pour :\n- Cartographier vos priorités IA actuelles\n- Identifier les leviers de transformation rapide\n- Esquisser un cadre de gouvernance adapté à votre contexte\n\nÊtes-vous disponible cette semaine ou la suivante ?\n\nCordialement,",
+          "ablatedOutput": "# Stratégie d'influence IA pour Chan Lee\n\n## Diagnostic initial\nAvant d'agir, Chan Lee devrait clarifier :\n- **État actuel** : existe-t-il une stratégie IA ? Qui la pilote ?\n- **Enjeux prioritaires** : productivité, innovation, risques, conformité ?\n- **Résistances** : technophobie, craintes RH, silos organisationnels ?\n\n## Leviers d'influence (PDG)\n\n### 1. **Légitimité institutionnelle**\n- Créer un comité IA de direction (transversal)\n- Fixer des objectifs IA dans la stratégie d'entreprise\n- Allouer un budget dédié et visible\n\n### 2. **Exemplarité**\n- Utiliser l'IA dans ses propres processus décisionnels\n- Communiquer publiquement sur la vision IA\n- Valoriser les initiatives réussies\n\n### 3. **Capacitation**\n- Former les cadres dirigeants\n- Recruter/promouvoir des talents IA\n- Créer des espaces d'expérimentation (labs, POC)\n\n### 4. **Gouvernance**\n- Établir des garde-fous éthiques et légaux\n- Définir des standards de qualité données\n- Assurer la transparence auprès des parties prenantes\n\n## Points de vigilance\n⚠️ Éviter l'effet \"gadget\" sans ROI réel\n⚠️ Gérer les impacts RH (reconversion, anxiété)\n⚠️ Respecter la conformité (RGPD, etc.)\n\n**Quel aspect prioritaire pour Chan Lee ?**",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.10000000000000009,
+            "sem": 0.3447011436700058
+          },
+          "semanticProvider": "voyage_api"
+        }
+      ]
+    }
+  ]
+}

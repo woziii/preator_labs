@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Architecture · preatorlabs documentation</title>
+<meta name="description" content="preatorlabs technical architecture: browser modules (Segmenter, Scorer, AblationEngine, Renderer), data contracts, local storage and security.">
+<meta name="theme-color" content="#1a1a18">
+<meta name="color-scheme" content="light">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="canonical" href="https://preatorlabs.dev/en/docs/architecture">
+<link rel="alternate" hreflang="fr" href="https://preatorlabs.dev/docs/architecture">
+<link rel="alternate" hreflang="en" href="https://preatorlabs.dev/en/docs/architecture">
+<link rel="alternate" hreflang="x-default" href="https://preatorlabs.dev/docs/architecture">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="preatorlabs">
+<meta property="og:title" content="Architecture · preatorlabs">
+<meta property="og:description" content="preatorlabs technical architecture: browser modules (Segmenter, Scorer, AblationEngine, Renderer), data contracts, local storage and security.">
+<meta property="og:url" content="https://preatorlabs.dev/en/docs/architecture">
+<meta property="og:image" content="https://preatorlabs.dev/og-image.png">
+<meta property="og:locale" content="en_US">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Architecture · preatorlabs">
+<meta name="twitter:description" content="preatorlabs technical architecture: browser modules (Segmenter, Scorer, AblationEngine, Renderer), data contracts, local storage and security.">
+<meta name="twitter:image" content="https://preatorlabs.dev/og-image.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Architecture",
+  "description": "preatorlabs technical architecture: browser modules (Segmenter, Scorer, AblationEngine, Renderer), data contracts, local storage and security.",
+  "inLanguage": "en",
+  "url": "https://preatorlabs.dev/en/docs/architecture",
+  "author": {
+    "@type": "Organization",
+    "name": "preatorlabs"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "preatorlabs",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://preatorlabs.dev/og-image.png"
+    }
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "url": "https://preatorlabs.dev/"
+  }
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=JetBrains+Mono:wght@400;500&family=Inter+Tight:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #f5f3ee;
+  --bg-2: #ebe7dd;
+  --ink: #1a1a18;
+  --ink-soft: #4a4842;
+  --ink-mute: #6e6c64;
+  --rule: rgba(26, 26, 24, 0.12);
+  --rule-strong: rgba(26, 26, 24, 0.25);
+  --accent: #c44322;
+  --accent-soft: #f4d9cf;
+}
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Inter Tight', system-ui, sans-serif;
+  line-height: 1.65;
+  font-size: 16px;
+}
+.shell { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
+@media (max-width: 720px) { .shell { padding: 0 20px; } }
+.topbar {
+  border-bottom: 1px solid var(--rule);
+  padding: 18px 0;
+  position: sticky;
+  top: 0;
+  background: rgba(245, 243, 238, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 100;
+}
+.topbar-inner { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.brand {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+  text-decoration: none;
+}
+.brand-mark {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ink);
+  position: relative;
+  flex-shrink: 0;
+}
+.brand-mark::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+}
+.topbar-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.topbar-actions a {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid var(--rule-strong);
+  padding: 6px 12px;
+  transition: color 0.2s, border-color 0.2s;
+}
+.topbar-actions a:hover { color: var(--ink); border-color: var(--ink); }
+.lang-toggle { display: inline-flex; align-items: center; border: 1px solid var(--rule-strong); border-radius: 999px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; line-height: 1; }
+.lang-toggle a, .lang-toggle span { display: inline-flex; align-items: center; padding: 5px 9px; color: var(--ink-mute); text-decoration: none; transition: background 0.18s, color 0.18s; }
+.lang-toggle a:hover { color: var(--ink); }
+.lang-toggle .is-active { background: var(--accent); color: #fff; font-weight: 600; }
+.i18n-note { background: var(--accent-soft); border: 1px solid var(--rule); border-radius: 8px; font-size: 13px; line-height: 1.55; color: var(--ink-soft); padding: 10px 14px; margin-bottom: 24px; }
+.i18n-note a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.doc-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 48px;
+  padding: 48px 0 96px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .doc-layout { grid-template-columns: 1fr; gap: 28px; }
+  .doc-nav { position: static !important; }
+}
+.doc-nav { position: sticky; top: 88px; }
+.doc-nav-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+.doc-nav a {
+  display: block;
+  font-size: 14px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--rule);
+  transition: color 0.2s;
+}
+.doc-nav a:hover { color: var(--ink); }
+.doc-nav a.is-active { color: var(--ink); font-weight: 500; }
+.doc-main { min-width: 0; }
+.md-prose { max-width: 720px; }
+.md-prose h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: clamp(28px, 4vw, 36px);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--rule);
+}
+.md-prose h2 {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  margin: 40px 0 14px;
+  padding-top: 8px;
+}
+.md-prose h3 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 18px; margin: 28px 0 10px; }
+.md-prose h4 { font-size: 15px; font-weight: 600; margin: 20px 0 8px; color: var(--ink-soft); }
+.md-prose p { margin-bottom: 14px; color: var(--ink-soft); }
+.md-prose blockquote {
+  border-left: 2px solid var(--accent);
+  padding: 4px 0 4px 18px;
+  margin: 20px 0;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+.md-prose ul, .md-prose ol { margin: 0 0 16px 22px; color: var(--ink-soft); }
+.md-prose li { margin-bottom: 6px; }
+.md-prose li > ul, .md-prose li > ol { margin-top: 6px; margin-bottom: 0; }
+.md-prose a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.md-prose a:hover { color: var(--ink); }
+.md-prose strong { color: var(--ink); font-weight: 600; }
+.md-prose hr { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
+.md-prose code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.88em;
+  background: var(--bg-2);
+  padding: 2px 6px;
+  border-radius: 2px;
+  color: var(--ink);
+}
+.md-prose pre {
+  background: var(--bg-2);
+  border: 1px solid var(--rule);
+  padding: 16px 18px;
+  overflow-x: auto;
+  margin: 16px 0 20px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+.md-prose pre code { background: none; padding: 0; font-size: inherit; }
+.md-prose table { width: 100%; border-collapse: collapse; margin: 20px 0 24px; font-size: 14px; }
+.md-prose th, .md-prose td { border: 1px solid var(--rule-strong); padding: 10px 14px; text-align: left; vertical-align: top; }
+.md-prose th { background: var(--bg-2); font-weight: 600; color: var(--ink); }
+.md-prose td { color: var(--ink-soft); }
+.md-prose img { max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="shell topbar-inner">
+    <a class="brand" href="/en/">
+      <span class="brand-mark" aria-hidden="true"></span>
+      preatorlabs
+    </a>
+    <div class="topbar-actions">
+      <a href="/en/">← home</a>
+      <a href="/en/#demo">demo</a>
+      <a href="/en/docs/03-ARCHITECTURE.md" download>source .md</a>
+      <span class="lang-toggle" role="group" aria-label="Language">
+        <a href="/docs/architecture" hreflang="fr" lang="fr">FR</a>
+        <span class="is-active" aria-current="true">EN</span>
+      </span>
+    </div>
+  </div>
+</header>
+
+<div class="shell doc-layout">
+  <nav class="doc-nav" aria-label="Documentation">
+    <div class="doc-nav-label">documentation</div>
+      <a href="/en/docs/scientific-rationale">Scientific rationale</a>
+      <a href="/en/docs/methodology">Methodology</a>
+      <a href="/en/docs/architecture" class="is-active">Architecture</a>
+      <a href="/en/docs/interpretation-guide">Interpretation guide</a>
+      <a href="/en/docs/roadmap">Roadmap</a>
+  </nav>
+
+  <main class="doc-main">
+    <div class="i18n-note" role="note">Originally written in French. This English version is a translation and may contain minor imperfections. <a href="/docs/architecture" hreflang="fr" lang="fr">View the original (FR)</a>.</div>
+<article class="md-prose">
+<h1>03 — Technical architecture</h1>
+<blockquote>
+<p>How preatorlabs is built, and how the components talk to each other.</p>
+</blockquote>
+<h2>V1 overview</h2>
+<pre><code>┌──────────────────────────────────────────────────────┐
+│                     Browser                          │
+│                                                      │
+│  ┌────────────────┐   ┌──────────────────────────┐   │
+│  │   Landing      │   │        Demo              │   │
+│  │   (HTML/CSS)   │   │   (HTML + vanilla JS)    │   │
+│  │                │   │                          │   │
+│  │   Scientific   │   │   • Segmentation         │   │
+│  │   presentation │──▶│   • Scenario config      │   │
+│  │   + anchors    │   │   • 3-axis config        │   │
+│  │                │   │   • Ablation engine      │   │
+│  └────────────────┘   │   • Visualisation        │   │
+│                       └────────────┬─────────────┘   │
+│                                    │                 │
+│                       API key stored                 │
+│                       in localStorage                │
+└────────────────────────────────────┼─────────────────┘
+                                     │
+                                     ▼
+                       ┌───────────────────────────────┐
+                       │    Anthropic API              │
+                       │    /v1/messages               │
+                       │                               │
+                       │    Direct CORS-enabled call   │
+                       │    Model: claude-sonnet-4-5   │
+                       │    Temperature: 0             │
+                       └───────────────────────────────┘
+</code></pre>
+<h2>V1 components</h2>
+<h3>1. Landing (<code>web/index.html</code>, sections at the top)</h3>
+<p>Pure HTML/CSS. No framework. No build.</p>
+<p>Content:</p>
+<ul>
+<li><strong>Hero</strong>: one-sentence pitch + CTA to the demo</li>
+<li><strong>The problem</strong>: why preatorlabs exists</li>
+<li><strong>The method</strong>: explanation of the 3 axes + ablation</li>
+<li><strong>How to read the results</strong>: a reading guide</li>
+<li><strong>Demo</strong>: anchor to the live section</li>
+</ul>
+<h3>2. Demo (<code>web/index.html</code>, section #demo)</h3>
+<p>Vanilla JS. Three sub-components:</p>
+<h4>2a. <code>Segmenter</code> module</h4>
+<pre><code class="language-javascript">const Segmenter = {
+  segment(rawText) -&gt; string[]
+}
+</code></pre>
+<p>Implementation: algorithm described in <code>02-METHODOLOGY.md</code> §1.</p>
+<h4>2a-bis. Criteria preview (<code>renderCriteriaPreview</code>)</h4>
+<p>Before launch, the configuration panel displays the rules that will be applied:</p>
+<pre><code class="language-javascript">function renderCriteriaPreview() {
+  const criteria = compileCriteria(getCriteriaRaw(), nonEmpty(state.segments));
+  // List structuralRules / behavioralRules with an auto | manual badge
+}
+</code></pre>
+<p>Triggers: segmentation, segment editing, auto-struct/auto-behav toggles, manual fields (length, terms, etc.). Goal: traceability of the active rules without launching the analysis.</p>
+<h4>2b. <code>Scorer</code> module</h4>
+<pre><code class="language-javascript">const Scorer = {
+  structural(output, criteria) -&gt; { score: number|null, applicable: boolean },
+  behavioral(output, criteria) -&gt; { score: number|null, applicable: boolean },
+  semantic(outputA, outputB, provider) -&gt; { delta: number|null, applicable: boolean, provider: string }
+}
+</code></pre>
+<p>Notes:</p>
+<ul>
+<li><code>structural</code>: local parsing in JS, zero cost.</li>
+<li><code>behavioral</code>: string / regex matching, zero cost.</li>
+<li><code>semantic</code>: switchable provider. V0.3 keeps local TF-IDF (free) and adds Voyage AI (optional) with an explicit fallback to TF-IDF if the call fails.</li>
+</ul>
+<h4>2c. <code>AblationEngine</code> module</h4>
+<pre><code class="language-javascript">const AblationEngine = {
+  async run({ segments, scenarios, criteria, apiKey, model }) -&gt; Results
+}
+</code></pre>
+<p>Pseudo-code:</p>
+<pre><code class="language-javascript">async function run({ segments, scenarios, criteria, apiKey, model }) {
+  const baselines = await Promise.all(
+    scenarios.map(s =&gt; callClaude(joinSegments(segments), s, apiKey, model))
+  );
+  
+  const results = [];
+  for (let i = 0; i &lt; segments.length; i++) {
+    const ablated = segments.filter((_, idx) =&gt; idx !== i);
+    const promptAblated = joinSegments(ablated);
+    
+    const outputs = await Promise.all(
+      scenarios.map(s =&gt; callClaude(promptAblated, s, apiKey, model))
+    );
+    
+    const deltas = scenarios.map((_, j) =&gt; ({
+      struct: abs(Scorer.structural(baselines[j], criteria).score - Scorer.structural(outputs[j], criteria).score),
+      behav: abs(Scorer.behavioral(baselines[j], criteria).score - Scorer.behavioral(outputs[j], criteria).score),
+      sem: Scorer.semantic(baselines[j], outputs[j], provider).delta
+    }));
+    
+    results.push(aggregateSegment(i, deltas));
+  }
+  
+  return results;
+}
+</code></pre>
+<p>Concurrency: API calls in parallel per scenario. Anthropic supports 5 req/s on Tier 1 — beyond that, sequential batching.</p>
+<h4>2d. <code>Renderer</code> module</h4>
+<pre><code class="language-javascript">const Renderer = {
+  drawVarianceChart(results, canvas),
+  drawAxesBreakdown(results, container),
+  drawSynthesis(results, container)
+}
+</code></pre>
+<p>External dependency: Chart.js (UMD via CDN).</p>
+<h2>Data contracts</h2>
+<h3><code>Segment</code></h3>
+<pre><code class="language-typescript">type Segment = {
+  id: string;           // &quot;S1&quot;, &quot;S2&quot;, ...
+  text: string;         // the segment text
+  label?: string;       // generated label
+}
+</code></pre>
+<h3><code>Scenario</code></h3>
+<pre><code class="language-typescript">type Scenario = {
+  id: string;           // &quot;T1&quot;, &quot;T2&quot;, ...
+  input: string;        // the user input
+}
+</code></pre>
+<h3><code>Criteria</code></h3>
+<pre><code class="language-typescript">type Criteria = {
+  structural: {
+    maxWords?: number;
+    forbidPatterns?: RegExp[];
+  };
+  behavioral: {
+    forbidden: string[];
+    required?: string[];
+  };
+  // semantic: no config in mode B
+}
+</code></pre>
+<h3><code>SegmentResult</code></h3>
+<pre><code class="language-typescript">type SegmentResult = {
+  id: string;
+  label: string;
+  impact: number;       // [0, 1]
+  variance: number;     // [0, 1]
+  activation?: {
+    overall: number | null;
+    struct: number | null;
+    behav: number | null;
+    sem: number | null;
+  };
+  struct: number;       // [0, 1]
+  behav: number;        // [0, 1]
+  sem: number;          // [0, 1]
+  verdict: &#39;critical&#39; | &#39;high&#39; | &#39;context&#39; | &#39;low&#39; | &#39;placebo&#39;;
+  perScenario: {
+    scenarioId: string;       // &quot;T1&quot;, &quot;T2&quot;, ...
+    input: string;            // user scenario
+    baselineOutput: string;   // full-prompt output
+    ablatedOutput: string;    // output without the current segment
+    axisDelta: {              // absolute deltas for this scenario
+      struct: number;
+      behav: number;
+      sem: number;
+    };
+  }[];
+}
+</code></pre>
+<h2>Local storage</h2>
+<p><code>localStorage</code> is used for:</p>
+<ul>
+<li><code>preatorlabs.apiKey</code> — the user&#39;s Anthropic key (never sent to a third-party server)</li>
+<li><code>preatorlabs.voyageApiKey</code> — Voyage key (if the Voyage provider is enabled)</li>
+<li><code>preatorlabs.lastPrompt</code> — last analysed prompt (for resuming)</li>
+<li><code>preatorlabs.lastResults</code> — last results</li>
+</ul>
+<p><strong>The project has no backend.</strong> All the logic runs in the browser. This is a privacy-by-design choice: the prompt and the results never leave the user&#39;s machine, except towards the target LLM&#39;s API.</p>
+<h2>Security</h2>
+<ul>
+<li>The user&#39;s API key is never logged, never sent anywhere but to Anthropic.</li>
+<li><code>localStorage</code> is isolated by origin — no cross-site exfiltration.</li>
+<li>The user can erase the key with one click via the UI.</li>
+</ul>
+<p>Assumed limit: a malicious script injected into the page (XSS) could read <code>localStorage</code>. Mitigation: no user-generated content rendered as raw HTML, strict CSP recommended for deployment.</p>
+<h2>V2 (planned)</h2>
+<p>Addition of an optional Python engine for large batches:</p>
+<pre><code>engine/
+├── preatorlabs.py        # reference engine
+├── scorers/
+│   ├── structural.py
+│   ├── behavioral.py
+│   └── semantic.py       # embeddings via Voyage AI or local sentence-transformers
+└── cli.py                # CLI entrypoint
+</code></pre>
+<p>Normalised JSON output, importable into the web app.</p>
+<h2>V3 (considered)</h2>
+<p>Multi-LLM support: adapters for OpenAI, Gemini, Mistral. Common <code>LLMAdapter</code> interface. Allows comparing the conformance of the same prompt across several models.</p>
+
+    </article>
+  </main>
+</div>
+
+</body>
+</html>

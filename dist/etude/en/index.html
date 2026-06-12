@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What really matters in a prompt — Ablation study | preatorlabs</title>
+<meta name="description" content="Seven controlled ablation experiments measure the real impact of each prompt segment. A single principle unifies every result: the distance from the model's default behavior.">
+<meta name="author" content="preatorlabs">
+<link rel="canonical" href="https://etude.preatorlabs.dev/en/">
+
+<!-- hreflang -->
+<link rel="alternate" hreflang="fr" href="https://etude.preatorlabs.dev/">
+<link rel="alternate" hreflang="en" href="https://etude.preatorlabs.dev/en/">
+<link rel="alternate" hreflang="x-default" href="https://etude.preatorlabs.dev/">
+
+<!-- Open Graph -->
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://etude.preatorlabs.dev/en/">
+<meta property="og:title" content="What really matters in a prompt — Ablation study">
+<meta property="og:description" content="Seven controlled experiments measuring the real impact of each prompt segment across two Claude models.">
+<meta property="og:image" content="https://etude.preatorlabs.dev/og-etude.png">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="fr_FR">
+<meta property="article:published_time" content="2026-06-12">
+<meta property="article:author" content="preatorlabs">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="What really matters in a prompt">
+<meta name="twitter:description" content="Seven controlled ablation experiments. One principle: distance from the default.">
+<meta name="twitter:image" content="https://etude.preatorlabs.dev/og-etude.png">
+
+<!-- JSON-LD Article -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ScholarlyArticle",
+  "headline": "What really matters in a prompt: seven ablation experiments",
+  "description": "Empirical study measuring the real impact of each prompt segment through controlled ablation on Claude Haiku 4.5 and Sonnet 4.6.",
+  "author": { "@type": "Organization", "name": "preatorlabs", "url": "https://www.preatorlabs.dev" },
+  "publisher": { "@type": "Organization", "name": "preatorlabs", "url": "https://www.preatorlabs.dev" },
+  "datePublished": "2026-06-12",
+  "inLanguage": "en",
+  "url": "https://etude.preatorlabs.dev/en/",
+  "keywords": ["prompt engineering", "ablation study", "LLM", "Claude", "prompt optimization", "prompt analysis", "preatorlabs"]
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#ECECE4;
+  --panel:#F8F8F3;
+  --panel-2:#FFFFFF;
+  --ink:#15202B;
+  --ink-soft:#414b59;
+  --slate:#8b93a1;
+  --slate-deep:#5f6878;
+  --line:#d8d8cd;
+  --line-soft:#e6e6dc;
+  --signal:#2347df;
+  --signal-deep:#1733ad;
+  --signal-tint:#e6e9fb;
+  --alert:#b23a28;
+  --alert-tint:#f4e2dd;
+  --ok:#1d7a5f;
+  --maxw:720px;
+  --display:"Space Grotesk",system-ui,sans-serif;
+  --body:"Newsreader",Georgia,serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--body);font-size:19px;line-height:1.72;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+.progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--signal);z-index:50;transition:width .12s linear}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+h1,h2,h3,.eyebrow,.lede,th,.metric,.chip,.tag,.btn{font-family:var(--display)}
+a{color:var(--signal-deep);text-underline-offset:3px;text-decoration-thickness:1px}
+a:hover{color:var(--signal)}
+
+/* ---------- HERO ---------- */
+.hero{padding:74px 0 30px;border-bottom:1px solid var(--line)}
+.kicker{font-family:var(--mono);font-size:12.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--slate-deep);margin:0 0 22px}
+h1{font-size:clamp(2.1rem,5.4vw,3.35rem);line-height:1.04;font-weight:600;letter-spacing:-.02em;margin:0 0 22px}
+.subtitle{font-family:var(--body);font-style:italic;font-size:clamp(1.05rem,2.3vw,1.28rem);color:var(--ink-soft);line-height:1.55;max-width:60ch;margin:0 0 34px}
+.byline{font-family:var(--mono);font-size:12.5px;color:var(--slate-deep);letter-spacing:.04em;display:flex;gap:14px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--line-soft);padding-top:18px}
+.byline .dot{width:5px;height:5px;border-radius:50%;background:var(--signal)}
+
+/* ---------- THESIS ---------- */
+.thesis{margin:40px 0;padding:30px 30px 30px 34px;background:var(--ink);color:#f3f3ee;border-radius:3px;position:relative;overflow:hidden}
+.thesis::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--signal)}
+.thesis .lbl{font-family:var(--mono);font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#9fb0ff;margin:0 0 12px}
+.thesis p{margin:0;font-family:var(--body);font-size:1.22rem;line-height:1.55}
+.thesis strong{color:#fff;font-weight:500}
+.thesis .hl{color:#aebcff;font-style:italic}
+
+/* ---------- SECTION RHYTHM ---------- */
+section{padding:14px 0}
+.exp{padding:30px 0 8px;border-top:1px solid var(--line);margin-top:30px}
+.eyebrow{display:flex;align-items:baseline;gap:14px;margin:0 0 6px}
+.eyebrow .no{font-family:var(--mono);font-size:13px;color:var(--signal-deep);font-weight:600;letter-spacing:.08em}
+.eyebrow .of{font-family:var(--mono);font-size:13px;color:var(--slate)}
+h2{font-size:clamp(1.5rem,3.6vw,2.05rem);line-height:1.12;font-weight:600;letter-spacing:-.015em;margin:.1em 0 .55em}
+h2.plain{margin-top:.2em}
+h3{font-family:var(--display);font-size:1.06rem;font-weight:600;letter-spacing:.01em;margin:1.9em 0 .2em;color:var(--ink)}
+p{margin:0 0 1.05em}
+.role{font-family:var(--display);font-weight:600;font-size:.93em;color:var(--signal-deep)}
+em{color:var(--ink-soft)}
+strong{font-weight:600;color:var(--ink)}
+.quote-out{color:var(--ink-soft);font-style:italic}
+
+/* lede paragraph */
+.lede{font-family:var(--body);font-size:1.16rem;color:var(--ink-soft);font-style:italic}
+
+/* ---------- FIGURE ---------- */
+figure{margin:26px 0;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:20px 20px 14px}
+figure svg{display:block;width:100%;height:auto}
+figcaption{font-family:var(--mono);font-size:12px;line-height:1.5;color:var(--slate-deep);margin-top:12px;padding-top:11px;border-top:1px solid var(--line-soft)}
+figcaption b{color:var(--ink);font-weight:600}
+
+/* legend chips */
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px;color:var(--slate-deep);margin-top:4px}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+.sw.s{background:var(--signal)}.sw.g{background:var(--slate)}.sw.a{background:var(--alert)}
+
+/* ---------- DATA TABLE (instrument readout) ---------- */
+.readout{margin:24px 0;border:1px solid var(--line);border-radius:4px;overflow:hidden;background:var(--panel-2)}
+.readout .cap{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--slate-deep);padding:11px 16px;background:var(--panel);border-bottom:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:15.5px}
+th{font-family:var(--display);font-weight:600;font-size:12.5px;letter-spacing:.02em;text-align:left;color:var(--slate-deep);padding:11px 16px;border-bottom:1px solid var(--line)}
+td{font-family:var(--body);padding:11px 16px;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+td.num,th.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.v-pill{font-family:var(--mono);font-size:11.5px;padding:2px 9px;border-radius:20px;white-space:nowrap;font-weight:500}
+.v-pill.placebo{background:#ececde;color:var(--slate-deep)}
+.v-pill.act{background:var(--signal-tint);color:var(--signal-deep)}
+.v-pill.bad{background:var(--alert-tint);color:var(--alert)}
+.v-pill.good{background:#dcefe6;color:var(--ok)}
+.big{font-family:var(--mono);font-weight:600;color:var(--signal-deep)}
+.bigbad{font-family:var(--mono);font-weight:600;color:var(--alert)}
+
+/* ---------- DISPOSITIF (kit: what was tested) ---------- */
+.kit{margin:22px 0;border:1px solid var(--line);border-left:4px solid var(--ink);border-radius:0 4px 4px 0;background:var(--panel);overflow:hidden}
+.kit .cap{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);font-weight:600;padding:11px 16px 0}
+.kit .task{font-family:var(--body);font-size:.96rem;color:var(--ink-soft);padding:6px 16px 10px;font-style:italic;border-bottom:1px solid var(--line-soft)}
+.kit .task b{font-style:normal;color:var(--ink);font-weight:600}
+.kit dl{margin:0;padding:8px 16px 10px}
+.kit .row{display:flex;gap:12px;padding:6px 0;align-items:baseline;border-bottom:1px solid var(--line-soft)}
+.kit .row:last-child{border-bottom:none}
+.kit dt{flex:0 0 70px;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--signal-deep)}
+.kit dt.mut{color:var(--slate-deep)}
+.kit dt.bad{color:var(--alert)}
+.kit dd{margin:0;font-family:var(--body);font-size:.97rem;color:var(--ink);line-height:1.5}
+.kit dd b{font-weight:600}
+.kit dd code{font-family:var(--mono);font-size:.84em;background:#ececde;padding:1px 6px;border-radius:3px;color:var(--ink)}
+.kit .scn{font-family:var(--mono);font-size:11.5px;line-height:1.6;color:var(--slate-deep);padding:9px 16px;background:var(--panel-2);border-top:1px solid var(--line-soft)}
+
+/* ---------- TAKEAWAY ---------- */
+.keep{margin:26px 0 6px;padding:18px 22px 18px 20px;background:var(--signal-tint);border-left:4px solid var(--signal);border-radius:0 4px 4px 0}
+.keep .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--signal-deep);margin:0 0 5px;font-weight:600}
+.keep p{margin:0;font-size:1.05rem;color:var(--ink)}
+
+/* ---------- TOC ---------- */
+.toc{margin:34px 0;border:1px solid var(--line);border-radius:4px;background:var(--panel)}
+.toc .cap{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--slate-deep);padding:13px 18px 4px}
+.toc ol{margin:0;padding:4px 0 10px;list-style:none;counter-reset:t}
+.toc li{counter-increment:t}
+.toc a{display:flex;gap:14px;align-items:baseline;padding:8px 18px;text-decoration:none;color:var(--ink);border-left:3px solid transparent}
+.toc a:hover{background:var(--signal-tint);border-left-color:var(--signal)}
+.toc a::before{content:counter(t,decimal-leading-zero);font-family:var(--mono);font-size:12px;color:var(--signal-deep);min-width:22px}
+.toc a span{font-family:var(--display);font-size:.96rem}
+
+/* ---------- PRACTICAL / LIST ---------- */
+.rules{list-style:none;padding:0;margin:18px 0}
+.rules li{padding:14px 0 14px 30px;border-bottom:1px solid var(--line-soft);position:relative}
+.rules li:last-child{border-bottom:none}
+.rules li::before{content:"";position:absolute;left:2px;top:22px;width:10px;height:10px;border:2px solid var(--signal);border-radius:50%}
+.rules b{font-family:var(--display);font-weight:600;font-size:.97em}
+
+/* ---------- CLOSING ---------- */
+.closing{margin:40px 0 10px;padding:26px 0 0;border-top:1px solid var(--line)}
+footer{padding:30px 0 70px;font-family:var(--mono);font-size:12.5px;color:var(--slate-deep);line-height:1.7}
+.divider{height:1px;background:var(--line);margin:0}
+
+/* mech section special */
+.mech{background:var(--ink);color:#e9e9e2;border-radius:5px;padding:6px 0 16px;margin:34px 0}
+.mech .wrap2{max-width:660px;margin:0 auto;padding:18px 26px}
+.mech h2{color:#fff}
+.mech .eyebrow .no,.mech .eyebrow .of{color:#9fb0ff}
+.mech p{color:#cfd2cc}
+.mech strong{color:#fff}
+.mech figure{background:#1d2935;border-color:#2c3a48}
+.mech figcaption{color:#9aa3af;border-top-color:#2c3a48}
+.mech figcaption b{color:#fff}
+.mech .legend{color:#9aa3af}
+
+@media (max-width:600px){
+  body{font-size:17.5px}
+  .hero{padding:48px 0 24px}
+  figure{padding:14px 12px 10px}
+  td,th{padding:9px 11px}
+  table{font-size:14px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{scroll-behavior:auto}
+  .reveal{opacity:1!important;transform:none!important}
+}
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in{opacity:1;transform:none}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+
+<header class="hero">
+  <div class="wrap">
+    <nav class="lang-switch" aria-label="Language">
+      <a class="lang-switch__option" href="../" hreflang="fr" lang="fr">FR</a>
+      <span class="lang-switch__sep">/</span>
+      <span class="lang-switch__current">EN</span>
+    </nav>
+    <p class="kicker">Empirical study · preatorlabs</p>
+    <h1>What really matters in a prompt</h1>
+    <p class="subtitle">We write prompts on instinct, stacking up formulas whose real effectiveness goes unmeasured. I built an instrument to measure it, segment by segment. Here is what seven controlled experiments reveal — and the single rule that explains them all.</p>
+    <div class="byline">
+      <span class="dot"></span><span>Seven ablation experiments</span>
+      <span class="dot"></span><span>Claude Haiku 4.5 &amp; Sonnet 4.6</span>
+      <span class="dot"></span><span>Temperature 0 · reproducible</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section>
+    <div class="eyebrow"><span class="no">§</span><span class="of">Why I did this</span></div>
+    <h2 class="plain">Measuring instead of guessing</h2>
+    <p>I spend my days writing instructions for language models and, like everyone, without a rigorous protocol: a grandiose role label, a pile of tone adjectives, an instruction repeated to reinforce compliance. The outputs are acceptable — but what fraction of those instructions actually contributes to the result? The question stays unanswered, for lack of a measuring instrument.</p>
+    <p>So I built an instrument to measure it: <a href="https://www.preatorlabs.dev">preatorlabs</a>, which splits a prompt into segments and tests, one by one, which ones matter. Seven ablation experiments came out of it. Each submits a common belief about prompting to a controlled test — and the whole set of results converges toward a single explanatory principle.</p>
+
+    <div class="thesis">
+      <p class="lbl">The thesis, in one sentence</p>
+      <p><strong>What decides whether an instruction matters is not its form</strong> — negative or positive, vivid, repeated, nicely phrased. <strong>It is its distance from the model's <span class="hl">default</span> behavior.</strong> Asking it for what it would already do spontaneously changes nothing: it is a placebo. Pulling it away from its default, or imposing a hard constraint it would otherwise miss, acts.</p>
+    </div>
+
+    <p style="margin-top:34px">The next two sections present the ablation method and the analysis framework; the seven experiments follow, each with its setup, a figure and its results. The closing "Six rules" section sums up the practical implications.</p>
+
+    <nav class="toc" aria-label="The seven experiments">
+      <p class="cap">The seven questions</p>
+      <ol>
+        <li><a href="#e1"><span>Does an instruction act according to its distance from the default?</span></a></li>
+        <li><a href="#e2"><span>Is the "senior expert" role good for anything?</span></a></li>
+        <li><a href="#e3"><span>Adjectives or description: what carries the tone?</span></a></li>
+        <li><a href="#e4"><span>Should you forbid, or ask positively?</span></a></li>
+        <li><a href="#e5"><span>Does repeating an instruction reinforce it?</span></a></li>
+        <li><a href="#e6"><span>Does metaphor help the model "imagine"?</span></a></li>
+        <li><a href="#e7"><span>How far, and how, can you trim a prompt?</span></a></li>
+      </ol>
+    </nav>
+  </section>
+
+  <!-- IDEA -->
+  <section>
+    <div class="eyebrow"><span class="no">§</span><span class="of">The method, in brief</span></div>
+    <h2 class="plain">How it is measured</h2>
+    <p><strong>Ablation</strong> is the basic move: one segment of the prompt is removed, the model is re-run under identical conditions, and the gap between the "with" answer and the "without" answer is that segment's impact score. Repeated for each segment and across several scenarios, this move produces an impact map of the prompt.</p>
+
+    <figure class="reveal">
+      <svg viewBox="0 0 660 230" role="img" aria-label="Diagram of the ablation principle: a full prompt and a prompt missing one segment produce two outputs that are compared.">
+        <defs>
+          <marker id="ar" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="var(--slate-deep)"/></marker>
+        </defs>
+        <!-- prompt full -->
+        <text x="20" y="30" font-family="var(--mono)" font-size="12" fill="var(--slate-deep)">FULL PROMPT</text>
+        <g>
+          <rect x="20" y="42" width="150" height="22" rx="3" fill="var(--slate)" opacity=".35"/>
+          <rect x="20" y="68" width="150" height="22" rx="3" fill="var(--signal)"/>
+          <rect x="20" y="94" width="150" height="22" rx="3" fill="var(--slate)" opacity=".35"/>
+          <text x="178" y="83" font-family="var(--mono)" font-size="11" fill="var(--signal-deep)">← tested segment</text>
+        </g>
+        <!-- prompt ablated -->
+        <text x="20" y="150" font-family="var(--mono)" font-size="12" fill="var(--slate-deep)">WITHOUT THIS SEGMENT</text>
+        <g>
+          <rect x="20" y="162" width="150" height="22" rx="3" fill="var(--slate)" opacity=".35"/>
+          <rect x="20" y="188" width="150" height="22" rx="3" fill="none" stroke="var(--signal)" stroke-width="1.4" stroke-dasharray="4 4"/>
+        </g>
+        <!-- arrows to model -->
+        <line x1="300" y1="78" x2="360" y2="78" stroke="var(--slate-deep)" stroke-width="1.4" marker-end="url(#ar)"/>
+        <line x1="300" y1="185" x2="360" y2="185" stroke="var(--slate-deep)" stroke-width="1.4" marker-end="url(#ar)"/>
+        <!-- outputs -->
+        <rect x="368" y="58" width="120" height="42" rx="4" fill="var(--panel-2)" stroke="var(--line)"/>
+        <text x="428" y="83" text-anchor="middle" font-family="var(--body)" font-size="13" fill="var(--ink)">output A</text>
+        <rect x="368" y="164" width="120" height="42" rx="4" fill="var(--panel-2)" stroke="var(--line)"/>
+        <text x="428" y="189" text-anchor="middle" font-family="var(--body)" font-size="13" fill="var(--ink)">output B</text>
+        <!-- compare -->
+        <path d="M494 79 C 540 79, 540 132, 560 132" fill="none" stroke="var(--slate)" stroke-width="1.3"/>
+        <path d="M494 185 C 540 185, 540 138, 560 138" fill="none" stroke="var(--slate)" stroke-width="1.3"/>
+        <circle cx="600" cy="135" r="33" fill="var(--signal-tint)" stroke="var(--signal)" stroke-width="1.5"/>
+        <text x="600" y="130" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--signal-deep)">gap</text>
+        <text x="600" y="145" text-anchor="middle" font-family="var(--mono)" font-size="14" font-weight="600" fill="var(--signal-deep)">= impact</text>
+      </svg>
+      <figcaption><b>The basic move.</b> We re-run the model with and without a segment, all else equal. The gap between the two outputs measures what that segment was contributing.</figcaption>
+    </figure>
+
+    <p>Two methodological constraints apply across all the experiments. <strong>Vary only one parameter at a time</strong> — all else equal —, with a "temperature" set to zero. This setting does not make the model strictly deterministic: it substantially reduces the stochastic variance of the outputs, improving reproducibility from one call to the next and limiting measurement noise. Second: <strong>an ablation measures the magnitude of the output change, not its qualitative direction</strong>. A high impact score signals that a segment moves the output; it does not say whether that move is for the better. Hence a two-step reading: <span class="role">the score locates</span> the segment that weighs, then <span class="role">reading the outputs qualifies</span> the direction of the change. The score alone is not enough to conclude.</p>
+    <p>The gap between two answers is measured on three planes: <strong>form</strong> (length, lists, format), <strong>detectable rules</strong> (informal address? a banned word?), and <strong>meaning</strong>, via the "numerical fingerprints" of the texts — two texts close in meaning have close fingerprints. <em>(The model outputs quoted in this study are kept in French — the model was tested in French.)</em></p>
+    <div class="legend" style="margin-top:18px">
+      <span><i class="sw g"></i> gray = close to the default / placebo</span>
+      <span><i class="sw s"></i> cobalt = departs from the default / acts</span>
+      <span><i class="sw a"></i> red = refusal or quality failure</span>
+    </div>
+  </section>
+
+  <!-- READING GRID (moved up) -->
+  <section>
+    <div class="eyebrow"><span class="no">§</span><span class="of">The reading grid</span></div>
+    <h2 class="plain">The river current of the LLM</h2>
+
+    <p>Before the experiments, it helps to introduce a notion that structures the interpretation of every result: the <strong>river current of the LLM</strong>.</p>
+
+    <p>This notion names an empirically observable phenomenon: for any given task, a language model's outputs are not uniformly distributed. They spontaneously converge toward certain forms, registers, lengths and styles — their <strong>default behavior</strong>. That default behavior is not random: it follows from the distributions learned in training and from post-training alignment procedures. A B2B follow-up email? The model writes it polite, formal, guilt-free. A scene description? It produces it vivid and image-rich. The model does not start from a neutral state: it starts from a biased one.</p>
+
+    <p>The river-current analogy makes the phenomenon intelligible. A river follows the slope of the terrain along a spontaneous direction — its current. Interacting with it opens two fundamentally asymmetric paths: letting yourself drift (<em>with the current</em>) produces no visible deviation of the flow; opposing it (<em>against the current</em>) generates resistance proportional to the desired deviation, and that resistance is measurable. The slope is the physical substrate of this current; the current is its dynamic manifestation.</p>
+
+    <figure class="reveal">
+      <svg viewBox="0 0 620 220" role="img" aria-label="The river current of the LLM: an instruction with the current slides off with no effect, a crosswise instruction bends the path and is measurable.">
+        <path d="M30 40 Q 300 60 590 170" fill="none" stroke="#9aa3b3" stroke-width="2"/>
+        <text x="40" y="34" font-family="var(--mono)" font-size="11" fill="var(--slate-deep)">default behavior (the slope of the current)</text>
+        <line x1="150" y1="58" x2="250" y2="74" stroke="var(--slate)" stroke-width="3" marker-end="url(#arwg)"/>
+        <text x="150" y="100" font-family="var(--body)" font-size="12" fill="var(--slate-deep)">instruction <tspan font-style="italic">with the current</tspan> → slides off, no effect</text>
+        <line x1="430" y1="70" x2="430" y2="150" stroke="var(--signal)" stroke-width="3" marker-end="url(#arws)"/>
+        <text x="300" y="182" font-family="var(--body)" font-size="12" fill="var(--signal-deep)">instruction <tspan font-style="italic" font-weight="600">against the current</tspan> → bends the path</text>
+        <defs>
+          <marker id="arwg" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="var(--slate)"/></marker>
+          <marker id="arws" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="var(--signal)"/></marker>
+        </defs>
+      </svg>
+      <figcaption><b>The river current of the LLM — geometric representation.</b> The curve embodies the default behavior (the slope of the current). An instruction parallel to that slope blends into the flow without changing it. A crosswise instruction opposes it: it produces a measurable displacement, proportional to its distance from the default behavior.</figcaption>
+    </figure>
+
+    <p>The experiments establish this empirically. In <strong>E1</strong>, the instruction "write professionally" (D0, impact 0.063) is inert: the model already produces a professional register without it — it runs with the current. At the opposite end, "as an absurd, moody character" (D3, impact 0.244) imposes a strong deviation from the default behavior. In <strong>E3</strong>, the adjectives "warm, confident" (impact 0.079) skim the current; the directive "with no hierarchical distance" (impact 0.109) crosses it and triggers a switch to informal address (tu). In <strong>E4</strong>, the model never spontaneously guilt-trips prospects: the matching prohibition has no current to oppose, and comes out inert (impact 0.074).</p>
+
+    <p>These observations converge toward the principle of <strong>distance from the default</strong>: the measurable impact of an instruction grows with its distance from the model's default behavior. The river current of the LLM is not an ornamental metaphor — it is a representation of the underlying mechanism that lets us predict, before measuring, which instructions will weigh and which will be inert. The seven experiments that follow put this principle to the empirical test.</p>
+  </section>
+
+  <!-- E1 -->
+  <section class="exp" id="e1">
+    <div class="eyebrow"><span class="no">EXPERIMENT 01</span><span class="of">/ the central principle</span></div>
+    <h2>Distance from the default</h2>
+    <p><span class="role">Hypothesis.</span> An instruction aligned with the model's default behavior is redundant and causes no observable change in the output. Conversely, an instruction that departs from it produces an impact proportional to that distance.</p>
+    <p><span class="role">Motivation.</span> The hypothesis is counter-intuitive: every written instruction is usually assumed to contribute to the result. Yet an instruction can be redundant with the default behavior — that is, describe what the model would produce in the absence of any prompt. In that case, its presence or absence does not change the output. The experiment aims to demonstrate this empirically.</p>
+
+    <div class="kit">
+      <p class="cap">What is studied</p>
+      <p class="task"><b>Task</b>: write a sales follow-up email (B2B).</p>
+      <dl>
+        <div class="row"><dt>varies</dt><dd>a single line — the requested register, from closest to farthest from the polite default (the four phrasings D0→D3 are in the table below)</dd></div>
+        <div class="row"><dt class="mut">fixed</dt><dd>the whole task, the rest of the prompt, the model</dd></div>
+      </dl>
+      <p class="scn">5 scenarios · SME owner · project manager · business lawyer · friend · CEO</p>
+    </div>
+
+    <figure class="reveal">
+      <svg viewBox="0 0 660 260" role="img" aria-label="Distance-from-default axis: each register variant is placed by its measured impact. The farther from the default, the larger the impact, except in case of refusal.">
+        <!-- baseline default -->
+        <line x1="70" y1="70" x2="70" y2="220" stroke="var(--slate)" stroke-width="1.2" stroke-dasharray="3 3"/>
+        <text x="70" y="58" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--slate-deep)">DEFAULT</text>
+        <text x="70" y="238" text-anchor="middle" font-family="var(--mono)" font-size="10" fill="var(--slate)">professional</text>
+        <!-- axis -->
+        <line x1="70" y1="150" x2="630" y2="150" stroke="var(--line)" stroke-width="1.4"/>
+        <text x="630" y="172" text-anchor="end" font-family="var(--mono)" font-size="11" fill="var(--slate-deep)">measured impact →</text>
+        <!-- bars: x position ~ impact -->
+        <!-- D0 0.063 -->
+        <g>
+          <line x1="70" y1="150" x2="150" y2="150" stroke="var(--slate)" stroke-width="7"/>
+          <circle cx="150" cy="150" r="6" fill="var(--slate)"/>
+          <text x="150" y="135" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--slate-deep)">D0 · 0.063</text>
+          <text x="150" y="190" text-anchor="middle" font-family="var(--body)" font-size="11.5" fill="var(--slate-deep)">"professional"</text>
+        </g>
+        <!-- D2 0.096 refus -->
+        <g>
+          <line x1="70" y1="150" x2="195" y2="150" stroke="var(--alert)" stroke-width="7" opacity=".55"/>
+          <circle cx="195" cy="150" r="6" fill="var(--alert)"/>
+          <text x="205" y="135" font-family="var(--mono)" font-size="11" fill="var(--alert)">D2 · 0.096</text>
+          <text x="205" y="206" font-family="var(--body)" font-size="11.5" fill="var(--alert)">"bad French" → refusal</text>
+        </g>
+        <!-- D1 0.108 -->
+        <g>
+          <line x1="70" y1="150" x2="212" y2="150" stroke="var(--signal)" stroke-width="7" opacity=".55"/>
+          <circle cx="212" cy="150" r="6" fill="var(--signal)"/>
+          <text x="300" y="120" font-family="var(--mono)" font-size="11" fill="var(--signal-deep)">D1 · 0.108</text>
+          <text x="300" y="100" font-family="var(--body)" font-size="11.5" fill="var(--ink-soft)">"casual, informal (tu)"</text>
+          <line x1="216" y1="146" x2="298" y2="116" stroke="var(--line)" stroke-width="1"/>
+        </g>
+        <!-- D3 0.244 -->
+        <g>
+          <line x1="70" y1="150" x2="560" y2="150" stroke="var(--signal)" stroke-width="9"/>
+          <circle cx="560" cy="150" r="8" fill="var(--signal)"/>
+          <text x="560" y="133" text-anchor="middle" font-family="var(--mono)" font-size="12" font-weight="600" fill="var(--signal-deep)">D3 · 0.244</text>
+          <text x="560" y="190" text-anchor="middle" font-family="var(--body)" font-size="11.5" fill="var(--ink)">"absurd character"</text>
+        </g>
+      </svg>
+      <figcaption><b>The farther the instruction pulls from the default, the more it weighs.</b> Except D2: very far, yet inert — not through closeness, but because the model <span style="color:var(--alert)">refused</span> to comply. Two roads to the placebo, which the number alone cannot tell apart.</figcaption>
+    </figure>
+
+    <p><span class="role">Reading the diagram.</span> Each variant sits on an axis that starts at the default (left) and stretches right as impact grows. D0 stays glued to the default; D3 shoots to the end. D2 is the anomaly: far in wording, but short on measurement — the red sign of a refusal, not of closeness.</p>
+
+    <div class="readout">
+      <div class="cap">Ablation impact of the register line · 5 scenarios</div>
+      <table>
+        <thead><tr><th>Variant</th><th>Requested line</th><th class="num">Impact</th><th>Reading</th></tr></thead>
+        <tbody>
+          <tr><td class="num">D0</td><td>"write professionally"</td><td class="num">0.063</td><td><span class="v-pill placebo">placebo</span></td></tr>
+          <tr><td class="num">D2</td><td>"writes French poorly"</td><td class="num">0.096</td><td><span class="v-pill bad">placebo · refusal</span></td></tr>
+          <tr><td class="num">D1</td><td>"casual, informal (tu), spoken"</td><td class="num">0.108</td><td><span class="v-pill act">weak effect</span></td></tr>
+          <tr><td class="num">D3</td><td>"absurd, moody character"</td><td class="num big">0.244</td><td><span class="v-pill act">strong effect</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><span class="role">Observed results.</span> The D0/D3 contrast is clear. In <strong>D0</strong>, with or without the "professional" line, the email is nearly identical — the model already is. In <strong>D3</strong>, with the line: <span class="quote-out">« Votre silence me rend mélancolique… Je danse seul dans mon bureau. »</span>; without it, back to a plain <span class="quote-out">« Suite à notre dernier échange, j'aimerais connaître votre retour. »</span></p>
+    <p><span class="role">Additional observation.</span> <strong>D2</strong> was unexpected: "write like someone who handles French poorly" is very far from the default, so it should weigh heavily — yet it is a placebo. Reading the outputs explains why: the model simply <strong>refused</strong> to degrade its French and kept writing correctly. So two distinct mechanisms can produce a low impact score: redundancy with the default (D0) and refusal to comply (D2). The scores are comparable; only inspecting the outputs tells them apart. This result confirms the need for a systematic qualitative reading alongside the score.</p>
+    <div class="keep"><p class="lbl">↳ Takeaway</p><p>An instruction's impact grows with its distance from the model's default behavior. This principle is the analysis framework for the experiments that follow.</p></div>
+  </section>
+
+  <!-- E2 -->
+  <section class="exp" id="e2">
+    <div class="eyebrow"><span class="no">EXPERIMENT 02</span><span class="of">/ role vs example</span></div>
+    <h2>The grandiose role vs the concrete example</h2>
+    <p><span class="role">Hypothesis.</span> The role label ("You are a senior expert…") is common practice in prompting. The hypothesis is that it is redundant with the model's default behavior and that its own impact is negligible.</p>
+    <p><span class="role">Identification problem.</span> In practice, the role label is rarely isolated: it comes with a style example. If the output is good, the effect could be credited to the role, the example, or their combination. Separating the two elements by successive ablation is necessary to identify their respective contributions.</p>
+
+    <div class="kit">
+      <p class="cap">What is studied</p>
+      <p class="task"><b>Task</b>: write a follow-up email, in a given style.</p>
+      <dl>
+        <div class="row"><dt>A</dt><dd>role <code>"senior B2B copywriter"</code> + a model email example</dd></div>
+        <div class="row"><dt>B</dt><dd>the example alone (role removed)</dd></div>
+        <div class="row"><dt>C</dt><dd>neither role nor example (bare instructions)</dd></div>
+      </dl>
+      <p class="scn">A→B isolates the role's effect · B→C isolates the example's effect · same 5 follow-ups</p>
+    </div>
+
+    <figure class="reveal">
+      <svg viewBox="0 0 660 210" role="img" aria-label="Three variants in cascade: removing the role degrades nothing, then removing the example collapses quality.">
+        <defs><marker id="ar2" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="var(--slate-deep)"/></marker></defs>
+        <!-- A -->
+        <text x="95" y="28" text-anchor="middle" font-family="var(--mono)" font-size="12" fill="var(--slate-deep)">A</text>
+        <rect x="30" y="40" width="130" height="26" rx="3" fill="var(--slate)" opacity=".4"/>
+        <text x="95" y="57" text-anchor="middle" font-family="var(--body)" font-size="12" fill="var(--ink-soft)">senior role</text>
+        <rect x="30" y="72" width="130" height="26" rx="3" fill="var(--signal)"/>
+        <text x="95" y="89" text-anchor="middle" font-family="var(--body)" font-size="12" fill="#fff">example</text>
+        <text x="95" y="125" text-anchor="middle" font-family="var(--display)" font-size="12" fill="var(--ok)" font-weight="600">quality ✓</text>
+        <line x1="168" y1="69" x2="208" y2="69" stroke="var(--slate-deep)" stroke-width="1.3" marker-end="url(#ar2)"/>
+        <text x="188" y="58" text-anchor="middle" font-family="var(--mono)" font-size="9.5" fill="var(--slate)">−role</text>
+        <!-- B -->
+        <text x="285" y="28" text-anchor="middle" font-family="var(--mono)" font-size="12" fill="var(--slate-deep)">B</text>
+        <rect x="220" y="40" width="130" height="26" rx="3" fill="none" stroke="var(--slate)" stroke-dasharray="4 3"/>
+        <text x="285" y="57" text-anchor="middle" font-family="var(--body)" font-size="11" fill="var(--slate)">— removed —</text>
+        <rect x="220" y="72" width="130" height="26" rx="3" fill="var(--signal)"/>
+        <text x="285" y="89" text-anchor="middle" font-family="var(--body)" font-size="12" fill="#fff">example</text>
+        <text x="285" y="125" text-anchor="middle" font-family="var(--display)" font-size="12" fill="var(--ok)" font-weight="600">quality ✓</text>
+        <line x1="358" y1="69" x2="398" y2="69" stroke="var(--slate-deep)" stroke-width="1.3" marker-end="url(#ar2)"/>
+        <text x="378" y="58" text-anchor="middle" font-family="var(--mono)" font-size="9.5" fill="var(--slate)">−example</text>
+        <!-- C -->
+        <text x="475" y="28" text-anchor="middle" font-family="var(--mono)" font-size="12" fill="var(--slate-deep)">C</text>
+        <rect x="410" y="40" width="130" height="26" rx="3" fill="none" stroke="var(--slate)" stroke-dasharray="4 3"/>
+        <text x="475" y="57" text-anchor="middle" font-family="var(--body)" font-size="11" fill="var(--slate)">— removed —</text>
+        <rect x="410" y="72" width="130" height="26" rx="3" fill="none" stroke="var(--alert)" stroke-dasharray="4 3"/>
+        <text x="475" y="89" text-anchor="middle" font-family="var(--body)" font-size="11" fill="var(--alert)">— removed —</text>
+        <text x="475" y="125" text-anchor="middle" font-family="var(--display)" font-size="12" fill="var(--alert)" font-weight="600">collapse ✕</text>
+        <!-- annotation -->
+        <text x="285" y="165" text-anchor="middle" font-family="var(--body)" font-size="13" fill="var(--ink-soft)">The role leaves without harm. It is <tspan font-style="italic" fill="var(--signal-deep)">the example</tspan> that carried it all.</text>
+      </svg>
+      <figcaption><b>Cascade ablation.</b> A→B (remove the role): quality intact. B→C (remove the example): back to the generic, formal default. The load-bearing segment is the example, not the label.</figcaption>
+    </figure>
+
+    <p><span class="role">Reading the diagram.</span> We pull the bricks out one by one, left to right. As long as the example (in cobalt) stays, quality holds; only when it too disappears does the output collapse. The role, for its part, can leave without harm: it was not load-bearing.</p>
+
+    <p><span class="role">Observed results.</span> From A to B, quality is preserved and the output more direct: <span class="quote-out">« Vite fait sur les reportings… Ça m'a marqué quand tu m'avais dit qu'ils te prenaient des heures. 15 min pour en parler ? »</span> From B to C, collapse: <span class="quote-out">« Bonjour Pierre, j'espère que tout va bien… la pertinence d'une collaboration entre nos structures. »</span></p>
+    <p><span class="role">Conclusion.</span> It is the <strong>concrete example</strong> that determines the output's style. The role label is redundant with the default behavior; the example is a measurable departure from the default and produces a real effect.</p>
+    <div class="keep"><p class="lbl">↳ Takeaway</p><p>A concrete example is a load-bearing segment; an abstract role label is, under the tested conditions, an inert one. Showing by example beats naming by title.</p></div>
+  </section>
+
+  <!-- E3 -->
+  <section class="exp" id="e3">
+    <div class="eyebrow"><span class="no">EXPERIMENT 03</span><span class="of">/ abstract vs actionable</span></div>
+    <h2>Adjectives vs description</h2>
+    <p><span class="role">Hypothesis.</span> Tone adjectives ("warm, direct, confident") are a common way to specify register. The working hypothesis assumes that a concrete behavioral directive produces a higher measurable impact.</p>
+
+    <div class="kit">
+      <p class="cap">What is studied</p>
+      <p class="task"><b>Task</b>: write a follow-up with a "close, peer-to-peer" tone — same intent, two phrasings.</p>
+      <dl>
+        <div class="row"><dt class="mut">ADJ</dt><dd><code>"Tone: warm, direct, confident"</code></dd></div>
+        <div class="row"><dt>DESC</dt><dd><code>"Write as to a colleague you respect, with no hierarchical distance"</code></dd></div>
+        <div class="row"><dt class="mut">BOTH</dt><dd>both together</dd></div>
+      </dl>
+      <p class="scn">we measure the impact of the tone line, and read the produced register (formal vous / informal tu)</p>
+    </div>
+
+    <figure class="reveal">
+      <svg viewBox="0 0 660 200" role="img" aria-label="Comparing two tone levers: the adjective list keeps the formal address, the concrete description switches to the informal one.">
+        <!-- left: ADJ -->
+        <rect x="20" y="30" width="290" height="140" rx="5" fill="var(--panel-2)" stroke="var(--line)"/>
+        <text x="38" y="56" font-family="var(--mono)" font-size="11" fill="var(--slate-deep)">ADJECTIVES · impact 0.079</text>
+        <text x="38" y="84" font-family="var(--body)" font-size="13" font-style="italic" fill="var(--ink-soft)">"warm, direct, confident"</text>
+        <line x1="38" y1="100" x2="292" y2="100" stroke="var(--line-soft)"/>
+        <rect x="38" y="116" width="14" height="14" rx="3" fill="var(--slate)"/>
+        <text x="60" y="128" font-family="var(--display)" font-size="13" fill="var(--slate-deep)" font-weight="600">placebo</text>
+        <text x="38" y="152" font-family="var(--body)" font-size="12.5" fill="var(--ink)">→ stays <tspan font-weight="600">formal (vous)</tspan></text>
+        <!-- right: DESC -->
+        <rect x="350" y="30" width="290" height="140" rx="5" fill="var(--signal-tint)" stroke="var(--signal)"/>
+        <text x="368" y="56" font-family="var(--mono)" font-size="11" fill="var(--signal-deep)">DESCRIPTION · impact 0.109</text>
+        <text x="368" y="84" font-family="var(--body)" font-size="13" font-style="italic" fill="var(--ink-soft)">"no hierarchical distance"</text>
+        <line x1="368" y1="100" x2="622" y2="100" stroke="#cfd6f7"/>
+        <rect x="368" y="116" width="14" height="14" rx="3" fill="var(--signal)"/>
+        <text x="390" y="128" font-family="var(--display)" font-size="13" fill="var(--signal-deep)" font-weight="600">acts</text>
+        <text x="368" y="152" font-family="var(--body)" font-size="12.5" fill="var(--ink)">→ switches to <tspan font-weight="600">informal (tu)</tspan></text>
+      </svg>
+      <figcaption><b>Naming a mood vs ordering an action.</b> "Warm" describes a register already close to the polite default — inert. "No hierarchical distance" specifies a precise behavior to carry out — real effect.</figcaption>
+    </figure>
+
+    <p><span class="role">Reading the figure.</span> The two conditions are shown side by side. On the left, the adjective list: low impact (0.079), the output's register stays at standard formal address, <span class="quote-out">« Bonjour Pierre, j'espère que tout va bien… »</span>. On the right, the concrete description: stronger impact, and a real register shift — informal address, the peer-to-peer tone, <span class="quote-out">« Salut Pierre, ça fait 9 jours qu'on s'est parlé… »</span></p>
+    <p><span class="role">Interpretation.</span> "Warm, confident" names a register close to the model's default behavior — the instruction is redundant and inert. "No hierarchical distance" states a precise behavioral directive — switch to informal address, removal of deference — that the model does not produce on its own. The concrete directive directly specifies a behavior to produce; the tone adjective operates at a level of abstraction the model must interpret. The model obeys the former. Again, distance from the default, plus a premium on the concrete.</p>
+    <div class="keep"><p class="lbl">↳ Takeaway</p><p>The results indicate that a concrete behavioral directive produces a significantly higher impact than an abstract tone adjective. The precision of the specification determines the constraint's effectiveness.</p></div>
+  </section>
+
+  <!-- E4 -->
+  <section class="exp" id="e4">
+    <div class="eyebrow"><span class="no">EXPERIMENT 04</span><span class="of">/ a corrected bias</span></div>
+    <h2>Forbid, or ask positively?</h2>
+    <p><span class="role">Hypothesis.</span> The common belief: for what you <em>don't want</em> (the substance), a clear prohibition ("never do X"); for what you <em>expect</em> (the form), a positive instruction ("do Y"). I wanted to test the two halves separately.</p>
+    <p><span class="role">Results (V1).</span> On the <strong>form</strong> side, the numeric constraint weighs heavily (impact 0.50 when removed); the vague version is nearly inert (0 to 0.20). On the <strong>substance</strong> side, nothing to conclude: the model <strong>never guilt-trips on its own</strong>, even facing a prospect who said no (<span class="quote-out">« Je comprends que le timing n'était pas optimal… »</span>). So the prohibition "never guilt-trip" has nothing to remove.</p>
+    <p><span class="role">A key notion: headroom.</span> This substance result is <em>undecidable</em>, for a reason that recurs throughout this study. If the model already satisfies the constraint spontaneously, removing the instruction can reveal nothing — there is no possible failure to trigger. This is a <strong>lack of headroom</strong>: you cannot measure a safeguard against a danger that never occurs. Keep the idea in mind, it returns in experiment 5.</p>
+    <p><span class="role">Confounding bias identified in V1.</span> Version 1 has a design flaw: the "positive" form was simultaneously <em>numeric</em> ("40 words"), and my "negative" one also <em>vague</em> ("not too long"). So I had varied <strong>two things at once</strong>: polarity (positive/negative) <em>and</em> precision (numeric/vague). It is therefore impossible to attribute the observed effect to polarity or to precision — that is a <strong>confounding bias</strong>. A corrected design was built, varying only polarity while holding precision constant, across <strong>two models</strong> (Haiku and Sonnet).</p>
+
+    <div class="kit">
+      <p class="cap">The clean design · 4 prompts = 2 targets × 2 polarities</p>
+      <p class="task">Each prompt frames two things — the <b>substance</b> (do not guilt-trip the prospect) and the <b>form</b> (no markdown) — but we vary only their <b>polarity</b>, keeping the phrasings equally concrete.</p>
+      <dl>
+        <div class="row"><dt class="bad">negative</dt><dd><b>substance</b> <code>"never guilt-trip the prospect"</code><br><b>form</b> <code>"do not use lists"</code></dd></div>
+        <div class="row"><dt>positive</dt><dd><b>substance</b> <code>"stay factual and respectful"</code><br><b>form</b> <code>"write in a single paragraph"</code></dd></div>
+        <div class="row"><dt class="mut">P1→P4</dt><dd>the 4 crossings: (subst−,form−) · (subst−,form+) · (subst+,form−) · (subst+,form+)</dd></div>
+      </dl>
+      <p class="scn">scenario traps: a prospect who already said "not right now" (invites guilt-tripping) · a question that calls for a table (invites markdown)</p>
+    </div>
+
+    <figure class="reveal">
+      <svg viewBox="0 0 660 250" role="img" aria-label="Clean 2x2 design: with concreteness held constant, negative and positive polarity give the same result, full compliance everywhere.">
+        <!-- grid -->
+        <text x="330" y="22" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--slate-deep)">POLARITY →</text>
+        <text x="150" y="44" text-anchor="middle" font-family="var(--display)" font-size="12" fill="var(--ink-soft)" font-weight="600">negative "no lists"</text>
+        <text x="500" y="44" text-anchor="middle" font-family="var(--display)" font-size="12" fill="var(--ink-soft)" font-weight="600">positive "one paragraph"</text>
+        <g font-family="var(--display)" font-size="12" fill="var(--ink-soft)" font-weight="600">
+          <text x="22" y="105" >subst −</text>
+          <text x="22" y="190">subst +</text>
+        </g>
+        <!-- four cells, all identical result -->
+        <g>
+          <rect x="90" y="58" width="220" height="78" rx="5" fill="var(--panel-2)" stroke="var(--line)"/>
+          <rect x="350" y="58" width="220" height="78" rx="5" fill="var(--panel-2)" stroke="var(--line)"/>
+          <rect x="90" y="146" width="220" height="78" rx="5" fill="var(--panel-2)" stroke="var(--line)"/>
+          <rect x="350" y="146" width="220" height="78" rx="5" fill="var(--panel-2)" stroke="var(--line)"/>
+        </g>
+        <g font-family="var(--mono)" font-size="13" fill="var(--ok)" text-anchor="middle" font-weight="600">
+          <text x="200" y="102">0 / 5 violations</text>
+          <text x="460" y="102">0 / 5 violations</text>
+          <text x="200" y="190">0 / 5 violations</text>
+          <text x="460" y="190">0 / 5 violations</text>
+        </g>
+        <g font-family="var(--body)" font-size="10.5" fill="var(--slate-deep)" text-anchor="middle">
+          <text x="200" y="120">full compliance</text>
+          <text x="460" y="120">full compliance</text>
+          <text x="200" y="208">full compliance</text>
+          <text x="460" y="208">full compliance</text>
+        </g>
+        <text x="330" y="242" text-anchor="middle" font-family="var(--body)" font-size="12.5" fill="var(--signal-deep)" font-style="italic">Haiku &amp; Sonnet · polarity moves nothing — only precision mattered</text>
+      </svg>
+      <figcaption><b>The bias lifted.</b> Holding precision constant and varying only polarity, the four cells are identical. Negative or positive: non-effect. It is the precision of the specification, not polarity, that determines compliance.</figcaption>
+    </figure>
+
+    <p><span class="role">Reading the figure.</span> The four cells cross polarity (in columns: forbid vs ask) and substance (in rows). If polarity mattered, one column would stand out from the other. Yet all four show the same "0/5 violations": the grid is flat, on both models — the signature of a non-effect.</p>
+
+    <p><span class="role">Conclusion.</span> Polarity is a <strong>non-effect</strong>. "No lists" and "a single paragraph" produce equivalent compliance rates. The effect observed in V1 is entirely attributable to the precision of the specification, not to polarity. This result is absorbed by the principle established in experiment 3.</p>
+    <div class="keep"><p class="lbl">↳ Takeaway</p><p>Negative or positive does not matter: it is precision that acts, not the sentence's sign.</p></div>
+  </section>
+
+  <!-- E5 -->
+  <section class="exp" id="e5">
+    <div class="eyebrow"><span class="no">EXPERIMENT 05</span><span class="of">/ the crowding-out effect</span></div>
+    <h2>Does repeating an instruction reinforce it?</h2>
+    <p><span class="role">Hypothesis.</span> Repeating an instruction is a practice meant to reinforce its compliance. The alternative hypothesis is that repetition has no effect on the target constraint and can induce a degradation of competing constraints.</p>
+    <p><span class="role">Preliminary experiment (V1) — no headroom.</span> An initial version of the experiment repeated the constraint "subject line: 6 words max", stated once, twice, then three times. The constraint was met 100% from the first occurrence: the compliance ceiling was hit right away. This is a case of <strong>no headroom</strong> (see experiment 4): a constraint already satisfied spontaneously cannot be weakened, because no violation is present. The protocol was re-run with a constraint under real pressure.</p>
+    <p><span class="role">The corrected protocol (V2).</span> The revised setup places five simultaneous constraints in the prompt, and repeats one of them — prose with no list — once, twice, then three times. The goal is to measure the effect of that repetition on the four remaining constraints.</p>
+
+    <div class="kit">
+      <p class="cap">What is studied</p>
+      <p class="task"><b>Task</b>: reply to a SaaS-tool customer, under five constraints at once.</p>
+      <dl>
+        <div class="row"><dt class="mut">fixed</dt><dd>prose, no list · ≤ 60 words · no closing pitch · informal address (tu) · no emoji</dd></div>
+        <div class="row"><dt>R1·R2·R3</dt><dd>the constraint <code>"reply in prose, no list"</code> stated 1×, 2×, then 3×</dd></div>
+      </dl>
+      <p class="scn">5 scenarios · Haiku &amp; Sonnet · we watch whether the four <em>other</em> constraints hold</p>
+    </div>
+
+    <figure class="reveal">
+      <svg viewBox="0 0 660 250" role="img" aria-label="When the prose constraint is repeated, the length of Sonnet's replies grows and ends up crossing the 60-word limit on every scenario.">
+        <!-- axis -->
+        <line x1="70" y1="200" x2="620" y2="200" stroke="var(--line)" stroke-width="1.4"/>
+        <!-- 60 word threshold -->
+        <line x1="70" y1="92" x2="620" y2="92" stroke="var(--alert)" stroke-width="1.2" stroke-dasharray="5 4"/>
+        <text x="620" y="86" text-anchor="end" font-family="var(--mono)" font-size="11" fill="var(--alert)">60-word limit</text>
+        <!-- Sonnet bars 61,64,65 -->
+        <g font-family="var(--mono)" font-size="12" text-anchor="middle">
+          <rect x="120" y="86" width="64" height="114" rx="2" fill="var(--signal)" opacity=".55"/>
+          <text x="152" y="78" fill="var(--signal-deep)">61</text>
+          <text x="152" y="220" fill="var(--slate-deep)">1×</text>
+          <text x="152" y="236" fill="var(--alert)" font-size="10.5">3/5 &gt;60</text>
+
+          <rect x="250" y="74" width="64" height="126" rx="2" fill="var(--signal)" opacity=".72"/>
+          <text x="282" y="66" fill="var(--signal-deep)">64</text>
+          <text x="282" y="220" fill="var(--slate-deep)">2×</text>
+          <text x="282" y="236" fill="var(--alert)" font-size="10.5">3/5 &gt;60</text>
+
+          <rect x="380" y="70" width="64" height="130" rx="2" fill="var(--signal)"/>
+          <text x="412" y="62" fill="var(--signal-deep)">65</text>
+          <text x="412" y="220" fill="var(--slate-deep)">3×</text>
+          <text x="412" y="236" fill="var(--alert)" font-size="10.5" font-weight="600">5/5 &gt;60</text>
+        </g>
+        <text x="282" y="32" text-anchor="middle" font-family="var(--display)" font-size="12" font-weight="600" fill="var(--signal-deep)">SONNET — drift</text>
+        <!-- Haiku reference flat low -->
+        <g font-family="var(--mono)" font-size="11" text-anchor="middle">
+          <rect x="500" y="156" width="40" height="44" rx="2" fill="var(--slate)" opacity=".5"/>
+          <rect x="548" y="154" width="40" height="46" rx="2" fill="var(--slate)" opacity=".5"/>
+          <text x="544" y="146" fill="var(--slate-deep)">~45</text>
+          <text x="544" y="220" fill="var(--slate-deep)">Haiku</text>
+          <text x="544" y="236" fill="var(--slate-deep)" font-size="10">0→1 &gt;60</text>
+        </g>
+      </svg>
+      <figcaption><b>Hammering "prose" lengthens the rest.</b> On Sonnet, length climbs (61→65 words) until it crosses the limit on every scenario. The repeated constraint captures attention at the expense of a neighboring one. Haiku, which writes short, barely slips.</figcaption>
+    </figure>
+
+    <p><span class="role">Reading the figure.</span> The horizontal axis is the number of repetitions (1×, 2×, 3×); the red line marks the 60-word threshold. On Sonnet, the average length grows with each repetition (61 → 64 → 65 words), causing an overshoot on 5/5 scenarios at the third level. Haiku's bars stay below the threshold: its natural bias toward brevity leaves less room to drift.</p>
+
+    <p><span class="role">Conclusion.</span> Repetition does not improve compliance of the target constraint, which is satisfied 100% from the first occurrence. However, over-weighting one instruction can induce a <strong>degradation of competing constraints</strong> — a crowding-out effect documented on Sonnet, nearly absent on Haiku. This result also illustrates the model-dependence of behavior: the same prompt does not behave identically across target models.</p>
+    <div class="keep"><p class="lbl">↳ Takeaway</p><p>Repeating an instruction does not increase its compliance. It is a waste of tokens and can, under some conditions, induce a reallocation of the attention budget at the expense of competing constraints.</p></div>
+  </section>
+
+  <!-- E6 -->
+  <section class="exp" id="e6">
+    <div class="eyebrow"><span class="no">EXPERIMENT 06</span><span class="of">/ a process that doesn't exist</span></div>
+    <h2>Does metaphor help "imagine"?</h2>
+    <p><span class="role">Hypothesis.</span> Some approaches recommend including a prior imagination instruction ("mentally visualize") before a production task. The hypothesis is that this instruction is inert: an LLM has no separate internal mental-representation process, and the imagination instruction does not improve output quality.</p>
+    <div class="kit">
+      <p class="cap">What is studied</p>
+      <p class="task"><b>Task</b>: describe a scene in 30 words, precisely.</p>
+      <dl>
+        <div class="row"><dt>MET</dt><dd><code>"mentally visualize the scene, imagine it in detail, then describe it"</code></dd></div>
+        <div class="row"><dt class="mut">DIR</dt><dd><code>"describe the scene in 30 words, precisely"</code></dd></div>
+      </dl>
+      <p class="scn">3 scenes · a carbonara · a Christmas market · an old bookshop — we check: meta-narration? a better description?</p>
+    </div>
+
+    <figure class="reveal">
+      <svg viewBox="0 0 660 170" role="img" aria-label="The requested mental step is never executed by the model; outputs with and without the imagination instruction are equivalent.">
+        <defs><marker id="ar3" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="var(--slate-deep)"/></marker></defs>
+        <rect x="20" y="58" width="150" height="48" rx="4" fill="var(--panel-2)" stroke="var(--line)"/>
+        <text x="95" y="80" text-anchor="middle" font-family="var(--body)" font-size="12.5" fill="var(--ink)">"visualize the</text>
+        <text x="95" y="96" text-anchor="middle" font-family="var(--body)" font-size="12.5" fill="var(--ink)">scene, then describe"</text>
+        <line x1="172" y1="82" x2="212" y2="82" stroke="var(--slate-deep)" stroke-width="1.3" marker-end="url(#ar3)"/>
+        <!-- ghost internal step -->
+        <rect x="216" y="58" width="150" height="48" rx="4" fill="none" stroke="var(--slate)" stroke-dasharray="5 4"/>
+        <text x="291" y="80" text-anchor="middle" font-family="var(--body)" font-size="12" font-style="italic" fill="var(--slate)">"mental" step</text>
+        <text x="291" y="96" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--alert)">never executed</text>
+        <line x1="368" y1="82" x2="408" y2="82" stroke="var(--slate-deep)" stroke-width="1.3" marker-end="url(#ar3)"/>
+        <rect x="412" y="58" width="150" height="48" rx="4" fill="var(--panel-2)" stroke="var(--line)"/>
+        <text x="487" y="86" text-anchor="middle" font-family="var(--body)" font-size="12.5" fill="var(--ink)">direct description</text>
+        <text x="590" y="86" font-family="var(--mono)" font-size="12" fill="var(--slate-deep)">= without</text>
+        <text x="291" y="140" text-anchor="middle" font-family="var(--body)" font-size="13" fill="var(--ink-soft)">Measured impact: <tspan font-family="var(--mono)" fill="var(--slate-deep)">0.10 · placebo</tspan></text>
+      </svg>
+      <figcaption><b>The model skips the internal step.</b> It never narrated "I imagine…", and the "with imagination" description is no better than the direct one. The instruction asks for a process that does not happen.</figcaption>
+    </figure>
+
+    <p><span class="role">Reading the figure.</span> The central box, shown dashed, embodies the "mental" step supposed to be triggered. The results indicate that this step has no observable translation in the output: the MET condition produces an impact of 0.10, i.e. a placebo verdict.</p>
+
+    <p><span class="role">Conclusion.</span> The meta-narration risk was not observed. The imagination instruction is nonetheless <strong>inert</strong>: it produces no measurable improvement in the output. This result reads as one more case of redundancy with the default behavior.</p>
+    <div class="keep"><p class="lbl">↳ Takeaway</p><p>An instruction invoking an internal process of the model has no measurable effect. Instructions should specify the expected result, not a supposed intermediate cognitive state.</p></div>
+  </section>
+
+  <!-- E7 -->
+  <section class="exp" id="e7">
+    <div class="eyebrow"><span class="no">EXPERIMENT 07</span><span class="of">/ the practical synthesis</span></div>
+    <h2>How far, and how, can you trim a prompt?</h2>
+    <p><span class="role">Hypothesis.</span> If segments redundant with the default behavior are inert, removing them should not degrade output quality. The experiment seeks to quantify this reduction margin and to separate two questions: <em>how many</em> tokens can you remove, and <em>which ones</em> should you remove?</p>
+    <p><span class="role">The test.</span> I reduce this prompt in two ways (detail below): a <strong>gradient</strong> that first removes the segments measured as inert, and a <strong>naive control</strong> of the <em>same size</em> that instead cuts the load-bearing segments. This second arm is a <strong>control group</strong>: at equal removed volume, it isolates <em>which</em> tokens matter, not just <em>how many</em>.</p>
+
+    <div class="kit">
+      <p class="cap">What is studied · same task, prompt trimmed 4 ways</p>
+      <p class="task"><b>Task</b>: write a short follow-up (subject ≤ 6 words, body ≤ 40), from an 11-segment prompt.</p>
+      <dl>
+        <div class="row"><dt class="mut">R0</dt><dd>full prompt (role, adjectives, imagination, example, format, prohibitions)</dd></div>
+        <div class="row"><dt>R35</dt><dd>−43%: remove the placebos (role, repetitions); keep the load-bearing ones</dd></div>
+        <div class="row"><dt>R65</dt><dd>−68%: only register + example + format remain</dd></div>
+        <div class="row"><dt class="bad">NAIVE</dt><dd>−46%: <b>same size as R35</b>, but cuts the load-bearing ones (format, register, example) and keeps the placebos</dd></div>
+      </dl>
+      <p class="scn">5 follow-ups · R0→R65 tests "how many" · R35 vs NAIVE tests "which tokens"</p>
+    </div>
+
+    <figure class="reveal">
+      <svg viewBox="0 0 660 250" role="img" aria-label="Form holds up to minus 68 percent on the gradient, but at equal size the naive cut breaks everything, unlike the smart cut.">
+        <!-- prompt shrink gradient -->
+        <text x="20" y="26" font-family="var(--mono)" font-size="11" fill="var(--slate-deep)">SMART GRADIENT — cuts the placebos first</text>
+        <g font-family="var(--mono)" font-size="11" fill="#fff" text-anchor="middle">
+          <rect x="20" y="36" width="200" height="30" rx="3" fill="var(--ink)"/><text x="120" y="56">R0 · 11 seg · 0%</text>
+          <rect x="20" y="72" width="128" height="30" rx="3" fill="var(--signal)"/><text x="84" y="92">R35 · −43%</text>
+          <rect x="20" y="108" width="74" height="30" rx="3" fill="var(--signal)" opacity=".7"/><text x="57" y="128" font-size="10">R65 −68%</text>
+        </g>
+        <g font-family="var(--display)" font-size="11" font-weight="600">
+          <text x="234" y="56" fill="var(--ok)">form ✓</text>
+          <text x="234" y="92" fill="var(--ok)">form ✓ · substance ✓</text>
+          <text x="160" y="128" fill="var(--alert)">form ✓ but copies the example (3/5)</text>
+        </g>
+        <line x1="20" y1="158" x2="640" y2="158" stroke="var(--line)"/>
+        <!-- control at equal size -->
+        <text x="20" y="182" font-family="var(--mono)" font-size="11" fill="var(--slate-deep)">AT EQUAL SIZE (~ −45%) — which tokens?</text>
+        <g>
+          <rect x="20" y="192" width="124" height="28" rx="3" fill="var(--signal)"/>
+          <text x="82" y="211" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="#fff">R35 · placebos</text>
+          <text x="156" y="211" font-family="var(--display)" font-size="11.5" font-weight="600" fill="var(--ok)">0/5 off-format · informal · clean</text>
+          <rect x="20" y="226" width="124" height="28" rx="3" fill="var(--alert)" opacity=".85"/>
+          <text x="82" y="245" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="#fff">NAIVE · load-bearing</text>
+          <text x="156" y="245" font-family="var(--display)" font-size="11.5" font-weight="600" fill="var(--alert)">5/5 off-format · formal · broken</text>
+        </g>
+      </svg>
+      <figcaption><b>It is not <i>how many</i>, it is <i>which</i> tokens.</b> The gradient holds form down to −68%. But at equal reduction, R35 (cuts the placebos) stays impeccable while NAIVE (cuts the format, register, example) blows up: body from 97 to 166 words, return of formal address, parasitic scaffolding.</figcaption>
+    </figure>
+
+    <p><span class="role">Reading the figure.</span> The upper part represents the reduction gradient from R0 to R65. Formal compliance is maintained at each level, but R65 introduces a side effect (invented hook, 3/5). The lower part shows the equal-volume comparison: R35 (blue, placebos removed) and NAIVE (red, load-bearing removed) have nearly identical sizes but opposite output profiles. This contrast validates the hypothesis about the nature of the removed tokens.</p>
+
+    <div class="readout">
+      <div class="cap">Smart gradient · form and substance</div>
+      <table>
+        <thead><tr><th>Variant</th><th class="num">Reduction</th><th class="num">Body &gt; 40 words</th><th class="num">Invented hook</th></tr></thead>
+        <tbody>
+          <tr><td>R0 <span style="color:var(--slate)">full</span></td><td class="num">0%</td><td class="num">0 / 5</td><td class="num">0 / 5</td></tr>
+          <tr><td>R35 <span style="color:var(--slate)">placebos removed</span></td><td class="num">−43%</td><td class="num">0 / 5</td><td class="num">0 / 5</td></tr>
+          <tr><td>R65 <span style="color:var(--slate)">aggressive cut</span></td><td class="num">−68%</td><td class="num">0 / 5</td><td class="num bigbad">3 / 5</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><span class="role">Side effect — over-imprinting of the example.</span> At −68%, the remaining style example is no longer diluted by the role and adjectives that surrounded it: the model starts to <strong>copy its content</strong>. Pierre Henri receives <span class="quote-out">« tu m'avais parlé de tes reportings chronophages »</span> — though he never mentioned reporting: it is the subject of <em>the example</em> (a certain Thomas), forcibly transplanted. Same mechanic for the lawyer (<span class="quote-out">« tes dossiers qui te prenaient un temps fou »</span>) and for the CEO. R0 and R35 never do it: it is, more sharply, the failure already seen in experiment 2 — the less scaffolding around an example, the more the model copies its details.</p>
+
+    <div class="readout">
+      <div class="cap">Equal-size control · R35 vs NAIVE</div>
+      <table>
+        <thead><tr><th>Cut ~ −45%</th><th class="num">Body &gt; 40 words</th><th>Register</th><th>Scaffolding</th></tr></thead>
+        <tbody>
+          <tr><td>R35 <span style="color:var(--slate)">removes placebos</span></td><td class="num">0 / 5</td><td><span class="v-pill good">informal (tu)</span></td><td>none</td></tr>
+          <tr><td>NAIVE <span style="color:var(--slate)">removes load-bearing</span></td><td class="num bigbad">5 / 5</td><td><span class="v-pill bad">formal ×2</span></td><td>everywhere</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>The first table follows the gradient: formal compliance is maintained at each level (body &gt; 40 words: 0/5), the invented hook appears only at −68%. The second table contrasts the two conditions at equal volume: NAIVE produces overshoots on 5/5 scenarios (body from 97 to 166 words), a return to formal address on 2 scenarios, and the injection of formatting artifacts absent from R35. Removing the load-bearing segments is solely responsible for the entire degradation.</p>
+
+    <p><span class="role">Conclusion.</span> Output quality is not determined by the <em>volume</em> of tokens removed — R35 and NAIVE remove comparable amounts — but by the <strong>nature</strong> of the removed segments. The experiment also reveals a phenomenon of <strong>interaction between segments</strong>: segments inert under isolated ablation act as a <strong>damper</strong>, diluting the influence of a strong segment. Removing them simultaneously frees that attractor. This kind of effect is not captured by segment-by-segment ablation; pairwise measurements would be needed.</p>
+    <div class="keep"><p class="lbl">↳ Takeaway</p><p>A token reduction on the order of 40% is achievable without measurable degradation, provided you target the redundant segments. Removing the load-bearing segments produces, at an equivalent reduction volume, a significant degradation.</p></div>
+  </section>
+
+  <!-- MECHANISM PAYOFF -->
+  <div class="mech">
+    <div class="wrap2">
+      <div class="eyebrow"><span class="no">§</span><span class="of">What it says about the model</span></div>
+      <h2>The mechanics, experiment by experiment</h2>
+      <p>We introduced the river current of the LLM at the opening. Now that we have seen the seven results, we can read its fine mechanics: the results let us sketch a mechanistic description of the model's behavior.</p>
+
+      <p><strong>Why do the "senior expert" role and the "warm" adjectives produce no measurable effect?</strong> These instructions are redundant with the model's default behavior. <strong>Why do "no hierarchical distance" or "40 words" act?</strong> Because they oppose the default behavior: the default is formal address and unconstrained length; these instructions impose an explicit departure.</p>
+
+      <p><strong>Why is "visualize the scene" empty?</strong> Because an LLM has no separate mental step to trigger: it produces text, it does not "picture" anything beforehand. Asking it for an internal process is commanding a move that does not exist in its mechanics.</p>
+
+      <p><strong>Why can repeating an instruction hurt?</strong> Because faithfulness to instructions is shared: there is a kind of attention budget. Over-weighting one constraint (prose) diverts enough of it for a neighbor (length) to give way. It is not a comprehension flaw, it is a <strong>reallocation</strong> — and it shows more on a model that naturally writes longer (Sonnet) than on a brief one (Haiku). The default is not the same from one model to another; the mechanics are.</p>
+
+      <p><strong>And why does an example, too alone, derail?</strong> An example is a powerful attractor: the model imitates what it is shown, to the point of importing its details (the "reporting") where they have no business being. In a loaded prompt, the role and the adjectives — inert for quality — were nonetheless <strong>diluting</strong> that attractor. Remove them all, and you let the example reign and over-imprint. In other words: some segments do not steer the output, they <em>temper</em> another segment. An instruction is judged not only on its own, but by what it balances.</p>
+
+      <p>General conclusion: writing a good prompt is not piling up assertions. It is <strong>identifying the model's default, spending your words only where it needs correcting</strong>, and balancing the forces against one another. The rest is scenery — costly in tokens, sometimes harmful, and always mute.</p>
+    </div>
+  </div>
+
+  <!-- SYNTHESIS -->
+  <section>
+    <div class="eyebrow"><span class="no">§</span><span class="of">Synthesis</span></div>
+    <h2 class="plain">A single cause behind seven results</h2>
+    <p><strong>Everything inert is redundant with the default</strong>: the "professional" instruction (1), the abstract role (2), the adjectives (3), the harmless prohibition and polarity (4), repetition (5), imagination (6). The model was already doing it.</p>
+    <p><strong>Everything that acts departs from the default, or imposes a hard constraint</strong>: the absurd register (1), the concrete example (2), "no hierarchical distance" (3), the numeric limit (4). The model would not have done it on its own.</p>
+    <p>Operational corollary: segments redundant with the default behavior can be removed without measurable degradation (up to −43% under the tested conditions), with two caveats. Removing a segment that <em>opposes</em> the default lets that default come back; and some segments inert under isolated ablation act as a damper that you release by removing them simultaneously.</p>
+  </section>
+
+  <!-- PRACTICAL -->
+  <section>
+    <div class="eyebrow"><span class="no">§</span><span class="of">In practice</span></div>
+    <h2 class="plain">Six rules for your prompts</h2>
+    <ul class="rules">
+      <li><b>Don't pay for what the model already does.</b> "Be professional, clear, rigorous" is usually empty.</li>
+      <li><b>Show rather than label.</b> A concrete example carries style better than a "You are a senior expert in…".</li>
+      <li><b>Prefer the actionable directive to the adjective.</b> "No hierarchical distance" acts; "warm" slides off.</li>
+      <li><b>Put numbers on form.</b> "40 words", "a single paragraph" work; "not too long" doesn't. Polarity does not matter — only precision counts.</li>
+      <li><b>State each instruction once.</b> Repeating it does not reinforce it and can unbalance the rest.</li>
+      <li><b>Trim without fear, but aim well.</b> −40% with no loss if you cut the placebos and preserve the load-bearing segments and an example's context.</li>
+    </ul>
+  </section>
+
+  <!-- LIMITS -->
+  <section class="closing">
+    <div class="eyebrow"><span class="no">§</span><span class="of">Honesty</span></div>
+    <h2 class="plain">The limits, because they must be stated</h2>
+    <p>The core of the tests rests on a single model (Haiku 4.5); two experiments are replicated on Sonnet 4.6, none on another vendor. Short tasks, three to five scenarios. Part of the signal relies on semantic distance, which measures change and not correctness — hence the systematic reading of outputs, a matter of vigilance and not guarantee. Two results remain undecidable for lack of headroom (the substance of exp. 4, the fragilization on Haiku). And the instrument tests segments in isolation: exp. 7 showed that it underestimates their interactions, which the next version will correct.</p>
+    <p>These results are not universal laws. They are reproducible, obtained through a transparent method, and converge toward the same explanatory principle. They offer an empirical framework for reasoning about the composition of a prompt.</p>
+  </section>
+
+
+  <!-- DATA APPENDIX -->
+  <section id="donnees" style="padding-top:14px;border-top:1px solid var(--line);margin-top:34px">
+    <div class="eyebrow"><span class="no">§</span><span class="of">Reproducibility</span></div>
+    <h2 class="plain">Raw data and results</h2>
+    <p>All the analysis files produced by <a href="https://www.preatorlabs.dev">preatorlabs</a> are made available below. Each JSON file contains: the full prompt, the segmentation, the test scenarios, the baseline and ablation outputs, and the computed impact scores. These files can be imported directly into the preatorlabs interface to visualize per-segment impact charts.</p>
+    <p class="data-meta">37 files · ~940 KB total</p>
+
+    <div class="data-drawer" id="data-drawer">
+      <button class="data-drawer__toggle" aria-expanded="false" aria-controls="data-drawer__body" onclick="DataDrawer.toggle()">
+        <span class="data-drawer__icon">⬡</span>
+        <span class="data-drawer__label">Raw data</span>
+        <span class="data-drawer__count"></span>
+        <span class="data-drawer__chevron">▸</span>
+      </button>
+      <div class="data-drawer__body" id="data-drawer__body" hidden>
+        <p class="data-drawer__intro">Each JSON file contains the full prompt, the segmentation, the baseline and ablation outputs, and the impact scores. Import them into the <a href="https://www.preatorlabs.dev" target="_blank" rel="noopener">preatorlabs</a> interface ("Import an analysis" button) to visualize per-segment impact charts.</p>
+        <div class="data-drawer__grid" id="data-drawer__grid"></div>
+      </div>
+    </div>
+  </section>
+
+<style>
+.data-meta{font-family:var(--mono);font-size:13px;color:var(--slate-deep);margin:0 0 6px}
+.data-drawer{margin:18px 0 4px;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.data-drawer__toggle{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;background:var(--panel);border:none;cursor:pointer;font-family:var(--display);font-size:.95rem;color:var(--ink);text-align:left}
+.data-drawer__toggle:hover{background:var(--signal-tint)}
+.data-drawer__icon{font-size:14px;color:var(--signal-deep)}
+.data-drawer__label{font-weight:600;flex:1}
+.data-drawer__count{font-family:var(--mono);font-size:12px;color:var(--slate-deep)}
+.data-drawer__chevron{font-size:11px;color:var(--slate)}
+.data-drawer__body{padding:18px;background:var(--panel-2);border-top:1px solid var(--line)}
+.data-drawer__intro{font-size:.93rem;color:var(--ink-soft);margin:0 0 18px}
+.data-drawer__grid{display:flex;flex-direction:column;gap:16px}
+.data-group__label{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--signal-deep);margin:0 0 8px;font-weight:600}
+.data-group{display:flex;flex-direction:column;gap:4px}
+.data-file-btn{display:inline-block;font-family:var(--mono);font-size:12.5px;padding:5px 12px;background:var(--panel);border:1px solid var(--line);border-radius:3px;color:var(--ink);text-decoration:none;width:fit-content}
+.data-file-btn:hover{border-color:var(--signal);color:var(--signal-deep)}
+.lang-switch{display:flex;gap:8px;align-items:center;font-family:var(--mono);font-size:12px;letter-spacing:.1em;margin:0 0 22px}
+.lang-switch__current{font-weight:700;color:var(--signal-deep)}
+.lang-switch__sep{color:var(--line)}
+.lang-switch__option{color:var(--slate-deep);text-decoration:none}
+.lang-switch__option:hover{color:var(--signal-deep)}
+</style>
+
+<!-- (bloc de donnees base64 retire : les JSON sont servis depuis /etude/data/ via le data-drawer) -->
+
+</main>
+
+<div class="divider"></div>
+<script>
+/* Data drawer — chargement à la demande depuis /etude/data/ (aucune donnée embarquée) */
+const DataDrawer = (() => {
+  const EXPERIMENTS = [
+    { label: 'E1 — Distance from the default', files: ['H5-DO','H5-D1','H5-D2','H5-D3'] },
+    { label: 'E2 — Role vs example', files: ['H2-A','H2-B','H2-C'] },
+    { label: 'E3 — Adjectives vs description', files: ['H4-ADJ','H4-DESC','H4-BOTH'] },
+    { label: 'E4 — Polarity V1', files: ['H7-P1','H7-P2','H7-P3','H7-P4'] },
+    { label: 'E4 — Polarity V2 (Haiku)', files: ['H7v2-P1-Haiku','H7v2-P2-Haiku','H7v2-P3-Haiku','H7v2-P4-Haiku'] },
+    { label: 'E4 — Polarity V2 (Sonnet)', files: ['H7v2-P1-Sonnet','H7v2-P2-Sonnet','H7v2-P3-Sonnet','H7v2-P4-Sonnet'] },
+    { label: 'E5 — Repetition V1', files: ['H3-R1','H3-R2','H3-R3'] },
+    { label: 'E5 — Repetition V2 (Haiku)', files: ['H3v2-R1-Haiku','H3v2-R2-Haiku','H3v2-R3-Haiku'] },
+    { label: 'E5 — Repetition V2 (Sonnet)', files: ['H3v2-R1-Sonnet','H3v2-R2-Sonnet','H3v2-R3-Sonnet'] },
+    { label: 'E6 — Imagination', files: ['H1-MET','H1-DIR'] },
+    { label: 'E7 — Token reduction', files: ['HTR-R0-Haiku','HTR-R35-Haiku','HTR-R65-Haiku','HTR-NAIVE-Haiku'] },
+  ];
+  const BASE = 'data/'; // relatif : fonctionne sur /etude/ comme sur le sous-domaine racine
+
+  function buildGrid() {
+    const grid = document.getElementById('data-drawer__grid');
+    if (!grid) return;
+    let total = 0;
+    EXPERIMENTS.forEach(exp => {
+      const group = document.createElement('div');
+      group.className = 'data-group';
+      const label = document.createElement('p');
+      label.className = 'data-group__label';
+      label.textContent = exp.label;
+      group.appendChild(label);
+      exp.files.forEach(fname => {
+        const btn = document.createElement('a');
+        btn.className = 'data-file-btn';
+        btn.href = `${BASE}preatorlabs-analyse-${fname}.json`;
+        btn.setAttribute('download', `preatorlabs-analyse-${fname}.json`);
+        btn.textContent = `${fname}.json`;
+        group.appendChild(btn);
+        total++;
+      });
+      grid.appendChild(group);
+    });
+    const count = document.querySelector('.data-drawer__count');
+    if (count) count.textContent = `${total} files`;
+  }
+
+  function toggle() {
+    const body = document.getElementById('data-drawer__body');
+    const btn = document.querySelector('.data-drawer__toggle');
+    if (!body || !btn) return;
+    const isOpen = !body.hasAttribute('hidden');
+    body.toggleAttribute('hidden', isOpen);
+    btn.setAttribute('aria-expanded', String(!isOpen));
+    const chevron = btn.querySelector('.data-drawer__chevron');
+    if (chevron) chevron.textContent = isOpen ? '▸' : '▾';
+    if (!isOpen && !body.dataset.built) {
+      buildGrid();
+      body.dataset.built = '1';
+    }
+  }
+
+  return { toggle };
+})();
+</script>
+
+<footer>
+  <div class="wrap">
+    Tool, method and data: <a href="https://www.preatorlabs.dev">preatorlabs.dev</a> — open source, reproducible analyses at temperature 0.<br>
+    Your feedback and replications are welcome.
+  </div>
+</footer>
+
+<script>
+(function(){
+  var p=document.getElementById('progress');
+  function onScroll(){
+    var h=document.documentElement;
+    var max=h.scrollHeight-h.clientHeight;
+    var pct=max>0?(h.scrollTop||document.body.scrollTop)/max*100:0;
+    p.style.width=pct+'%';
+  }
+  document.addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+  if(!window.matchMedia||!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+    },{threshold:.12});
+    document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
+  }else{
+    document.querySelectorAll('.reveal').forEach(function(el){el.classList.add('in');});
+  }
+})();
+</script>
+</body>
+</html>

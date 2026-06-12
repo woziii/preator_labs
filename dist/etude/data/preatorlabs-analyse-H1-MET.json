@@ -1,0 +1,95 @@
+{
+  "meta": {
+    "tool": "preatorlabs",
+    "version": "v0.3",
+    "exportedAt": "2026-06-04T15:19:29.191Z",
+    "model": "claude-haiku-4-5-20251001",
+    "temperature": 0,
+    "semanticProvider": "voyage_api"
+  },
+  "prompt": "Visualise mentalement la scène dans ta tête, imagine-la en détail, puis décris-la en 30 mots.",
+  "segments": [
+    "Visualise mentalement la scène dans ta tête, imagine-la en détail, puis décris-la en 30 mots."
+  ],
+  "scenarios": [
+    "un plat de pâtes carbonara",
+    "un marché de Noël en Alsace",
+    "une vieille librairie poussiéreuse"
+  ],
+  "summary": {
+    "segmentCount": 1,
+    "scenarioCount": 3,
+    "meanImpact": 0.09965152245889146,
+    "verdictCounts": {
+      "placebo": 1
+    }
+  },
+  "results": [
+    {
+      "id": "S1",
+      "label": "Visualise mentalement la scène dans ta tête, im…",
+      "text": "Visualise mentalement la scène dans ta tête, imagine-la en détail, puis décris-la en 30 mots.",
+      "impact": 0.09965152245889146,
+      "variance": 0.03200623064575446,
+      "struct": 0,
+      "behav": 0,
+      "sem": 0.2989545673766743,
+      "activation": {
+        "overall": 0,
+        "struct": 0,
+        "behav": 0,
+        "sem": 0.6666666666666666
+      },
+      "verdict": "placebo",
+      "stats": {
+        "zImpact": 0,
+        "minmaxImpact": 0,
+        "rankImpact": 1,
+        "snr": 1.215170136149289,
+        "carrierAxis": "sem",
+        "carrierImpact": 0.2989545673766743,
+        "runMeanImpact": 0.09965152245889146,
+        "runSdImpact": 1e-9
+      },
+      "direction": "neutre",
+      "perScenario": [
+        {
+          "scenarioId": "T1",
+          "input": "un plat de pâtes carbonara",
+          "baselineOutput": "# Carbonara\n\nUne assiette blanche déborde de spaghetti dorés, enrobés d'une sauce crémeuse et onctueuse. Des lardons croustillants parsèment le plat, tandis que le parmesan râpé scintille sous la lumière. Vapeur chaude s'échappe délicatement.",
+          "ablatedOutput": "# Pâtes Carbonara 🍝\n\n## Ingrédients (pour 4 personnes)\n- 400 g de pâtes (spaghetti ou rigatoni)\n- 200 g de guanciale (ou bacon/pancetta)\n- 4 jaunes d'œufs\n- 100 g de Pecorino Romano (ou Parmesan)\n- Poivre noir moulu\n- Sel\n\n## Préparation\n\n1. **Cuire les pâtes** dans l'eau salée bouillante (al dente)\n\n2. **Préparer la sauce** :\n   - Mélanger les jaunes d'œufs avec le fromage râpé et le poivre\n\n3. **Cuire le guanciale** :\n   - Couper en petits dés\n   - Faire revenir à la poêle jusqu'à croustillant\n\n4. **Assembler** :\n   - Égoutter les pâtes (réserver un peu d'eau de cuisson)\n   - Mélanger les pâtes chaudes avec le guanciale et sa graisse\n   - Retirer du feu\n   - Ajouter le mélange œuf-fromage en remuant rapidement\n   - Ajouter un peu d'eau de cuisson si nécessaire\n\n## ✨ Conseil\nNe pas faire cuire les œufs ! La chaleur des pâtes crée une sauce crémeuse.\n\nBuon appetito ! 🇮🇹",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.38377505316112626
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T2",
+          "input": "un marché de Noël en Alsace",
+          "baselineOutput": "# Marché de Noël alsacien\n\nChalets en bois décorés de guirlandes scintillantes bordent les ruelles pavées. Odeurs de vin chaud, pain d'épices et châtaignes grillées flottent dans l'air glacé. Sapins illuminés, crèches artisanales et jouets traditionnels attirent les visiteurs émerveillés.",
+          "ablatedOutput": "# Marché de Noël en Alsace 🎄\n\n## Les plus beaux marchés\n\n### **Strasbourg** ⭐ (le plus célèbre)\n- 11 marchés thématiques\n- Illuminations spectaculaires\n- Cathédrale décorée\n- Période : fin novembre à fin décembre\n\n### **Colmar**\n- Ambiance féerique et intime\n- Petites ruelles pittoresques\n- Marché traditionnel\n- Très photogénique\n\n### **Mulhouse, Sélestat, Obernai**\n- Marchés plus petits mais authentiques\n- Moins de foule\n\n## Ce qu'on y trouve 🎁\n\n- **Artisanat** : décorations, jouets en bois\n- **Gastronomie** : vin chaud, pain d'épices, bretzel\n- **Cadeaux** : bijoux, vêtements, objets de décoration\n- **Spécialités alsaciennes** : foie gras, choucroute\n\n## Ambiance typique\n\n✨ Chalets en bois  \n🎵 Musique de Noël  \n🕯️ Lumières chaleureuses  \n👨‍👩‍👧‍👦 Famille et convivialité  \n\n## Meilleure période\n**Novembre-décembre** (avant le 24 décembre)\n\nVous envisagez de visiter un marché en particulier ? 🎅",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.34837840146833177
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T3",
+          "input": "une vieille librairie poussiéreuse",
+          "baselineOutput": "# Une vieille librairie poussiéreuse\n\nRayons de bois vermoulu croulent sous des milliers de livres jaunes. Poussière danse dans les rayons de lumière. Odeur de papier ancien flotte. Silence profond règne. Escalier grinçant mène aux étages oubliés du temps.",
+          "ablatedOutput": "# Une vieille librairie poussiéreuse\n\nL'air y est épais, chargé de cette odeur inimitable — mélange de papier jauni, de cuir craquelé et de temps qui s'accumule.\n\nLes rayonnages s'élèvent jusqu'au plafond, penchant légèrement sous le poids des années. Les livres s'y entassent sans ordre apparent : des reliures fatiguées côtoient des dos dorés à demi effacés. Certains volumes semblent n'avoir jamais été ouverts.\n\nLa poussière danse dans les rais de lumière qui percent les vitres sales. Elle se pose sur les étagères, sur les chaises en bois vermoulu, sur les piles de bouquins abandonnés dans les coins.\n\nLe libraire — un vieux monsieur aux doigts tachés d'encre — connaît chaque recoin, chaque secret de ce labyrinthe de papier. Il se déplace lentement entre les allées étroites, murmurant des titres comme des incantations.\n\nC'est un endroit où le temps s'est arrêté. Où chaque livre attend patiemment son lecteur. Où l'on vient chercher non pas un bestseller, mais une *rencontre*.\n\n---\n\n*Vous cherchez quelque chose de particulier dans ce genre d'atmosphère ?*",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.16471024750056495
+          },
+          "semanticProvider": "voyage_api"
+        }
+      ]
+    }
+  ]
+}

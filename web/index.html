@@ -9,6 +9,9 @@
 <meta name="color-scheme" content="light">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="canonical" href="https://preatorlabs.dev/">
+<link rel="alternate" hreflang="fr" href="https://preatorlabs.dev/">
+<link rel="alternate" hreflang="en" href="https://preatorlabs.dev/en/">
+<link rel="alternate" hreflang="x-default" href="https://preatorlabs.dev/">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="preatorlabs">
@@ -24,6 +27,40 @@
 <meta name="twitter:title" content="preatorlabs · débogueur de prompt LLM">
 <meta name="twitter:description" content="Mesure objective, segment par segment, du rôle effectif de chaque partie d'un prompt système.">
 <meta name="twitter:image" content="/og-image.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://preatorlabs.dev/#org",
+      "name": "preatorlabs",
+      "url": "https://preatorlabs.dev/",
+      "logo": "https://preatorlabs.dev/og-image.png"
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://preatorlabs.dev/#website",
+      "url": "https://preatorlabs.dev/",
+      "name": "preatorlabs",
+      "inLanguage": "fr",
+      "publisher": { "@id": "https://preatorlabs.dev/#org" }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "preatorlabs",
+      "url": "https://preatorlabs.dev/",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Web",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+      "description": "Débogueur de prompt LLM par ablation multi-axes : mesure objective, segment par segment, de ce que chaque partie d'un prompt système fait réellement faire au modèle.",
+      "inLanguage": "fr",
+      "publisher": { "@id": "https://preatorlabs.dev/#org" }
+    }
+  ]
+}
+</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -114,6 +151,13 @@ code {
 .nav { display: flex; gap: 28px; font-size: 14px; }
 .nav a { color: var(--ink-soft); text-decoration: none; transition: color 0.2s; }
 .nav a:hover { color: var(--ink); }
+.lang-toggle { display: inline-flex; align-items: center; border: 1px solid var(--rule-strong); border-radius: 999px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; line-height: 1; }
+.lang-toggle a, .lang-toggle span { display: inline-flex; align-items: center; padding: 5px 9px; color: var(--ink-mute); text-decoration: none; transition: background 0.18s, color 0.18s; }
+.lang-toggle a:hover { color: var(--ink); }
+.lang-toggle .is-active { background: var(--accent); color: #fff; font-weight: 600; }
+.i18n-note { background: var(--accent-soft); border-bottom: 1px solid var(--rule); font-size: 12.5px; color: var(--ink-soft); }
+.i18n-note .shell { padding-top: 9px; padding-bottom: 9px; }
+.i18n-note a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
 @media (max-width: 720px) { .nav { display: none; } }
 
 /* ============ Hero ============ */
@@ -1291,6 +1335,22 @@ footer { padding: 56px 0 80px; }
 
 /* hidden helper */
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+/* ── Study popup (étude d'ablation) ─────────────────── */
+.study-popup { position: fixed; inset: 0; z-index: 9000; display: flex; align-items: center; justify-content: center; }
+.study-popup[hidden] { display: none; }
+.study-popup__backdrop { position: absolute; inset: 0; background: rgba(26, 26, 24, 0.55); backdrop-filter: blur(4px); }
+.study-popup__panel { position: relative; z-index: 1; background: var(--bg); border: 1px solid var(--rule-strong); border-radius: 4px; padding: 36px 40px; max-width: 480px; width: calc(100% - 40px); box-shadow: 0 24px 64px rgba(0,0,0,.22); }
+.study-popup__close { position: absolute; top: 14px; right: 18px; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--ink-mute); line-height: 1; }
+.study-popup__close:hover { color: var(--ink); }
+.study-popup__eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--accent); margin: 0 0 12px; }
+.study-popup__title { font-family: 'Fraunces', Georgia, serif; font-size: 1.5rem; font-weight: 400; line-height: 1.15; color: var(--ink); margin: 0 0 14px; }
+.study-popup__desc { font-size: .97rem; color: var(--ink-soft); line-height: 1.6; margin: 0 0 24px; }
+.study-popup__actions { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+.study-popup__cta { display: inline-block; padding: 11px 22px; background: var(--accent); color: #fff; border-radius: 3px; text-decoration: none; font-weight: 500; font-size: .95rem; transition: background .15s; }
+.study-popup__cta:hover { background: var(--c-critical); }
+.study-popup__dismiss { background: none; border: none; cursor: pointer; font-size: .88rem; color: var(--ink-mute); text-decoration: underline; }
+.study-popup__dismiss:hover { color: var(--ink); }
+@media (max-width: 540px) { .study-popup__panel { padding: 28px 22px; } }
 </style>
 </head>
 <body>
@@ -1308,6 +1368,9 @@ footer { padding: 56px 0 80px; }
       <a href="#demo">Démo</a>
       <a href="#validation">Validation</a>
       <a href="#faq">FAQ</a>
+      <!-- PLACEMENT POPUP : lien d'accès à l'étude (ouvre le popup au clic) -->
+      <a href="https://etude.preatorlabs.dev" data-popup-trigger="study">L'étude</a>
+      <span class="lang-toggle" role="group" aria-label="Langue"><span class="is-active" aria-current="true">FR</span><a href="/en/" hreflang="en" lang="en">EN</a></span>
     </nav>
   </div>
 </header>
@@ -1321,6 +1384,9 @@ footer { padding: 56px 0 80px; }
     <div class="hero-actions">
       <a href="#demo" class="btn">Essayer la démo <span class="btn-arrow">→</span></a>
       <a href="#method" class="btn btn-ghost">La méthode scientifique</a>
+      <!-- PLACEMENT POPUP : déclencheur de l'étude (ouvre le popup au clic) -->
+      <a href="https://etude.preatorlabs.dev" class="btn btn-ghost" data-popup-trigger="study">Découvrir l'étude</a>
+
     </div>
   </div>
 </section>
@@ -1416,8 +1482,8 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
     <div class="doc-links">
       <p>Approfondir le protocole, les scores par axe, l'activation et les limites</p>
       <ul>
-        <li><a href="/docs/02-METHODOLOGY.md">Méthodologie</a> : workflow complet et formules</li>
-        <li><a href="/docs/01-SCIENTIFIC-RATIONALE.md">Rationale scientifique</a> : choix méthodologiques et évolution V0.3</li>
+        <li><a href="/docs/methodologie">Méthodologie</a> : workflow complet et formules</li>
+        <li><a href="/docs/rationale-scientifique">Rationale scientifique</a> : choix méthodologiques et évolution V0.3</li>
       </ul>
     </div>
   </div>
@@ -1455,9 +1521,9 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
     <div class="doc-links">
       <p>Comment les résultats sont calculés (détail technique)</p>
       <ul>
-        <li><a href="/docs/02-METHODOLOGY.md">Méthodologie</a> : segmentation, règles auto/manuel, deltas, agrégation, verdicts</li>
-        <li><a href="/docs/03-ARCHITECTURE.md">Architecture</a> : modules, prévisualisation des critères, flux de données</li>
-        <li><a href="/docs/01-SCIENTIFIC-RATIONALE.md">Rationale</a> : limites assumées et évolution V0.3</li>
+        <li><a href="/docs/methodologie">Méthodologie</a> : segmentation, règles auto/manuel, deltas, agrégation, verdicts</li>
+        <li><a href="/docs/architecture">Architecture</a> : modules, prévisualisation des critères, flux de données</li>
+        <li><a href="/docs/rationale-scientifique">Rationale</a> : limites assumées et évolution V0.3</li>
       </ul>
     </div>
   </div>
@@ -1468,7 +1534,7 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
   <div class="shell">
     <div class="sect-label" data-num="04">comment lire</div>
     <h2 class="sect-h serif">Cinq verdicts, une grille de décision.</h2>
-    <p class="sect-lead">Le résultat principal est un graphique de variance, où chaque barre représente un segment. La hauteur dit l'impact, la barre d'erreur dit la variance. Le verdict tient aussi compte du taux d'activation (part des scénarios où l'impact dépasse 30 %). Formules complètes : <a href="/docs/02-METHODOLOGY.md">méthodologie</a>.</p>
+    <p class="sect-lead">Le résultat principal est un graphique de variance, où chaque barre représente un segment. La hauteur dit l'impact, la barre d'erreur dit la variance. Le verdict tient aussi compte du taux d'activation (part des scénarios où l'impact dépasse 30 %). Formules complètes : <a href="/docs/methodologie">méthodologie</a>.</p>
 
     <h3 class="serif" style="font-size: 20px; font-weight: 500; margin: 32px 0 12px;">Lire le graphique</h3>
     <div class="method-intro" style="margin-bottom: 28px;">
@@ -1695,7 +1761,7 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
 
             <div class="results-explainer">
               <h4>Comment lire ce graphique</h4>
-              <p>Chaque barre = un segment. Hauteur = <strong>impact</strong> · trait = ±<strong>variance</strong> · couleur = <strong>verdict</strong>. Grille de décision : <a href="#reading">comment lire</a> · calculs détaillés : <a href="/docs/02-METHODOLOGY.md">méthodologie</a> · <a href="/docs/04-INTERPRETATION-GUIDE.md">guide d'interprétation</a>.</p>
+              <p>Chaque barre = un segment. Hauteur = <strong>impact</strong> · trait = ±<strong>variance</strong> · couleur = <strong>verdict</strong>. Grille de décision : <a href="#reading">comment lire</a> · calculs détaillés : <a href="/docs/methodologie">méthodologie</a> · <a href="/docs/guide-interpretation">guide d'interprétation</a>.</p>
             </div>
 
             <h3 class="serif" style="font-size: 20px; font-weight: 500; margin-bottom: 12px; letter-spacing: -0.005em;">Graphique de variance</h3>
@@ -1791,7 +1857,7 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
         <li><strong>La décomposition par axe identifie le mécanisme.</strong> S4 du Test 2 sort à 41% sur l'axe sémantique (changement de registre&nbsp;: réponse Python vs «&nbsp;Hors sujet&nbsp;»), tandis que S2 du Test 2 sort à 17% sur l'axe structurel (JSON valide vs prose markdown). L'outil sait dire <em>pourquoi</em> un segment compte, pas seulement <em>combien</em>.</li>
         <li><strong>Les placebos sont des vrais placebos.</strong> S5 du Test 2 («&nbsp;ne jamais dire je suis une IA&nbsp;») est mesuré à 1% d'impact : le modèle ne produit pas ces tournures même sans la consigne. Confirmation comportementale.</li>
       </ul>
-      <p><strong>Limite identifiée.</strong> Sur Claude Haiku, les seuils de verdict calibrés pour Sonnet peuvent rester trop stricts&nbsp;: la variance brute peut être plus informative que le label final. La V0.3 corrige déjà une partie du biais via l'activation et l'agrégation sur axes applicables, mais la calibration cross-modèles reste un chantier V0.4. Détail dans la <a href="/docs/05-ROADMAP.md">roadmap</a>.</p>
+      <p><strong>Limite identifiée.</strong> Sur Claude Haiku, les seuils de verdict calibrés pour Sonnet peuvent rester trop stricts&nbsp;: la variance brute peut être plus informative que le label final. La V0.3 corrige déjà une partie du biais via l'activation et l'agrégation sur axes applicables, mais la calibration cross-modèles reste un chantier V0.4. Détail dans la <a href="/docs/roadmap">roadmap</a>.</p>
     </div>
   </div>
 </section>
@@ -1805,7 +1871,7 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
     <div class="faq-list">
       <div class="faq-item">
         <div class="faq-q">Pourquoi pas un LLM qui juge la qualité du prompt ?</div>
-        <p class="faq-a">Parce qu'un LLM-juge produit une réponse plausible, pas une mesure. La sortie dépend du LLM utilisé, du wording de la consigne, et n'est pas reproductible. preatorlabs reste strictement sur des métriques parsables ou calculables. Détail dans <a href="/docs/01-SCIENTIFIC-RATIONALE.md">la rationale scientifique</a>.</p>
+        <p class="faq-a">Parce qu'un LLM-juge produit une réponse plausible, pas une mesure. La sortie dépend du LLM utilisé, du wording de la consigne, et n'est pas reproductible. preatorlabs reste strictement sur des métriques parsables ou calculables. Détail dans <a href="/docs/rationale-scientifique">la rationale scientifique</a>.</p>
       </div>
       <div class="faq-item">
         <div class="faq-q">Combien ça coûte vraiment ?</div>
@@ -1829,7 +1895,7 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
       </div>
       <div class="faq-item">
         <div class="faq-q">Le projet est-il open source ?</div>
-        <p class="faq-a">Oui, licence MIT. Le code source est sur <a href="https://github.com/woziii/preator_labs" rel="noopener">GitHub</a>. Les choix méthodologiques sont documentés dans <a href="/docs/01-SCIENTIFIC-RATIONALE.md">docs/01-SCIENTIFIC-RATIONALE.md</a> et <a href="/docs/02-METHODOLOGY.md">docs/02-METHODOLOGY.md</a>.</p>
+        <p class="faq-a">Oui, licence MIT. Le code source est sur <a href="https://github.com/woziii/preator_labs" rel="noopener">GitHub</a>. Les choix méthodologiques sont documentés dans <a href="/docs/rationale-scientifique">docs/01-SCIENTIFIC-RATIONALE.md</a> et <a href="/docs/methodologie">docs/02-METHODOLOGY.md</a>.</p>
       </div>
     </div>
   </div>
@@ -1888,11 +1954,11 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
       </div>
       <div class="foot-col">
         <h5>documentation</h5>
-        <a href="/docs/01-SCIENTIFIC-RATIONALE.md">Rationale</a>
-        <a href="/docs/02-METHODOLOGY.md">Méthodologie</a>
-        <a href="/docs/03-ARCHITECTURE.md">Architecture</a>
-        <a href="/docs/04-INTERPRETATION-GUIDE.md">Interprétation</a>
-        <a href="/docs/05-ROADMAP.md">Roadmap</a>
+        <a href="/docs/rationale-scientifique">Rationale</a>
+        <a href="/docs/methodologie">Méthodologie</a>
+        <a href="/docs/architecture">Architecture</a>
+        <a href="/docs/guide-interpretation">Interprétation</a>
+        <a href="/docs/roadmap">Roadmap</a>
       </div>
       <div class="foot-col">
         <h5>projet</h5>
@@ -3405,6 +3471,89 @@ function showError(msg) {
   el.textContent = msg;
   el.style.display = 'block';
 }
+</script>
+
+<!-- ============ Study popup (étude d'ablation) ============ -->
+<!-- Composant prêt à l'emploi. Pour le déclencher, ajoute data-popup-trigger="study"
+     sur le lien/bouton de ton choix (voir les commentaires PLACEMENT POPUP plus haut). -->
+<div id="study-popup" class="study-popup" role="dialog" aria-modal="true" aria-labelledby="study-popup-title" hidden>
+  <div class="study-popup__backdrop" onclick="StudyPopup.close()"></div>
+  <div class="study-popup__panel">
+    <button class="study-popup__close" onclick="StudyPopup.close()" aria-label="Fermer">×</button>
+    <p class="study-popup__eyebrow" id="study-popup-eyebrow">Étude empirique · preatorlabs</p>
+    <h2 class="study-popup__title" id="study-popup-title">Ce qui compte vraiment dans un prompt</h2>
+    <p class="study-popup__desc" id="study-popup-desc">Sept expériences d'ablation contrôlées pour mesurer l'impact réel de chaque segment d'un prompt — et le principe unique qui les explique toutes.</p>
+    <div class="study-popup__actions">
+      <a class="study-popup__cta" id="study-popup-cta" href="https://etude.preatorlabs.dev" target="_blank" rel="noopener">Lire l'étude →</a>
+      <button class="study-popup__dismiss" id="study-popup-dismiss" onclick="StudyPopup.dismiss()">Ne plus afficher</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const StudyPopup = (() => {
+  const STORAGE_KEY = 'preator_study_dismissed';
+  const el = () => document.getElementById('study-popup');
+
+  function applyLang() {
+    const isEn = document.documentElement.lang === 'en'
+      || window.location.pathname.startsWith('/en');
+    // En local, l'étude vit sous /etude/ ; en production, sous le sous-domaine dédié.
+    const isLocal = ['localhost', '127.0.0.1', ''].includes(location.hostname);
+    const base = isLocal ? '/etude' : 'https://etude.preatorlabs.dev';
+    const t = {
+      eyebrow: isEn ? 'Empirical study · preatorlabs' : "Étude empirique · preatorlabs",
+      title: isEn ? 'What really matters in a prompt' : 'Ce qui compte vraiment dans un prompt',
+      desc: isEn
+        ? 'Seven controlled ablation experiments measuring the real impact of each prompt segment — and the single principle that explains them all.'
+        : "Sept expériences d'ablation contrôlées pour mesurer l'impact réel de chaque segment d'un prompt — et le principe unique qui les explique toutes.",
+      cta: isEn ? 'Read the study →' : "Lire l'étude →",
+      ctaHref: isEn ? base + '/en/' : base + '/',
+      dismiss: isEn ? "Don't show again" : 'Ne plus afficher',
+    };
+    document.getElementById('study-popup-eyebrow').textContent = t.eyebrow;
+    document.getElementById('study-popup-title').textContent = t.title;
+    document.getElementById('study-popup-desc').textContent = t.desc;
+    const cta = document.getElementById('study-popup-cta');
+    cta.textContent = t.cta;
+    cta.href = t.ctaHref;
+    document.getElementById('study-popup-dismiss').textContent = t.dismiss;
+  }
+
+  function open() {
+    const popup = el();
+    if (!popup || localStorage.getItem(STORAGE_KEY)) return;
+    applyLang();
+    popup.removeAttribute('hidden');
+    document.body.style.overflow = 'hidden';
+    popup.querySelector('[id$="-cta"]')?.focus();
+  }
+
+  function close() {
+    const popup = el();
+    if (!popup) return;
+    popup.setAttribute('hidden', '');
+    document.body.style.overflow = '';
+  }
+
+  function dismiss() {
+    localStorage.setItem(STORAGE_KEY, '1');
+    close();
+  }
+
+  document.addEventListener('click', e => {
+    if (e.target.closest('[data-popup-trigger="study"]')) {
+      e.preventDefault();
+      open();
+    }
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+
+  // Ouverture automatique à la première visite (respecte « Ne plus afficher »).
+  window.addEventListener('load', () => { setTimeout(open, 1500); });
+
+  return { open, close, dismiss };
+})();
 </script>
 </body>
 </html>

@@ -1,0 +1,213 @@
+{
+  "meta": {
+    "tool": "preatorlabs",
+    "version": "v0.3",
+    "exportedAt": "2026-06-04T15:29:10.753Z",
+    "model": "claude-haiku-4-5-20251001",
+    "temperature": 0,
+    "semanticProvider": "voyage_api"
+  },
+  "prompt": "Rédige uniquement l'email de relance B2B (objet + corps), 60 mots maximum.\n\n\nÉcris comme à un collègue que tu respectes, sans distance hiérarchique, en allant droit au but sans tourner autour du pot.",
+  "segments": [
+    "Rédige uniquement l'email de relance B2B (objet + corps), 60 mots maximum.",
+    "Écris comme à un collègue que tu respectes, sans distance hiérarchique, en allant droit au but sans tourner autour du pot."
+  ],
+  "scenarios": [
+    "Pierre Henri, patron de ABC Société, ouvert à une collaboration. Dernier échange il y a 9 jours, est resté sans réponse depuis.",
+    "Julie Humbert, Product Manager, connaît très bien le sujet. A ouvert ma dernière relance sans y répondre.",
+    "Maître Vigneau, avocat en droit des affaires. Contexte très formel, premier recontact après une réunion.",
+    "Marc Lefel, m'a répondu \"pas pour le moment\" il y a 3 semaines. Je retente une ouverture",
+    "Chan Lee, PDG d'un grand groupe. Aucun échange préalable fourni, je dois ouvrir le contact."
+  ],
+  "summary": {
+    "segmentCount": 2,
+    "scenarioCount": 5,
+    "meanImpact": 0.2866530943256155,
+    "verdictCounts": {
+      "high": 1,
+      "low": 1
+    }
+  },
+  "results": [
+    {
+      "id": "S1",
+      "label": "Rédige uniquement l'email de relance B2B (objet…",
+      "text": "Rédige uniquement l'email de relance B2B (objet + corps), 60 mots maximum.",
+      "impact": 0.46437947466034296,
+      "variance": 0.034235518910050784,
+      "struct": 1,
+      "behav": 0.02857142857142858,
+      "sem": 0.36456699540960036,
+      "activation": {
+        "overall": 1,
+        "struct": 1,
+        "behav": 0,
+        "sem": 0.8
+      },
+      "verdict": "high",
+      "stats": {
+        "zImpact": 1,
+        "minmaxImpact": 1,
+        "rankImpact": 1,
+        "snr": 5.512870113095893,
+        "carrierAxis": "struct",
+        "carrierImpact": 1,
+        "runMeanImpact": 0.2866530943256155,
+        "runSdImpact": 0.17772638033472749
+      },
+      "direction": "porte",
+      "perScenario": [
+        {
+          "scenarioId": "T1",
+          "input": "Pierre Henri, patron de ABC Société, ouvert à une collaboration. Dernier échange il y a 9 jours, est resté sans réponse depuis.",
+          "baselineOutput": "**Objet :** Retour sur notre discussion\n\nSalut Pierre,\n\nÇa fait 9 jours qu'on s'est parlé. Je voulais juste vérifier si tu as eu le temps de regarder ce qu'on avait évoqué. Pas de souci si c'est pas le moment, mais j'aimerais bien avancer ensemble.\n\nDis-moi ce qui te convient.\n\nÀ bientôt",
+          "ablatedOutput": "# Relance directe\n\nSalut Pierre,\n\nJe te relance sur mon dernier message d'il y a 9 jours. Je sais que tu as beaucoup de trucs sur les bras, mais j'aimerais vraiment avancer sur la collaboration qu'on avait commencé à discuter.\n\nDeux questions simples :\n- T'es toujours intéressé par le projet ?\n- Si oui, on peut fixer un créneau pour en parler sérieusement ?\n\nSi le timing n'est pas bon en ce moment, dis-le clairement — je préfère savoir plutôt que de rester dans le flou.\n\nÀ toi.\n\n---\n\n**Variante plus légère** (si vous avez une relation plus décontractée) :\n\"Salut Pierre, tu as disparu ! 😄 Toujours chaud pour en discuter ou tu mets ça de côté pour l'instant ?\"",
+          "axisDelta": {
+            "struct": 1,
+            "behav": 0,
+            "sem": 0.34228220774301465
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T2",
+          "input": "Julie Humbert, Product Manager, connaît très bien le sujet. A ouvert ma dernière relance sans y répondre.",
+          "baselineOutput": "**Objet :** Retour sur ma proposition – besoin de ton avis\n\nSalut Julie,\n\nJ'ai vu que tu as consulté mon dernier message. Je sais que tu es submergée, mais j'aimerais vraiment avoir ton retour sur le point qu'on discutait.\n\nÇa te dit un appel rapide cette semaine pour en parler ?\n\nCheers",
+          "ablatedOutput": "Ça sent le \"pas prioritaire pour elle en ce moment\" ou \"elle sait qu'elle va devoir dire non et elle repousse\".\n\nDeux options :\n\n**1. Relance directe et courte**\n\"Julie, je sais que tu as beaucoup sur les bras. Juste pour clarifier : tu as besoin de plus d'infos pour avancer, ou c'est pas le bon timing ? Je peux adapter.\"\n\nÇa lui donne une porte de sortie honnête et tu sauras où tu en es.\n\n**2. Contourner si c'est urgent**\nSi tu as besoin d'une réponse rapidement, va voir son manager ou la personne qui peut débloquer sans elle. Mais fais-le proprement : \"Je sais que Julie est surchargée, je voulais pas la relancer une 3e fois, tu peux m'aider ?\"\n\nÉvite juste de la contourner sans le dire — ça crée des frictions inutiles.\n\nQuel est ton deadline réel sur ce truc ?",
+          "axisDelta": {
+            "struct": 1,
+            "behav": 0,
+            "sem": 0.4579878058083592
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T3",
+          "input": "Maître Vigneau, avocat en droit des affaires. Contexte très formel, premier recontact après une réunion.",
+          "baselineOutput": "**Objet :** Suite à notre entretien\n\nMaître Vigneau,\n\nSuite à notre rencontre, je reviens vers vous pour connaître vos premières impressions sur la proposition discutée. Avez-vous pu l'examiner ? Je reste disponible pour clarifier les points ou ajuster notre approche selon vos besoins.\n\nÀ bientôt.",
+          "ablatedOutput": "# Objet : Suite à notre réunion du [date]\n\nMaître Vigneau,\n\nJe vous remercie pour le temps que vous nous avez consacré lors de notre entretien du [date]. Les points que vous avez soulevés sur [sujet spécifique] m'ont permis de clarifier notre stratégie.\n\nConcernant [dossier/question], j'aimerais revenir sur [point précis] et vous soumettre [document/proposition]. Pensez-vous que cette approche répond aux enjeux que vous aviez identifiés ?\n\nJe reste à votre disposition pour discuter des prochaines étapes et des délais à respecter.\n\nCordialement,\n\n[Votre nom]\n\n---\n\n**Note** : Avec un avocat en droit des affaires, le ton reste professionnel mais direct. Évite la surcharge de formules de politesse — il apprécie la clarté et l'efficacité. Sois précis sur les points à traiter et propose du concret plutôt que de poser des questions vagues.",
+          "axisDelta": {
+            "struct": 1,
+            "behav": 0,
+            "sem": 0.2961582198170176
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T4",
+          "input": "Marc Lefel, m'a répondu \"pas pour le moment\" il y a 3 semaines. Je retente une ouverture",
+          "baselineOutput": "**Objet :** Retour sur notre discussion\n\nSalut Marc,\n\nJe comprends que ce n'était pas le bon timing il y a 3 semaines. Les choses ont peut-être bougé de ton côté depuis ? \n\nJe pensais à toi en voyant [élément pertinent/actualité du secteur]. Ça pourrait te concerner.\n\nLibre pour un rapide call ?\n\nÀ bientôt",
+          "ablatedOutput": "Bonne idée de relancer. Trois semaines, c'est un délai raisonnable.\n\nQuelques points pour ta relance :\n\n**Le ton** : Léger, pas insistant. Genre \"j'y repense, ça te dit toujours rien ?\" plutôt que \"tu m'avais dit non mais...\"\n\n**L'angle** : \n- Mentionne un élément nouveau (une évolution, une info pertinente) si tu en as un\n- Ou simplement : \"Je relance parce que ça me semble vraiment pertinent pour toi\"\n- Évite de faire comme si son \"pas pour le moment\" n'existait pas\n\n**La forme** :\n- Court. Une ou deux phrases max avant de poser la question\n- Pas de long préambule\n\n**Exemple basique** :\n\"Marc, je relance sur [sujet]. Ça te dit toujours rien, ou les choses ont bougé de ton côté ?\"\n\nC'est direct, ça respecte son \"pas pour le moment\" tout en testant si la situation a changé.\n\nQu'est-ce que tu lui proposais exactement ? Ça m'aide à affiner si besoin.",
+          "axisDelta": {
+            "struct": 1,
+            "behav": 0.1428571428571429,
+            "sem": 0.42042704997958225
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T5",
+          "input": "Chan Lee, PDG d'un grand groupe. Aucun échange préalable fourni, je dois ouvrir le contact.",
+          "baselineOutput": "**Objet :** Opportunité de partenariat – [Ton secteur]\n\nBonjour Chan,\n\nJ'ai suivi vos récents développements et pense qu'on pourrait créer de la valeur ensemble sur [domaine spécifique].\n\nLibre 15 min cette semaine pour en discuter ?\n\nCordialement,\n[Ton nom]",
+          "ablatedOutput": "# Objet : Opportunité de partenariat stratégique\n\nChan,\n\nJe te contacte directement car je pense qu'il y a quelque chose d'intéressant à explorer ensemble.\n\n[**Ici, sois précis** : décris en 2-3 phrases ce que tu proposes concrètement — pas du vague]\n\nPourquoi maintenant ? [**Contexte rapide** : marché qui bouge, technologie qui change, problème qu'on voit dans ton secteur, etc.]\n\nJe ne vais pas te faire perdre du temps avec un pitch de 10 pages. Si ça te parle, on prend 20 minutes pour voir si c'est pertinent pour vous.\n\nDisponible quand tu veux.\n\n[Ton nom]\n\n---\n\n**Quelques règles pour que ça marche :**\n\n- **Objet accrocheur mais honnête** — pas de \"urgent\" ou \"confidentiel\" bidon\n- **Première phrase = le truc** — pas de \"j'espère que tu vas bien\"\n- **Montre que tu le connais** — une raison précise pour laquelle *lui* en particulier\n- **Court** — 5-6 lignes max\n- **Pas de pièce jointe** — elle sera pas lue\n- **Appel à l'action clair** — un call, un café, une démo, pas vague\n\nÇa marche mieux si tu as un point d'entrée (quelqu'un qui peut te présenter), mais si tu dois le faire froid, c'est comme ça qu'on le fait.",
+          "axisDelta": {
+            "struct": 1,
+            "behav": 0,
+            "sem": 0.3059796937000283
+          },
+          "semanticProvider": "voyage_api"
+        }
+      ]
+    },
+    {
+      "id": "S2",
+      "label": "Écris comme à un collègue que tu respectes, san…",
+      "text": "Écris comme à un collègue que tu respectes, sans distance hiérarchique, en allant droit au but sans tourner autour du pot.",
+      "impact": 0.10892671399088802,
+      "variance": 0.02775526646397746,
+      "struct": 0,
+      "behav": 0.02857142857142858,
+      "sem": 0.29820871340123556,
+      "activation": {
+        "overall": 0,
+        "struct": 0,
+        "behav": 0,
+        "sem": 0.6
+      },
+      "verdict": "low",
+      "stats": {
+        "zImpact": -0.9999999999999999,
+        "minmaxImpact": 0,
+        "rankImpact": 2,
+        "snr": 1.400891784498632,
+        "carrierAxis": "sem",
+        "carrierImpact": 0.29820871340123556,
+        "runMeanImpact": 0.2866530943256155,
+        "runSdImpact": 0.17772638033472749
+      },
+      "direction": "neutre",
+      "perScenario": [
+        {
+          "scenarioId": "T1",
+          "input": "Pierre Henri, patron de ABC Société, ouvert à une collaboration. Dernier échange il y a 9 jours, est resté sans réponse depuis.",
+          "baselineOutput": "**Objet :** Retour sur notre discussion\n\nSalut Pierre,\n\nÇa fait 9 jours qu'on s'est parlé. Je voulais juste vérifier si tu as eu le temps de regarder ce qu'on avait évoqué. Pas de souci si c'est pas le moment, mais j'aimerais bien avancer ensemble.\n\nDis-moi ce qui te convient.\n\nÀ bientôt",
+          "ablatedOutput": "**Objet :** Relance – Collaboration ABC Société\n\nBonjour Pierre,\n\nSuite à notre échange du 9 janvier, je reviens vers vous concernant notre proposition de collaboration. Avez-vous pu l'examiner ? Je serais ravi de discuter des opportunités mutuelles et répondre à vos questions.\n\nDisponible cette semaine pour un appel.\n\nCordialement,\n[Votre nom]",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.34951803237143275
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T2",
+          "input": "Julie Humbert, Product Manager, connaît très bien le sujet. A ouvert ma dernière relance sans y répondre.",
+          "baselineOutput": "**Objet :** Retour sur ma proposition – besoin de ton avis\n\nSalut Julie,\n\nJ'ai vu que tu as consulté mon dernier message. Je sais que tu es submergée, mais j'aimerais vraiment avoir ton retour sur le point qu'on discutait.\n\nÇa te dit un appel rapide cette semaine pour en parler ?\n\nCheers",
+          "ablatedOutput": "**Objet :** Retour sur notre proposition - Points clés à discuter\n\nBonjour Julie,\n\nJ'ai remarqué que vous aviez consulté ma dernière relance. Avant de conclure, j'aimerais clarifier deux points spécifiques qui pourraient vous intéresser en tant que Product Manager.\n\nÊtes-vous disponible 15 min cette semaine ?\n\nCordialement,\n[Votre nom]",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.3641575690102128
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T3",
+          "input": "Maître Vigneau, avocat en droit des affaires. Contexte très formel, premier recontact après une réunion.",
+          "baselineOutput": "**Objet :** Suite à notre entretien\n\nMaître Vigneau,\n\nSuite à notre rencontre, je reviens vers vous pour connaître vos premières impressions sur la proposition discutée. Avez-vous pu l'examiner ? Je reste disponible pour clarifier les points ou ajuster notre approche selon vos besoins.\n\nÀ bientôt.",
+          "ablatedOutput": "**Objet :** Suite à notre entretien – Droit des affaires\n\nMaître Vigneau,\n\nSuite à notre rencontre, je souhaite revenir sur les points discutés concernant votre expertise en droit des affaires. Votre approche m'a particulièrement intéressé.\n\nJe serais ravi de poursuivre cette collaboration. Pourriez-vous me confirmer votre disponibilité pour un prochain échange ?\n\nCordialement,\n[Votre nom]",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.23319203555305013
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T4",
+          "input": "Marc Lefel, m'a répondu \"pas pour le moment\" il y a 3 semaines. Je retente une ouverture",
+          "baselineOutput": "**Objet :** Retour sur notre discussion\n\nSalut Marc,\n\nJe comprends que ce n'était pas le bon timing il y a 3 semaines. Les choses ont peut-être bougé de ton côté depuis ? \n\nJe pensais à toi en voyant [élément pertinent/actualité du secteur]. Ça pourrait te concerner.\n\nLibre pour un rapide call ?\n\nÀ bientôt",
+          "ablatedOutput": "**Objet :** Nouvelle opportunité pour [Votre Entreprise]\n\nBonjour Marc,\n\nJ'espère que tout va bien. Depuis notre dernier échange, nous avons lancé une nouvelle solution qui pourrait intéresser [Son secteur]. \n\nSerais-tu disponible pour un court appel cette semaine ? Je pense que ça vaut le coup d'en discuter.\n\nÀ bientôt,\n[Votre nom]",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0.1428571428571429,
+            "sem": 0.30890202745766493
+          },
+          "semanticProvider": "voyage_api"
+        },
+        {
+          "scenarioId": "T5",
+          "input": "Chan Lee, PDG d'un grand groupe. Aucun échange préalable fourni, je dois ouvrir le contact.",
+          "baselineOutput": "**Objet :** Opportunité de partenariat – [Ton secteur]\n\nBonjour Chan,\n\nJ'ai suivi vos récents développements et pense qu'on pourrait créer de la valeur ensemble sur [domaine spécifique].\n\nLibre 15 min cette semaine pour en discuter ?\n\nCordialement,\n[Ton nom]",
+          "ablatedOutput": "**Objet :** Opportunité de partenariat stratégique\n\nMonsieur Lee,\n\nJ'aimerais vous présenter une solution qui pourrait optimiser [domaine pertinent] de votre groupe. Votre leadership dans le secteur m'a impressionné.\n\nDisposeriez-vous de 15 minutes cette semaine pour explorer ensemble les synergies possibles ?\n\nCordialement,\n[Votre nom]",
+          "axisDelta": {
+            "struct": 0,
+            "behav": 0,
+            "sem": 0.2352739026138171
+          },
+          "semanticProvider": "voyage_api"
+        }
+      ]
+    }
+  ]
+}
