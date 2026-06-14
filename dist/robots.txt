@@ -3,4 +3,3 @@ Allow: /
 Disallow: /docs/00-AGENT-
 
 Sitemap: https://preatorlabs.dev/sitemap.xml
-Sitemap: https://etude.preatorlabs.dev/sitemap.xml

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://etude.preatorlabs.dev/sitemap.xml
+Sitemap: https://preatorlabs.dev/sitemap.xml

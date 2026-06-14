@@ -1369,7 +1369,7 @@ footer { padding: 56px 0 80px; }
       <a href="#validation">Validation</a>
       <a href="#faq">FAQ</a>
       <!-- PLACEMENT POPUP : lien d'accès à l'étude (ouvre le popup au clic) -->
-      <a href="https://etude.preatorlabs.dev" data-popup-trigger="study">L'étude</a>
+      <a href="/etude" data-popup-trigger="study">L'étude</a>
       <span class="lang-toggle" role="group" aria-label="Langue"><span class="is-active" aria-current="true">FR</span><a href="/en/" hreflang="en" lang="en">EN</a></span>
     </nav>
   </div>
@@ -1385,7 +1385,7 @@ footer { padding: 56px 0 80px; }
       <a href="#demo" class="btn">Essayer la démo <span class="btn-arrow">→</span></a>
       <a href="#method" class="btn btn-ghost">La méthode scientifique</a>
       <!-- PLACEMENT POPUP : déclencheur de l'étude (ouvre le popup au clic) -->
-      <a href="https://etude.preatorlabs.dev" class="btn btn-ghost" data-popup-trigger="study">Découvrir l'étude</a>
+      <a href="/etude" class="btn btn-ghost" data-popup-trigger="study">Découvrir l'étude</a>
 
     </div>
   </div>
@@ -3484,7 +3484,7 @@ function showError(msg) {
     <h2 class="study-popup__title" id="study-popup-title">Ce qui compte vraiment dans un prompt</h2>
     <p class="study-popup__desc" id="study-popup-desc">Sept expériences d'ablation contrôlées pour mesurer l'impact réel de chaque segment d'un prompt — et le principe unique qui les explique toutes.</p>
     <div class="study-popup__actions">
-      <a class="study-popup__cta" id="study-popup-cta" href="https://etude.preatorlabs.dev" target="_blank" rel="noopener">Lire l'étude →</a>
+      <a class="study-popup__cta" id="study-popup-cta" href="/etude" rel="noopener">Lire l'étude →</a>
       <button class="study-popup__dismiss" id="study-popup-dismiss" onclick="StudyPopup.dismiss()">Ne plus afficher</button>
     </div>
   </div>
@@ -3498,9 +3498,8 @@ const StudyPopup = (() => {
   function applyLang() {
     const isEn = document.documentElement.lang === 'en'
       || window.location.pathname.startsWith('/en');
-    // En local, l'étude vit sous /etude/ ; en production, sous le sous-domaine dédié.
-    const isLocal = ['localhost', '127.0.0.1', ''].includes(location.hostname);
-    const base = isLocal ? '/etude' : 'https://etude.preatorlabs.dev';
+    // L'étude est servie sous /etude (même origine, robuste au slash final).
+    const base = '/etude';
     const t = {
       eyebrow: isEn ? 'Empirical study · preatorlabs' : "Étude empirique · preatorlabs",
       title: isEn ? 'What really matters in a prompt' : 'Ce qui compte vraiment dans un prompt',
@@ -3508,7 +3507,7 @@ const StudyPopup = (() => {
         ? 'Seven controlled ablation experiments measuring the real impact of each prompt segment — and the single principle that explains them all.'
         : "Sept expériences d'ablation contrôlées pour mesurer l'impact réel de chaque segment d'un prompt — et le principe unique qui les explique toutes.",
       cta: isEn ? 'Read the study →' : "Lire l'étude →",
-      ctaHref: isEn ? base + '/en/' : base + '/',
+      ctaHref: isEn ? base + '/en' : base,
       dismiss: isEn ? "Don't show again" : 'Ne plus afficher',
     };
     document.getElementById('study-popup-eyebrow').textContent = t.eyebrow;

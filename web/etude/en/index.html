@@ -6,19 +6,19 @@
 <title>What really matters in a prompt — Ablation study | preatorlabs</title>
 <meta name="description" content="Seven controlled ablation experiments measure the real impact of each prompt segment. A single principle unifies every result: the distance from the model's default behavior.">
 <meta name="author" content="preatorlabs">
-<link rel="canonical" href="https://etude.preatorlabs.dev/en/">
+<link rel="canonical" href="https://preatorlabs.dev/etude/en">
 
 <!-- hreflang -->
-<link rel="alternate" hreflang="fr" href="https://etude.preatorlabs.dev/">
-<link rel="alternate" hreflang="en" href="https://etude.preatorlabs.dev/en/">
-<link rel="alternate" hreflang="x-default" href="https://etude.preatorlabs.dev/">
+<link rel="alternate" hreflang="fr" href="https://preatorlabs.dev/etude">
+<link rel="alternate" hreflang="en" href="https://preatorlabs.dev/etude/en">
+<link rel="alternate" hreflang="x-default" href="https://preatorlabs.dev/etude">
 
 <!-- Open Graph -->
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://etude.preatorlabs.dev/en/">
+<meta property="og:url" content="https://preatorlabs.dev/etude/en">
 <meta property="og:title" content="What really matters in a prompt — Ablation study">
 <meta property="og:description" content="Seven controlled experiments measuring the real impact of each prompt segment across two Claude models.">
-<meta property="og:image" content="https://etude.preatorlabs.dev/og-etude.png">
+<meta property="og:image" content="https://preatorlabs.dev/etude/og-etude.png">
 <meta property="og:locale" content="en_US">
 <meta property="og:locale:alternate" content="fr_FR">
 <meta property="article:published_time" content="2026-06-12">
@@ -28,7 +28,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="What really matters in a prompt">
 <meta name="twitter:description" content="Seven controlled ablation experiments. One principle: distance from the default.">
-<meta name="twitter:image" content="https://etude.preatorlabs.dev/og-etude.png">
+<meta name="twitter:image" content="https://preatorlabs.dev/etude/og-etude.png">
 
 <!-- JSON-LD Article -->
 <script type="application/ld+json">
@@ -41,7 +41,7 @@
   "publisher": { "@type": "Organization", "name": "preatorlabs", "url": "https://www.preatorlabs.dev" },
   "datePublished": "2026-06-12",
   "inLanguage": "en",
-  "url": "https://etude.preatorlabs.dev/en/",
+  "url": "https://preatorlabs.dev/etude/en",
   "keywords": ["prompt engineering", "ablation study", "LLM", "Claude", "prompt optimization", "prompt analysis", "preatorlabs"]
 }
 </script>
@@ -221,7 +221,7 @@ footer{padding:30px 0 70px;font-family:var(--mono);font-size:12.5px;color:var(--
 <header class="hero">
   <div class="wrap">
     <nav class="lang-switch" aria-label="Language">
-      <a class="lang-switch__option" href="../" hreflang="fr" lang="fr">FR</a>
+      <a class="lang-switch__option" href="/etude" hreflang="fr" lang="fr">FR</a>
       <span class="lang-switch__sep">/</span>
       <span class="lang-switch__current">EN</span>
     </nav>
@@ -891,7 +891,7 @@ const DataDrawer = (() => {
     { label: 'E6 — Imagination', files: ['H1-MET','H1-DIR'] },
     { label: 'E7 — Token reduction', files: ['HTR-R0-Haiku','HTR-R35-Haiku','HTR-R65-Haiku','HTR-NAIVE-Haiku'] },
   ];
-  const BASE = 'data/'; // relatif : fonctionne sur /etude/ comme sur le sous-domaine racine
+  const BASE = '/etude/data/'; // chemin absolu : robuste au slash final (/etude vs /etude/)
 
   function buildGrid() {
     const grid = document.getElementById('data-drawer__grid');

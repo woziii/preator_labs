@@ -28,13 +28,6 @@
     Content-Type = "text/markdown; charset=utf-8"
     Cache-Control = "public, max-age=3600"
 
-# Sous-domaine de l'étude : sert /etude/ à la racine de etude.preatorlabs.dev
-[[redirects]]
-  from = "https://etude.preatorlabs.dev/*"
-  to = "/etude/:splat"
-  status = 200
-  force = true
-
 [[redirects]]
   from = "/*"
   to = "/404.html"
