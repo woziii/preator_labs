@@ -3524,9 +3524,12 @@ const StudyPopup = (() => {
     document.getElementById('study-popup-dismiss').textContent = t.dismiss;
   }
 
-  function open() {
+  function open(force = false) {
     const popup = el();
-    if (!popup || localStorage.getItem(STORAGE_KEY)) return;
+    if (!popup) return;
+    // Le drapeau « ne plus afficher » ne bloque que l'ouverture automatique,
+    // jamais un clic explicite sur un déclencheur.
+    if (!force && localStorage.getItem(STORAGE_KEY)) return;
     applyLang();
     popup.removeAttribute('hidden');
     document.body.style.overflow = 'hidden';
@@ -3548,7 +3551,7 @@ const StudyPopup = (() => {
   document.addEventListener('click', e => {
     if (e.target.closest('[data-popup-trigger="study"]')) {
       e.preventDefault();
-      open();
+      open(true);
     }
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
