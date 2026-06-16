@@ -166,6 +166,23 @@ td.num,th.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
 .keep .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--signal-deep);margin:0 0 5px;font-weight:600}
 .keep p{margin:0;font-size:1.05rem;color:var(--ink)}
 
+/* ---------- RECAP (essentials overview) ---------- */
+.recap{margin:30px 0;border:1px solid var(--line);border-radius:4px;background:var(--panel);overflow:hidden}
+.recap__head{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--slate-deep);padding:12px 18px;border-bottom:1px solid var(--line);font-weight:600}
+.recap__grid{display:grid;grid-template-columns:1fr 1fr}
+.recap__col{padding:15px 18px 17px}
+.recap__col + .recap__col{border-left:1px solid var(--line)}
+.recap__lbl{font-family:var(--display);font-size:.95rem;font-weight:600;color:var(--signal-deep);margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.recap__lbl::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--signal);flex:0 0 auto}
+.recap ul{list-style:none;margin:0;padding:0}
+.recap li{font-family:var(--body);font-size:.96rem;line-height:1.5;color:var(--ink);padding:7px 0;border-bottom:1px solid var(--line-soft)}
+.recap li:last-child{border-bottom:none}
+.recap li b{font-family:var(--display);font-weight:600;font-size:.9em}
+@media (max-width:600px){
+  .recap__grid{grid-template-columns:1fr}
+  .recap__col + .recap__col{border-left:none;border-top:1px solid var(--line)}
+}
+
 /* ---------- TOC ---------- */
 .toc{margin:34px 0;border:1px solid var(--line);border-radius:4px;background:var(--panel)}
 .toc .cap{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--slate-deep);padding:13px 18px 4px}
@@ -186,6 +203,7 @@ td.num,th.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
 /* ---------- CLOSING ---------- */
 .closing{margin:40px 0 10px;padding:26px 0 0;border-top:1px solid var(--line)}
 footer{padding:30px 0 70px;font-family:var(--mono);font-size:12.5px;color:var(--slate-deep);line-height:1.7}
+.credit{display:block;margin-top:16px;font-size:11px;letter-spacing:.06em;color:var(--slate);opacity:.7}
 .divider{height:1px;background:var(--line);margin:0}
 
 /* mech section special */
@@ -241,12 +259,12 @@ footer{padding:30px 0 70px;font-family:var(--mono);font-size:12.5px;color:var(--
   <section>
     <div class="eyebrow"><span class="no">§</span><span class="of">Why I did this</span></div>
     <h2 class="plain">Measuring instead of guessing</h2>
-    <p>I spend my days writing instructions for language models and, like everyone, without a rigorous protocol: a grandiose role label, a pile of tone adjectives, an instruction repeated to reinforce compliance. The outputs are acceptable — but what fraction of those instructions actually contributes to the result? The question stays unanswered, for lack of a measuring instrument.</p>
-    <p>So I built an instrument to measure it: <a href="https://www.preatorlabs.dev">preatorlabs</a>, which splits a prompt into segments and tests, one by one, which ones matter. Seven ablation experiments came out of it. Each submits a common belief about prompting to a controlled test — and the whole set of results converges toward a single explanatory principle.</p>
+    <p>The standard prompt-engineering cycle is empirical. You write a first prompt, feed it to the model, observe the result, then refine it. This approach works — but it has a structural limitation: it is very hard, even impossible, to analyze the effectiveness of each individual adjustment. A seemingly decorative sentence can genuinely affect the model's behavior; a seemingly essential one can be ignored.</p>
+    <p>So I built this instrument: <a href="https://www.preatorlabs.dev">preatorlabs</a>. In practice, it segments the prompt automatically, then ablates those segments across user-defined scenarios, and analyzes the impact of each segment to determine how much it influences the model's behavior in producing its output.</p>
 
     <div class="thesis">
       <p class="lbl">The thesis, in one sentence</p>
-      <p><strong>What decides whether an instruction matters is not its form</strong> — negative or positive, vivid, repeated, nicely phrased. <strong>It is its distance from the model's <span class="hl">default</span> behavior.</strong> Asking it for what it would already do spontaneously changes nothing: it is a placebo. Pulling it away from its default, or imposing a hard constraint it would otherwise miss, acts.</p>
+      <p><strong>What determines an instruction's impact on an LLM's behavior is not its form</strong> — negative or positive, vivid, repeated, nicely phrased — <strong>but its ability to make the model deviate from its <span class="hl">default</span> behavior.</strong></p>
     </div>
 
     <p style="margin-top:34px">The next two sections present the ablation method and the analysis framework; the seven experiments follow, each with its setup, a figure and its results. The closing "Six rules" section sums up the practical implications.</p>
@@ -263,6 +281,35 @@ footer{padding:30px 0 70px;font-family:var(--mono);font-size:12.5px;color:var(--
         <li><a href="#e7"><span>How far, and how, can you trim a prompt?</span></a></li>
       </ol>
     </nav>
+  </section>
+
+  <!-- ESSENTIALS RECAP -->
+  <section>
+    <div class="recap">
+      <p class="recap__head">The essentials — at a glance</p>
+      <div class="recap__grid">
+        <div class="recap__col">
+          <p class="recap__lbl">Model mechanics</p>
+          <ul>
+            <li><b>The model is never neutral.</b> For any given task, it has a default behavior toward which its outputs spontaneously converge.</li>
+            <li><b>Impact is measured as a distance.</b> An instruction only truly modifies the output if it forces the model to deviate from this default behavior.</li>
+            <li><b>Deviation has its limits.</b> When an instruction directly clashes with its deep alignment, the model refuses to obey and maintains its standard.</li>
+            <li><b>Attention is a zero-sum budget.</b> Over-weighting one instruction captures the model's focus and mechanically degrades compliance with other constraints.</li>
+            <li><b>Segments interact with each other.</b> Some words, seemingly useless on their own, act as dampers to prevent a strong example from hijacking the output.</li>
+          </ul>
+        </div>
+        <div class="recap__col">
+          <p class="recap__lbl">Prompting laws</p>
+          <ul>
+            <li><b>Concrete examples beat labels.</b> Providing a reference text dictates the desired style far more effectively than assigning an abstract role.</li>
+            <li><b>Precise actions beat adjectives.</b> Describing a specific behavior to adopt systematically works better than a simple list of tone adjectives.</li>
+            <li><b>Precision beats polarity.</b> A quantified formal constraint is respected whether it is phrased as a prohibition or as a positive request.</li>
+            <li><b>Repetition is often harmful.</b> Repeating an instruction multiple times does not reinforce it, but risks unbalancing the entire prompt.</li>
+            <li><b>Volume is not load.</b> A prompt can be trimmed by 40% with no loss of quality, provided you exclusively target and remove placebos.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- IDEA -->
@@ -308,7 +355,7 @@ footer{padding:30px 0 70px;font-family:var(--mono);font-size:12.5px;color:var(--
       <figcaption><b>The basic move.</b> We re-run the model with and without a segment, all else equal. The gap between the two outputs measures what that segment was contributing.</figcaption>
     </figure>
 
-    <p>Two methodological constraints apply across all the experiments. <strong>Vary only one parameter at a time</strong> — all else equal —, with a "temperature" set to zero. This setting does not make the model strictly deterministic: it substantially reduces the stochastic variance of the outputs, improving reproducibility from one call to the next and limiting measurement noise. Second: <strong>an ablation measures the magnitude of the output change, not its qualitative direction</strong>. A high impact score signals that a segment moves the output; it does not say whether that move is for the better. Hence a two-step reading: <span class="role">the score locates</span> the segment that weighs, then <span class="role">reading the outputs qualifies</span> the direction of the change. The score alone is not enough to conclude.</p>
+    <p>Two methodological constraints apply across all the experiments. <strong>Vary only one parameter at a time</strong> — all else equal —, with a "temperature" set to zero. This setting does not make the model strictly deterministic: it reduces the stochastic variance of the outputs and improves their reproducibility from one call to the next, thereby limiting measurement noise. Second: <strong>an ablation measures the magnitude of the output change, not its qualitative direction</strong>. A high impact score signals that a segment moves the output; it does not say whether that move is for the better. Hence a two-step reading: <span class="role">the score locates</span> the segment that weighs, then <span class="role">reading the outputs qualifies</span> the direction of the change. The score alone is not enough to conclude.</p>
     <p>The gap between two answers is measured on three planes: <strong>form</strong> (length, lists, format), <strong>detectable rules</strong> (informal address? a banned word?), and <strong>meaning</strong>, via the "numerical fingerprints" of the texts — two texts close in meaning have close fingerprints. <em>(The model outputs quoted in this study are kept in French — the model was tested in French.)</em></p>
     <div class="legend" style="margin-top:18px">
       <span><i class="sw g"></i> gray = close to the default / placebo</span>
@@ -322,11 +369,13 @@ footer{padding:30px 0 70px;font-family:var(--mono);font-size:12.5px;color:var(--
     <div class="eyebrow"><span class="no">§</span><span class="of">The reading grid</span></div>
     <h2 class="plain">The river current of the LLM</h2>
 
-    <p>Before the experiments, it helps to introduce a notion that structures the interpretation of every result: the <strong>river current of the LLM</strong>.</p>
+    <p>This first experiment lets me introduce the notion of the <strong>river current of the LLM</strong>. This analogy names an empirically observable phenomenon: it would be a mistake to think a language model starts from a neutral state. On the contrary, for any given task, its outputs are not uniformly distributed — they spontaneously converge toward a certain form, a certain register, a certain length or a certain writing style. This convergence is the result of how the engineers trained and aligned their model toward what is called its <strong>default behavior</strong>.</p>
 
-    <p>This notion names an empirically observable phenomenon: for any given task, a language model's outputs are not uniformly distributed. They spontaneously converge toward certain forms, registers, lengths and styles — their <strong>default behavior</strong>. That default behavior is not random: it follows from the distributions learned in training and from post-training alignment procedures. A B2B follow-up email? The model writes it polite, formal, guilt-free. A scene description? It produces it vivid and image-rich. The model does not start from a neutral state: it starts from a biased one.</p>
+    <p>For example, if you ask Claude to write an email, it will naturally write it politely, using formal address, with a syntax borrowed from professional exchanges — and all this without any explicit instruction asking it to.</p>
 
-    <p>The river-current analogy makes the phenomenon intelligible. A river follows the slope of the terrain along a spontaneous direction — its current. Interacting with it opens two fundamentally asymmetric paths: letting yourself drift (<em>with the current</em>) produces no visible deviation of the flow; opposing it (<em>against the current</em>) generates resistance proportional to the desired deviation, and that resistance is measurable. The slope is the physical substrate of this current; the current is its dynamic manifestation.</p>
+    <p>The river-current analogy makes the phenomenon intelligible. Just as a river follows the slope of the terrain along a geologically determinable direction, an LLM will steer its outputs along a statistically determinable trajectory.</p>
+
+    <p>Interacting with this current opens two paths whose effects are measurable and asymmetric. An instruction redundant with the default behavior produces no observable displacement of the output. An instruction that departs from it produces an effect whose magnitude is proportional to that deviation — which is what the seven experiments that follow quantify.</p>
 
     <figure class="reveal">
       <svg viewBox="0 0 620 220" role="img" aria-label="The river current of the LLM: an instruction with the current slides off with no effect, a crosswise instruction bends the path and is measurable.">
@@ -344,9 +393,9 @@ footer{padding:30px 0 70px;font-family:var(--mono);font-size:12.5px;color:var(--
       <figcaption><b>The river current of the LLM — geometric representation.</b> The curve embodies the default behavior (the slope of the current). An instruction parallel to that slope blends into the flow without changing it. A crosswise instruction opposes it: it produces a measurable displacement, proportional to its distance from the default behavior.</figcaption>
     </figure>
 
-    <p>The experiments establish this empirically. In <strong>E1</strong>, the instruction "write professionally" (D0, impact 0.063) is inert: the model already produces a professional register without it — it runs with the current. At the opposite end, "as an absurd, moody character" (D3, impact 0.244) imposes a strong deviation from the default behavior. In <strong>E3</strong>, the adjectives "warm, confident" (impact 0.079) skim the current; the directive "with no hierarchical distance" (impact 0.109) crosses it and triggers a switch to informal address (tu). In <strong>E4</strong>, the model never spontaneously guilt-trips prospects: the matching prohibition has no current to oppose, and comes out inert (impact 0.074).</p>
+    <p>The experiments confirm this empirically. In <strong>E1</strong>, the instruction "write professionally" (D0, impact 0.063) is inert: the model was already writing that way — it runs with the current. Conversely, "as an absurd, moody character" (D3, impact 0.244) imposes a strong deviation from the default behavior. In <strong>E3</strong>, the adjectives "warm, confident" (impact 0.079) skim the current; the directive "with no hierarchical distance" (impact 0.109) opposes it and produces a switch to informal address (tu). In <strong>E4</strong>, the model never spontaneously guilt-trips a prospect: the matching prohibition has no current to oppose, and comes out inert (impact 0.074).</p>
 
-    <p>These observations converge toward the principle of <strong>distance from the default</strong>: the measurable impact of an instruction grows with its distance from the model's default behavior. The river current of the LLM is not an ornamental metaphor — it is a representation of the underlying mechanism that lets us predict, before measuring, which instructions will weigh and which will be inert. The seven experiments that follow put this principle to the empirical test.</p>
+    <p>These observations ground the principle of <strong>distance from the default</strong>. The measured impact of an instruction is proportional to the distance it imposes between the output obtained and the one the model would have produced spontaneously. The seven experiments that follow put this principle to the empirical test.</p>
   </section>
 
   <!-- E1 -->
@@ -425,7 +474,8 @@ footer{padding:30px 0 70px;font-family:var(--mono);font-size:12.5px;color:var(--
     </div>
 
     <p><span class="role">Observed results.</span> The D0/D3 contrast is clear. In <strong>D0</strong>, with or without the "professional" line, the email is nearly identical — the model already is. In <strong>D3</strong>, with the line: <span class="quote-out">« Votre silence me rend mélancolique… Je danse seul dans mon bureau. »</span>; without it, back to a plain <span class="quote-out">« Suite à notre dernier échange, j'aimerais connaître votre retour. »</span></p>
-    <p><span class="role">Additional observation.</span> <strong>D2</strong> was unexpected: "write like someone who handles French poorly" is very far from the default, so it should weigh heavily — yet it is a placebo. Reading the outputs explains why: the model simply <strong>refused</strong> to degrade its French and kept writing correctly. So two distinct mechanisms can produce a low impact score: redundancy with the default (D0) and refusal to comply (D2). The scores are comparable; only inspecting the outputs tells them apart. This result confirms the need for a systematic qualitative reading alongside the score.</p>
+    <p><span class="role">Additional observation — the limit of deviation.</span> Case D2 is the most instructive of the experiment. "Write like someone who handles French poorly" is an instruction far from the default: per the thesis, its impact should be high. Yet it comes out a placebo (0.096). Reading the outputs reveals why: the model did not carry out the instruction — it kept correct French, ignoring the directive.</p>
+    <p>This result introduces an important nuance into the river-current concept of the LLM. A model's deviation from its default behavior is not unlimited. Some instructions clash directly with properties deeply anchored in the model's alignment — here, producing quality French. When an instruction crosses that threshold, the model puts up total resistance: it does not comply, and its behavior does not move. The current therefore has a <strong>bank</strong>: you can influence it to a degree, not break it. So two distinct mechanisms produce a low impact score — redundancy with the default (D0) and refusal to comply (D2); the scores are comparable, only the qualitative reading tells them apart.</p>
     <div class="keep"><p class="lbl">↳ Takeaway</p><p>An instruction's impact grows with its distance from the model's default behavior. This principle is the analysis framework for the experiments that follow.</p></div>
   </section>
 
@@ -769,9 +819,11 @@ footer{padding:30px 0 70px;font-family:var(--mono);font-size:12.5px;color:var(--
       </table>
     </div>
 
-    <p>The first table follows the gradient: formal compliance is maintained at each level (body &gt; 40 words: 0/5), the invented hook appears only at −68%. The second table contrasts the two conditions at equal volume: NAIVE produces overshoots on 5/5 scenarios (body from 97 to 166 words), a return to formal address on 2 scenarios, and the injection of formatting artifacts absent from R35. Removing the load-bearing segments is solely responsible for the entire degradation.</p>
+    <p>The first table follows the gradient. Formal compliance holds at every level — R0, R35 and R65 all respect the length constraints. But at −68%, a new phenomenon appears: the invented hook (3/5). The form holds; the substance drifts. The reason is mechanical: by progressively removing the role and the adjectives that surrounded the example, we removed the segments that diluted it. The example, now alone, is no longer one reference point among others: it becomes the dominant instruction. The model stops using it as a style guide; it replicates its content. This is a direct consequence of the river current: without the damping segments, the output is pulled toward the only strong anchor left.</p>
 
-    <p><span class="role">Conclusion.</span> Output quality is not determined by the <em>volume</em> of tokens removed — R35 and NAIVE remove comparable amounts — but by the <strong>nature</strong> of the removed segments. The experiment also reveals a phenomenon of <strong>interaction between segments</strong>: segments inert under isolated ablation act as a <strong>damper</strong>, diluting the influence of a strong segment. Removing them simultaneously frees that attractor. This kind of effect is not captured by segment-by-segment ablation; pairwise measurements would be needed.</p>
+    <p>The second table isolates this mechanism precisely. R35 and NAIVE remove a comparable amount of tokens — but not the same ones. R35 removes the placebos and preserves the load-bearing segments (format, register, example): impeccable result. NAIVE does the opposite — it removes the format, the register and the example, and keeps the role and the adjectives. Result: length explodes (97 to 166 words), formal address returns, formatting artifacts appear. What NAIVE removed is precisely what pulled the model away from its default behavior. The degradation is not caused by the volume removed, but by the nature of what was removed.</p>
+
+    <p><span class="role">Conclusion.</span> The experiment establishes two distinct results. First, trimming a prompt is not neutral: it is the segments that oppose the default behavior that carry the output — removing them lets the current take back over. Second, some segments inert under isolated ablation play a structural role: by diluting the influence of a strong segment, they keep it from over-imprinting the output. This <strong>segment-interaction</strong> phenomenon is not captured by segment-by-segment ablation — it is a methodological limitation of the instrument, which pairwise measurements would address.</p>
     <div class="keep"><p class="lbl">↳ Takeaway</p><p>A token reduction on the order of 40% is achievable without measurable degradation, provided you target the redundant segments. Removing the load-bearing segments produces, at an equivalent reduction volume, a significant degradation.</p></div>
   </section>
 
@@ -942,6 +994,7 @@ const DataDrawer = (() => {
   <div class="wrap">
     Tool, method and data: <a href="https://www.preatorlabs.dev">preatorlabs.dev</a> — open source, reproducible analyses at temperature 0.<br>
     Your feedback and replications are welcome.
+    <span class="credit">Written with the help of Claude Opus 4.8</span>
   </div>
 </footer>
 

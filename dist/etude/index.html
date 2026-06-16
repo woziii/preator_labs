@@ -166,6 +166,23 @@ td.num,th.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
 .keep .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--signal-deep);margin:0 0 5px;font-weight:600}
 .keep p{margin:0;font-size:1.05rem;color:var(--ink)}
 
+/* ---------- RECAP (essentials overview) ---------- */
+.recap{margin:30px 0;border:1px solid var(--line);border-radius:4px;background:var(--panel);overflow:hidden}
+.recap__head{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--slate-deep);padding:12px 18px;border-bottom:1px solid var(--line);font-weight:600}
+.recap__grid{display:grid;grid-template-columns:1fr 1fr}
+.recap__col{padding:15px 18px 17px}
+.recap__col + .recap__col{border-left:1px solid var(--line)}
+.recap__lbl{font-family:var(--display);font-size:.95rem;font-weight:600;color:var(--signal-deep);margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.recap__lbl::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--signal);flex:0 0 auto}
+.recap ul{list-style:none;margin:0;padding:0}
+.recap li{font-family:var(--body);font-size:.96rem;line-height:1.5;color:var(--ink);padding:7px 0;border-bottom:1px solid var(--line-soft)}
+.recap li:last-child{border-bottom:none}
+.recap li b{font-family:var(--display);font-weight:600;font-size:.9em}
+@media (max-width:600px){
+  .recap__grid{grid-template-columns:1fr}
+  .recap__col + .recap__col{border-left:none;border-top:1px solid var(--line)}
+}
+
 /* ---------- TOC ---------- */
 .toc{margin:34px 0;border:1px solid var(--line);border-radius:4px;background:var(--panel)}
 .toc .cap{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--slate-deep);padding:13px 18px 4px}
@@ -186,6 +203,7 @@ td.num,th.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
 /* ---------- CLOSING ---------- */
 .closing{margin:40px 0 10px;padding:26px 0 0;border-top:1px solid var(--line)}
 footer{padding:30px 0 70px;font-family:var(--mono);font-size:12.5px;color:var(--slate-deep);line-height:1.7}
+.credit{display:block;margin-top:16px;font-size:11px;letter-spacing:.06em;color:var(--slate);opacity:.7}
 .divider{height:1px;background:var(--line);margin:0}
 
 /* mech section special */
@@ -241,12 +259,12 @@ footer{padding:30px 0 70px;font-family:var(--mono);font-size:12.5px;color:var(--
   <section>
     <div class="eyebrow"><span class="no">§</span><span class="of">Pourquoi j'ai fait ça</span></div>
     <h2 class="plain">Mesurer, au lieu de deviner</h2>
-    <p>Je passe mes journées à écrire des instructions pour des modèles de langage, et comme tout le monde, sans protocole rigoureux&nbsp;: une étiquette de rôle ronflante, une pile d'adjectifs de ton, une consigne répétée pour renforcer la conformité. Les sorties sont acceptables — mais quelle fraction de ces instructions contribue réellement au résultat&nbsp;? La question reste sans réponse, faute d'instrument de mesure.</p>
-    <p>J'ai donc construit un instrument pour le mesurer&nbsp;: <a href="https://www.preatorlabs.dev">preatorlabs</a>, qui découpe un prompt en segments et teste, un par un, lesquels comptent. Sept expériences d'ablation en sont issues. Chacune soumet une hypothèse courante sur le prompting à un test contrôlé — et l'ensemble des résultats converge vers un même principe explicatif.</p>
+    <p>Le cycle standard de l'ingénierie de prompt s'organise de manière empirique. On rédige un premier prompt, on l'injecte dans le modèle, on observe le résultat, puis on l'affine. Cette approche fonctionne — mais elle présente une limite structurelle&nbsp;: il est très difficile, voire impossible, d'analyser l'effectivité de chaque ajustement en particulier. Une phrase apparemment décorative peut réellement impacter le comportement du modèle&nbsp;; une phrase apparemment essentielle peut être ignorée.</p>
+    <p>J'ai donc construit cet instrument&nbsp;: <a href="https://www.preatorlabs.dev">preatorlabs</a>. Dans les faits, il segmente le prompt automatiquement, puis effectue une ablation de ces segments sur des scénarios prédéfinis par l'utilisateur, et analyse l'impact de chaque segment pour déterminer dans quelle mesure il influence le comportement du modèle dans la rédaction de son output.</p>
 
     <div class="thesis">
       <p class="lbl">La thèse, en une phrase</p>
-      <p><strong>Ce qui détermine si une instruction compte, ce n'est pas sa forme</strong> — négative ou positive, imagée, répétée, joliment tournée. <strong>C'est sa distance au comportement <span class="hl">par défaut</span> du modèle.</strong> Lui demander ce qu'il ferait déjà spontanément ne change rien : c'est un placebo. L'écarter de son défaut, ou lui imposer une contrainte dure qu'il manquerait, agit.</p>
+      <p><strong>Ce qui détermine l'impact d'une instruction sur le comportement d'un LLM n'est pas sa forme</strong> — négative ou positive, imagée, répétée, joliment tournée — <strong>mais sa capacité à faire dévier le modèle de son comportement <span class="hl">par défaut</span>.</strong></p>
     </div>
 
     <p style="margin-top:34px">Les deux sections suivantes présentent la méthode d'ablation et le cadre d'analyse&nbsp;; les sept expériences suivent, chacune accompagnée de son dispositif, d'une figure et de ses résultats. La section «&nbsp;Six règles&nbsp;» en clôture synthétise les implications pratiques.</p>
@@ -263,6 +281,35 @@ footer{padding:30px 0 70px;font-family:var(--mono);font-size:12.5px;color:var(--
         <li><a href="#e7"><span>Jusqu'où, et comment, alléger un prompt&nbsp;?</span></a></li>
       </ol>
     </nav>
+  </section>
+
+  <!-- ESSENTIALS RECAP -->
+  <section>
+    <div class="recap">
+      <p class="recap__head">L'essentiel — en un coup d'œil</p>
+      <div class="recap__grid">
+        <div class="recap__col">
+          <p class="recap__lbl">Mécanique du modèle</p>
+          <ul>
+            <li><b>Le modèle n'est jamais neutre.</b> Pour toute tâche donnée, il possède un comportement par défaut vers lequel ses sorties convergent spontanément.</li>
+            <li><b>L'impact se mesure en distance.</b> Une instruction ne modifie réellement la sortie que si elle contraint le modèle à s'écarter de ce comportement par défaut.</li>
+            <li><b>La déviation a ses limites.</b> Lorsqu'une instruction entre en confrontation directe avec son alignement profond, le modèle refuse d'obéir et maintient son standard.</li>
+            <li><b>L'attention est un budget à somme nulle.</b> Sur-pondérer une consigne capte l'attention du modèle et dégrade mécaniquement le respect des autres contraintes.</li>
+            <li><b>Les segments interagissent entre eux.</b> Certains mots, apparemment inutiles seuls, servent d'amortisseurs pour empêcher un exemple fort de vampiriser la sortie.</li>
+          </ul>
+        </div>
+        <div class="recap__col">
+          <p class="recap__lbl">Lois du prompt</p>
+          <ul>
+            <li><b>L'exemple concret bat l'étiquette.</b> Fournir un texte de référence dicte le style désiré bien plus efficacement que de lui assigner un rôle abstrait.</li>
+            <li><b>L'action précise bat l'adjectif.</b> Décrire un comportement à adopter fonctionne systématiquement mieux qu'une simple liste d'adjectifs de ton.</li>
+            <li><b>La précision bat la polarité.</b> Une contrainte formelle chiffrée est respectée, qu'elle soit formulée comme un interdit ou comme une demande positive.</li>
+            <li><b>La répétition est souvent nuisible.</b> Répéter plusieurs fois une instruction ne la renforce pas, mais risque de déséquilibrer l'ensemble du prompt.</li>
+            <li><b>Le volume n'est pas la charge.</b> Il est possible d'amputer un prompt de 40&nbsp;% sans aucune perte de qualité, à condition de cibler et supprimer uniquement les placebos.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- IDEA -->
@@ -308,7 +355,7 @@ footer{padding:30px 0 70px;font-family:var(--mono);font-size:12.5px;color:var(--
       <figcaption><b>Le geste de base.</b> On relance le modèle avec et sans un segment, toutes choses égales par ailleurs. L'écart entre les deux sorties mesure ce que ce segment apportait.</figcaption>
     </figure>
 
-    <p>Deux contraintes méthodologiques s’appliquent à l’ensemble des expériences. <strong>Ne faire varier qu'un seul paramètre à la fois</strong> — toutes choses égales par ailleurs —, avec une « température » réglée à zéro. Ce réglage ne rend pas le modèle déterministe au sens strict : il réduit substantiellement la variance stochastique des sorties, améliorant leur reproductibilité d'un appel à l'autre et limitant le bruit de mesure. Secondement&nbsp;: <strong>une ablation mesure l'amplitude du changement de sortie, non sa direction qualitative</strong>. Un score d'impact élevé signale qu'un segment déplace la sortie&nbsp;; il ne dit pas si ce déplacement est favorable. D'où une lecture en deux temps&nbsp;: <span class="role">le score localise</span> le segment qui pèse, puis <span class="role">la lecture des sorties qualifie</span> le sens du changement. Le score seul ne permet pas de conclure.</p>
+    <p>Deux contraintes méthodologiques s’appliquent à l’ensemble des expériences. <strong>Ne faire varier qu'un seul paramètre à la fois</strong> — toutes choses égales par ailleurs —, avec une « température » réglée à zéro. Ce réglage ne rend pas le modèle déterministe au sens strict : il réduit la variance stochastique des sorties et améliore leur reproductibilité d'un appel à l'autre, limitant ainsi le bruit de mesure. Secondement&nbsp;: <strong>une ablation mesure l'amplitude du changement de sortie, non sa direction qualitative</strong>. Un score d'impact élevé signale qu'un segment déplace la sortie&nbsp;; il ne dit pas si ce déplacement est favorable. D'où une lecture en deux temps&nbsp;: <span class="role">le score localise</span> le segment qui pèse, puis <span class="role">la lecture des sorties qualifie</span> le sens du changement. Le score seul ne permet pas de conclure.</p>
     <p>L'écart entre deux réponses se mesure sur trois plans&nbsp;: la <strong>forme</strong> (longueur, listes, format), des <strong>règles repérables</strong> (tutoiement&nbsp;? mot interdit&nbsp;?), et le <strong>sens</strong>, via les «&nbsp;empreintes numériques&nbsp;» des textes — deux textes proches par le sens ont des empreintes proches.</p>
     <div class="legend" style="margin-top:18px">
       <span><i class="sw g"></i> gris = proche du défaut / placebo</span>
@@ -322,11 +369,13 @@ footer{padding:30px 0 70px;font-family:var(--mono);font-size:12.5px;color:var(--
     <div class="eyebrow"><span class="no">§</span><span class="of">La grille de lecture</span></div>
     <h2 class="plain">Le courant fluvial du LLM</h2>
 
-    <p>Avant les expériences, il est utile d'introduire une notion qui structure l'interprétation de l'ensemble des résultats&nbsp;: le <strong>courant fluvial du LLM</strong>.</p>
+    <p>Cette première étude me permet d'introduire la notion de <strong>courant fluvial du LLM</strong>. Cette analogie désigne un phénomène empiriquement observable&nbsp;: il serait erroné de croire qu'un modèle de langage part d'un état neutre. Au contraire, pour toute tâche donnée, ses sorties ne sont pas uniformément distribuées — elles convergent spontanément vers une certaine forme, un certain registre, une certaine longueur ou un certain style rédactionnel. Cette convergence est le résultat de la manière dont les ingénieurs ont entraîné et aligné leur modèle vers ce que l'on appelle son <strong>comportement par défaut</strong>.</p>
 
-    <p>Cette notion désigne un phénomène empiriquement observable&nbsp;: pour toute tâche donnée, les sorties d'un modèle de langage ne sont pas uniformément distribuées. Elles convergent spontanément vers certaines formes, registres, longueurs et styles — leur <strong>comportement par défaut</strong>. Ce comportement par défaut n'est pas aléatoire&nbsp;: il découle des distributions apprises lors de l'entraînement et des procédures d'alignement post-entraînement. Une relance B2B&nbsp;? Le modèle la rédige polie, vouvoyée, sans culpabilisation. Une description de scène&nbsp;? Il la produit vive et imagée. Le modèle ne part pas d'un état neutre&nbsp;: il part d'un état orienté.</p>
+    <p>Par exemple, si vous demandez à Claude de rédiger un mail, il le rédigera naturellement de manière polie, en vouvoyant, avec une syntaxe empruntée aux échanges professionnels — et ce, sans qu'aucune instruction explicite ne le lui demande.</p>
 
-    <p>L'analogie du courant fluvial rend ce phénomène intelligible. Un cours d'eau suit la pente du terrain selon une direction spontanée — son courant. Interagir avec lui ouvre deux voies fondamentalement asymétriques&nbsp;: se laisser porter (<em>dans le sens du courant</em>) ne produit aucune déviation visible du flux&nbsp;; s'y opposer (<em>à contre-courant</em>) génère une résistance proportionnelle à la déviation souhaitée, et cette résistance est mesurable. La pente est le substrat physique de ce courant&nbsp;; le courant en est la manifestation dynamique.</p>
+    <p>L'analogie du courant fluvial rend ce phénomène intelligible. Tout comme un cours d'eau suit la pente du terrain selon une direction géologiquement déterminable, un LLM orientera ses outputs selon une trajectoire statistiquement déterminable.</p>
+
+    <p>Interagir avec ce courant ouvre deux voies dont les effets sont mesurables et asymétriques. Une instruction redondante avec le comportement par défaut ne produit aucun déplacement observable de la sortie. Une instruction qui s'en écarte produit un effet dont l'amplitude est proportionnelle à cette déviation — c'est ce que les sept expériences suivantes quantifient.</p>
 
     <figure class="reveal">
       <svg viewBox="0 0 620 220" role="img" aria-label="Le courant fluvial du LLM : une instruction dans le sens du courant glisse sans effet, une instruction transversale dévie la trajectoire et est mesurable.">
@@ -344,9 +393,9 @@ footer{padding:30px 0 70px;font-family:var(--mono);font-size:12.5px;color:var(--
       <figcaption><b>Le courant fluvial du LLM — représentation géométrique.</b> La courbe matérialise le comportement par défaut (la pente du courant). Une instruction parallèle à cette pente se fond dans le flux sans le modifier. Une instruction transversale le contrarie&nbsp;: elle produit un déplacement mesurable, proportionnel à son écart au comportement par défaut.</figcaption>
     </figure>
 
-    <p>Les expériences l'établissent empiriquement. En <strong>E1</strong>, l'instruction «&nbsp;rédige de façon professionnelle&nbsp;» (D0, impact&nbsp;0,063) est inerte&nbsp;: le modèle produit déjà un registre professionnel sans cette instruction — elle s'inscrit dans le sens du courant. À l'opposé, «&nbsp;comme un personnage absurde et lunatique&nbsp;» (D3, impact&nbsp;0,244) impose une déviation forte au comportement par défaut. En <strong>E3</strong>, les adjectifs «&nbsp;chaleureux, confiant&nbsp;» (impact&nbsp;0,079) longent le courant&nbsp;; la directive «&nbsp;sans distance hiérarchique&nbsp;» (impact&nbsp;0,109) le traverse et entraîne un passage au tutoiement. En <strong>E4</strong>, le modèle ne culpabilise jamais spontanément les prospects&nbsp;: l'interdit correspondant n'a pas de courant à contrarier, et ressort inerte (impact&nbsp;0,074).</p>
+    <p>Les expériences le confirment empiriquement. En <strong>E1</strong>, l'instruction «&nbsp;rédige de façon professionnelle&nbsp;» (D0, impact&nbsp;0,063) est inerte&nbsp;: le modèle rédigeait déjà de cette façon — elle s'inscrit dans le sens du courant. À l'inverse, «&nbsp;comme un personnage absurde et lunatique&nbsp;» (D3, impact&nbsp;0,244) impose une déviation forte au comportement par défaut. En <strong>E3</strong>, les adjectifs «&nbsp;chaleureux, confiant&nbsp;» (impact&nbsp;0,079) longent le courant&nbsp;; la directive «&nbsp;sans distance hiérarchique&nbsp;» (impact&nbsp;0,109) le contrarie et produit un passage au tutoiement. En <strong>E4</strong>, le modèle ne culpabilise jamais spontanément un prospect&nbsp;: l'interdit correspondant n'a aucun courant à contrarier, et ressort inerte (impact&nbsp;0,074).</p>
 
-    <p>Ces observations convergent vers le principe de <strong>distance au défaut</strong>&nbsp;: l'impact mesurable d'une instruction croît avec son écart au comportement par défaut du modèle. Le courant fluvial du LLM n'est pas une métaphore ornementale — c'est une représentation du mécanisme sous-jacent qui permet de prédire, avant même de mesurer, quelles instructions pèseront et lesquelles seront inertes. Les sept expériences qui suivent soumettent ce principe à l'épreuve empirique.</p>
+    <p>Ces observations fondent le principe de <strong>distance au défaut</strong>. L'impact mesuré d'une instruction est proportionnel à la distance qu'elle impose entre la sortie obtenue et celle que le modèle aurait produite spontanément. Les sept expériences qui suivent soumettent ce principe à l'épreuve empirique.</p>
   </section>
 
   <!-- E1 -->
@@ -425,7 +474,8 @@ footer{padding:30px 0 70px;font-family:var(--mono);font-size:12.5px;color:var(--
     </div>
 
     <p><span class="role">Résultats observés.</span> Le contraste D0/D3 est net. En <strong>D0</strong>, avec ou sans la ligne «&nbsp;professionnelle&nbsp;», l'email est quasi identique — le modèle l'est déjà. En <strong>D3</strong>, avec la ligne&nbsp;: <span class="quote-out">«&nbsp;Votre silence me rend mélancolique… Je danse seul dans mon bureau.&nbsp;»</span> ; sans elle, retour à un sobre <span class="quote-out">«&nbsp;Suite à notre dernier échange, j'aimerais connaître votre retour.&nbsp;»</span></p>
-    <p><span class="role">Observation complémentaire.</span> <strong>D2</strong> était inattendu&nbsp;: «&nbsp;écris comme quelqu'un qui maîtrise mal le français&nbsp;» est très éloigné du défaut, il devrait donc peser fort — or c'est un placebo. La lecture des sorties explique pourquoi&nbsp;: le modèle a tout simplement <strong>refusé</strong> de dégrader son français, et a continué d'écrire correctement. Deux mécanismes distincts peuvent donc produire un score d'impact faible&nbsp;: la redondance avec le défaut (D0) et le refus d'exécution (D2). Les scores sont comparables&nbsp;; seule l'inspection des sorties permet de les distinguer. Ce résultat confirme la nécessité d'une lecture qualitative systématique en complément du score.</p>
+    <p><span class="role">Observation complémentaire — la limite de déviation.</span> Le cas D2 est le plus instructif de l'expérience. «&nbsp;Écris comme quelqu'un qui maîtrise mal le français&nbsp;» est une instruction fortement éloignée du défaut&nbsp;: selon la thèse, son impact devrait être élevé. Or elle ressort placebo (0,096). La lecture des sorties révèle pourquoi&nbsp;: le modèle n'a pas exécuté l'instruction — il a maintenu un français correct en ignorant la consigne.</p>
+    <p>Ce résultat introduit une nuance importante dans le concept de courant fluvial du LLM. La déviation d'un modèle par rapport à son comportement par défaut n'est pas illimitée. Certaines instructions entrent en confrontation directe avec des propriétés profondément ancrées dans l'alignement du modèle — ici, la production d'un français de qualité. Lorsqu'une instruction franchit ce seuil, le modèle oppose une résistance totale&nbsp;: il n'exécute pas, et son comportement ne se déplace pas. Le courant dispose donc d'une <strong>berge</strong>&nbsp;: on peut l'influencer dans une certaine mesure, pas le rompre. Deux mécanismes distincts produisent ainsi un score d'impact faible — la redondance avec le défaut (D0) et le refus d'exécution (D2)&nbsp;; les scores sont comparables, seule la lecture qualitative les distingue.</p>
     <div class="keep"><p class="lbl">↳ À retenir</p><p>L'impact d'une instruction croît avec sa distance au comportement par défaut du modèle. Ce principe constitue le cadre d'analyse des expériences suivantes.</p></div>
   </section>
 
@@ -769,9 +819,11 @@ footer{padding:30px 0 70px;font-family:var(--mono);font-size:12.5px;color:var(--
       </table>
     </div>
 
-    <p>Le premier tableau suit le gradient&nbsp;: la conformité formelle est maintenue à chaque palier (corps &gt; 40 mots&nbsp;: 0/5), l'accroche inventée apparaît uniquement à −68&nbsp;%. Le second tableau oppose les deux conditions à volume égal&nbsp;: NAIVE produit des dépassements sur 5/5 scénarios (corps de 97 à 166 mots), un retour au vouvoiement sur 2 scénarios, et l'injection d'artefacts de mise en forme absents de R35. La suppression des segments porteurs est seule responsable de l'intégralité de la dégradation.</p>
+    <p>Le premier tableau suit le gradient. La conformité formelle est maintenue à chaque palier — R0, R35 et R65 respectent tous les contraintes de longueur. Mais à −68&nbsp;%, un phénomène nouveau apparaît&nbsp;: l'accroche inventée (3/5). La forme tient&nbsp;; le fond dérive. La raison est mécanique&nbsp;: en supprimant progressivement le rôle et les adjectifs qui entouraient l'exemple, on a retiré les segments qui le diluaient. L'exemple, désormais seul, n'est plus un point de référence parmi d'autres&nbsp;: il devient l'instruction dominante. Le modèle cesse de l'utiliser comme guide de style&nbsp;; il en réplique le contenu. C'est une conséquence directe du courant fluvial&nbsp;: sans les segments amortisseurs, la sortie est aspirée vers l'unique ancrage fort restant.</p>
 
-    <p><span class="role">Conclusion.</span> La qualité de la sortie n'est pas déterminée par le <em>volume</em> de tokens supprimés — R35 et NAIVE suppriment des quantités comparables — mais par la <strong>nature</strong> des segments retirés. L'expérience met également en évidence un phénomène d'<strong>interaction entre segments</strong>&nbsp;: des segments inertes à l'ablation isolée jouent un rôle d'<strong>amortisseur</strong> en diluant l'influence d'un segment fort. Leur suppression simultanée libère cet attracteur. Ce type d'effet n'est pas capturé par une ablation segment par segment&nbsp;; des mesures par paires seraient nécessaires.</p>
+    <p>Le second tableau isole précisément ce mécanisme. R35 et NAIVE retirent une quantité comparable de tokens — mais pas les mêmes. R35 supprime les placebos et préserve les porteurs (format, registre, exemple)&nbsp;: résultat impeccable. NAIVE fait l'inverse — il retire le format, le registre et l'exemple, et conserve le rôle et les adjectifs. Résultat&nbsp;: la longueur explose (97 à 166 mots), le vouvoiement revient, des artefacts de mise en forme apparaissent. Ce que NAIVE a supprimé, c'est précisément ce qui écartait le modèle de son comportement par défaut. La dégradation n'est pas causée par le volume retiré, mais par la nature de ce qui a été retiré.</p>
+
+    <p><span class="role">Conclusion.</span> L'expérience établit deux résultats distincts. D'abord, la réduction d'un prompt n'est pas neutre&nbsp;: ce sont les segments qui s'opposent au comportement par défaut qui portent la sortie — les supprimer, c'est laisser le courant reprendre. Ensuite, certains segments inertes à l'ablation isolée jouent un rôle structurel&nbsp;: en diluant l'influence d'un segment fort, ils empêchent ce dernier de sur-imprimer la sortie. Ce phénomène d'<strong>interaction entre segments</strong> n'est pas capturé par une ablation segment par segment — c'est une limite méthodologique de l'instrument, que des mesures par paires permettraient d'adresser.</p>
     <div class="keep"><p class="lbl">↳ À retenir</p><p>On peut réduction de l'ordre de 40&nbsp;% des tokens est réalisable sans dégradation mesurable, sous réserve de cibler les segments redondants. La suppression des segments porteurs produit, à volume de réduction équivalent, une dégradation significative.</p></div>
   </section>
 
@@ -942,6 +994,7 @@ const DataDrawer = (() => {
   <div class="wrap">
     Outil, méthode et données : <a href="https://www.preatorlabs.dev">preatorlabs.dev</a> — open source, analyses reproductibles à température 0.<br>
     Vos retours et réplications sont les bienvenus.
+    <span class="credit">Rédigé avec l'aide de Claude Opus 4.8</span>
   </div>
 </footer>
 
