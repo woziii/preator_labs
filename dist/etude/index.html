@@ -3,10 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ce qui compte vraiment dans un prompt — Étude d'ablation | preatorlabs</title>
-<meta name="description" content="Sept expériences d'ablation contrôlées mesurent l'impact réel de chaque segment de prompt. Un principe unifie tous les résultats : la distance au comportement par défaut du modèle.">
-<meta name="author" content="preatorlabs">
+<title>preatorlabs · étude d'ablation de prompt LLM — 7 expériences contrôlées</title>
+<meta name="description" content="Étude d'ablation de prompt : mesurez l'impact réel de chaque segment sur Claude Haiku et Sonnet. Analyse prompt LLM, ablation contrôlée, ingénierie de prompt. Données reproductibles par preatorlabs.">
+<meta name="application-name" content="preatorlabs">
+<meta name="keywords" content="preatorlabs, ablation prompt, ablation de prompt, étude ablation LLM, analyse prompt, ingénierie de prompt, prompt engineering, ablation study, Claude prompt">
+<meta name="robots" content="index, follow, max-image-preview:large">
 <link rel="canonical" href="https://preatorlabs.dev/etude">
+<link rel="home" href="https://preatorlabs.dev/">
 
 <!-- hreflang -->
 <link rel="alternate" hreflang="fr" href="https://preatorlabs.dev/etude">
@@ -15,9 +18,10 @@
 
 <!-- Open Graph -->
 <meta property="og:type" content="article">
+<meta property="og:site_name" content="preatorlabs">
 <meta property="og:url" content="https://preatorlabs.dev/etude">
-<meta property="og:title" content="Ce qui compte vraiment dans un prompt — Étude d'ablation">
-<meta property="og:description" content="Sept expériences contrôlées pour mesurer l'impact réel de chaque segment de prompt sur deux modèles Claude.">
+<meta property="og:title" content="preatorlabs · étude d'ablation de prompt LLM — 7 expériences">
+<meta property="og:description" content="Mesurez l'impact réel de chaque segment de prompt par ablation contrôlée sur Claude. Analyse prompt LLM, ingénierie de prompt, données reproductibles.">
 <meta property="og:image" content="https://preatorlabs.dev/etude/og-etude.png">
 <meta property="og:locale" content="fr_FR">
 <meta property="og:locale:alternate" content="en_US">
@@ -26,23 +30,37 @@
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Ce qui compte vraiment dans un prompt">
-<meta name="twitter:description" content="Sept expériences d'ablation contrôlées. Un principe : la distance au défaut.">
+<meta name="twitter:title" content="preatorlabs · étude d'ablation de prompt LLM">
+<meta name="twitter:description" content="7 expériences d'ablation contrôlées. Mesurez l'impact réel de chaque segment de prompt sur Claude.">
 <meta name="twitter:image" content="https://preatorlabs.dev/etude/og-etude.png">
 
 <!-- JSON-LD Article -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "ScholarlyArticle",
-  "headline": "Ce qui compte vraiment dans un prompt : sept expériences d'ablation",
-  "description": "Étude empirique mesurant l'impact réel de chaque segment de prompt par ablation contrôlée sur Claude Haiku 4.5 et Sonnet 4.6.",
-  "author": { "@type": "Organization", "name": "preatorlabs", "url": "https://www.preatorlabs.dev" },
-  "publisher": { "@type": "Organization", "name": "preatorlabs", "url": "https://www.preatorlabs.dev" },
-  "datePublished": "2026-06-12",
-  "inLanguage": "fr",
-  "url": "https://preatorlabs.dev/etude",
-  "keywords": ["prompt engineering", "ablation study", "LLM", "Claude", "prompt optimization", "prompt analysis", "preatorlabs"]
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "preatorlabs", "item": "https://preatorlabs.dev/" },
+        { "@type": "ListItem", "position": 2, "name": "Étude d'ablation de prompt", "item": "https://preatorlabs.dev/etude" }
+      ]
+    },
+    {
+      "@type": "ScholarlyArticle",
+      "headline": "Ce qui compte vraiment dans un prompt : sept expériences d'ablation",
+      "alternativeHeadline": "Étude d'ablation de prompt LLM — preatorlabs",
+      "description": "Étude empirique mesurant l'impact réel de chaque segment de prompt par ablation contrôlée sur Claude Haiku 4.5 et Sonnet 4.6.",
+      "author": { "@type": "Organization", "name": "preatorlabs", "url": "https://preatorlabs.dev/" },
+      "publisher": { "@type": "Organization", "name": "preatorlabs", "url": "https://preatorlabs.dev/" },
+      "datePublished": "2026-06-12",
+      "dateModified": "2026-06-18",
+      "inLanguage": "fr",
+      "url": "https://preatorlabs.dev/etude",
+      "isPartOf": { "@type": "WebSite", "name": "preatorlabs", "url": "https://preatorlabs.dev/" },
+      "keywords": ["preatorlabs", "ablation prompt", "ablation de prompt", "étude ablation LLM", "analyse prompt", "ingénierie de prompt", "prompt engineering", "Claude", "LLM"]
+    }
+  ]
 }
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -260,7 +278,7 @@ footer{padding:30px 0 70px;font-family:var(--mono);font-size:12.5px;color:var(--
     <div class="eyebrow"><span class="no">§</span><span class="of">Pourquoi j'ai fait ça</span></div>
     <h2 class="plain">Mesurer, au lieu de deviner</h2>
     <p>Le cycle standard de l'ingénierie de prompt s'organise de manière empirique. On rédige un premier prompt, on l'injecte dans le modèle, on observe le résultat, puis on l'affine. Cette approche fonctionne — mais elle présente une limite structurelle&nbsp;: il est très difficile, voire impossible, d'analyser l'effectivité de chaque ajustement en particulier. Une phrase apparemment décorative peut réellement impacter le comportement du modèle&nbsp;; une phrase apparemment essentielle peut être ignorée.</p>
-    <p>J'ai donc construit cet instrument&nbsp;: <a href="https://www.preatorlabs.dev">preatorlabs</a>. Dans les faits, il segmente le prompt automatiquement, puis effectue une ablation de ces segments sur des scénarios prédéfinis par l'utilisateur, et analyse l'impact de chaque segment pour déterminer dans quelle mesure il influence le comportement du modèle dans la rédaction de son output.</p>
+    <p>J'ai donc construit cet instrument&nbsp;: <a href="https://preatorlabs.dev">preatorlabs</a>. Dans les faits, il segmente le prompt automatiquement, puis effectue une ablation de ces segments sur des scénarios prédéfinis par l'utilisateur, et analyse l'impact de chaque segment pour déterminer dans quelle mesure il influence le comportement du modèle dans la rédaction de son output.</p>
 
     <div class="thesis">
       <p class="lbl">La thèse, en une phrase</p>
@@ -882,7 +900,7 @@ footer{padding:30px 0 70px;font-family:var(--mono);font-size:12.5px;color:var(--
   <section id="donnees" style="padding-top:14px;border-top:1px solid var(--line);margin-top:34px">
     <div class="eyebrow"><span class="no">§</span><span class="of">Reproductibilité</span></div>
     <h2 class="plain">Données brutes et résultats</h2>
-    <p>L'ensemble des fichiers d'analyse issus de <a href="https://www.preatorlabs.dev">preatorlabs</a> est mis à disposition ci-dessous. Chaque fichier au format JSON contient&nbsp;: le prompt complet, la segmentation, les scénarios de test, les sorties baseline et les sorties ablations, et les scores d'impact calculés. Ces fichiers peuvent être importés directement dans l'interface preatorlabs pour visualiser les graphiques d'impact par segment.</p>
+    <p>L'ensemble des fichiers d'analyse issus de <a href="https://preatorlabs.dev">preatorlabs</a> est mis à disposition ci-dessous. Chaque fichier au format JSON contient&nbsp;: le prompt complet, la segmentation, les scénarios de test, les sorties baseline et les sorties ablations, et les scores d'impact calculés. Ces fichiers peuvent être importés directement dans l'interface preatorlabs pour visualiser les graphiques d'impact par segment.</p>
     <p class="data-meta">37 fichiers · ~940&nbsp;Ko au total</p>
 
     <div class="data-drawer" id="data-drawer">
@@ -893,7 +911,7 @@ footer{padding:30px 0 70px;font-family:var(--mono);font-size:12.5px;color:var(--
         <span class="data-drawer__chevron">▸</span>
       </button>
       <div class="data-drawer__body" id="data-drawer__body" hidden>
-        <p class="data-drawer__intro">Chaque fichier JSON contient le prompt complet, la segmentation, les sorties baseline et ablations, et les scores d’impact. Importez-les dans l’interface <a href="https://www.preatorlabs.dev" target="_blank" rel="noopener">preatorlabs</a> (bouton «&nbsp;Importer une analyse&nbsp;») pour visualiser les graphiques d’impact par segment.</p>
+        <p class="data-drawer__intro">Chaque fichier JSON contient le prompt complet, la segmentation, les sorties baseline et ablations, et les scores d’impact. Importez-les dans l’interface <a href="https://preatorlabs.dev" target="_blank" rel="noopener">preatorlabs</a> (bouton «&nbsp;Importer une analyse&nbsp;») pour visualiser les graphiques d’impact par segment.</p>
         <div class="data-drawer__grid" id="data-drawer__grid"></div>
       </div>
     </div>
@@ -992,7 +1010,7 @@ const DataDrawer = (() => {
 
 <footer>
   <div class="wrap">
-    Outil, méthode et données : <a href="https://www.preatorlabs.dev">preatorlabs.dev</a> — open source, analyses reproductibles à température 0.<br>
+    Outil, méthode et données : <a href="https://preatorlabs.dev">preatorlabs.dev</a> — open source, analyses reproductibles à température 0.<br>
     Vos retours et réplications sont les bienvenus.
     <span class="credit">Rédigé avec l'aide de Claude Opus 4.8</span>
   </div>

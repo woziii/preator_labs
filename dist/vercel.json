@@ -2,6 +2,14 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.preatorlabs.dev" }],
+      "destination": "https://preatorlabs.dev/:path*",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/etude/(.*)",

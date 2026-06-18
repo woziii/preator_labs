@@ -3,8 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>preatorlabs · multi-axis ablation LLM prompt debugger</title>
-<meta name="description" content="preatorlabs objectively measures, segment by segment, what each part of your system prompt actually makes the LLM do. An ablation study across 3 axes (structural, behavioural, semantic).">
+<title>preatorlabs · LLM prompt ablation — segment-by-segment analysis</title>
+<meta name="description" content="preatorlabs: open-source LLM prompt ablation tool. Measure the real impact of each segment — controlled ablation study, prompt engineering, Claude prompt analysis.">
+<meta name="application-name" content="preatorlabs">
+<meta name="keywords" content="preatorlabs, prompt ablation, ablation study, LLM prompt analysis, prompt engineering, prompt debugger, ablation prompt">
 <meta name="theme-color" content="#1a1a18">
 <meta name="color-scheme" content="light">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -12,21 +14,22 @@
 <link rel="alternate" hreflang="fr" href="https://preatorlabs.dev/">
 <link rel="alternate" hreflang="en" href="https://preatorlabs.dev/en/">
 <link rel="alternate" hreflang="x-default" href="https://preatorlabs.dev/">
+<link rel="sitemap" type="application/xml" title="Sitemap" href="https://preatorlabs.dev/sitemap.xml">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="preatorlabs">
-<meta property="og:title" content="preatorlabs · which parts of your prompt actually matter?">
-<meta property="og:description" content="An ablation study, segment by segment, across 3 orthogonal axes, to measure what each part of a prompt actually makes the LLM do.">
+<meta property="og:title" content="preatorlabs · LLM prompt ablation — segment-by-segment analysis">
+<meta property="og:description" content="Open-source LLM prompt ablation tool. Measure the real impact of each segment — controlled ablation study on Claude.">
 <meta property="og:url" content="https://preatorlabs.dev/en/">
-<meta property="og:image" content="/og-image.png">
+<meta property="og:image" content="https://preatorlabs.dev/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="en_US">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="preatorlabs · LLM prompt debugger">
-<meta name="twitter:description" content="Objective, segment-by-segment measurement of the effective role of each part of a system prompt.">
-<meta name="twitter:image" content="/og-image.png">
+<meta name="twitter:title" content="preatorlabs · LLM prompt ablation">
+<meta name="twitter:description" content="Segment-by-segment analysis: measure the real impact of each part of a system prompt on an LLM.">
+<meta name="twitter:image" content="https://preatorlabs.dev/og-image.png">
 
 <script type="application/ld+json">
 {
@@ -36,15 +39,31 @@
       "@type": "Organization",
       "@id": "https://preatorlabs.dev/#org",
       "name": "preatorlabs",
+      "alternateName": ["Preator Labs", "preator labs"],
       "url": "https://preatorlabs.dev/",
-      "logo": "https://preatorlabs.dev/og-image.png"
+      "logo": "https://preatorlabs.dev/og-image.png",
+      "sameAs": [
+        "https://github.com/woziii/preator_labs",
+        "https://www.linkedin.com/in/lucas-maurici-8a6a311a5/"
+      ]
     },
     {
       "@type": "WebSite",
       "@id": "https://preatorlabs.dev/#website",
       "url": "https://preatorlabs.dev/",
       "name": "preatorlabs",
+      "alternateName": "preator labs",
+      "inLanguage": ["fr", "en"],
+      "publisher": { "@id": "https://preatorlabs.dev/#org" }
+    },
+    {
+      "@type": "ScholarlyArticle",
+      "@id": "https://preatorlabs.dev/etude/en#article",
+      "headline": "What really matters in a prompt: seven ablation experiments",
+      "url": "https://preatorlabs.dev/etude/en",
       "inLanguage": "en",
+      "isPartOf": { "@id": "https://preatorlabs.dev/#website" },
+      "about": ["prompt ablation", "LLM prompt engineering", "ablation study"],
       "publisher": { "@id": "https://preatorlabs.dev/#org" }
     },
     {
@@ -1959,6 +1978,7 @@ activation(Si) = ratio over j where impact(Si, Tj) >= 0.30
       </div>
       <div class="foot-col">
         <h5>documentation</h5>
+        <a href="/etude/en">LLM prompt ablation study</a>
         <a href="/en/docs/scientific-rationale">Rationale</a>
         <a href="/en/docs/methodology">Methodology</a>
         <a href="/en/docs/architecture">Architecture</a>

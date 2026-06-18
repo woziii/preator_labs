@@ -3,10 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>What really matters in a prompt — Ablation study | preatorlabs</title>
-<meta name="description" content="Seven controlled ablation experiments measure the real impact of each prompt segment. A single principle unifies every result: the distance from the model's default behavior.">
-<meta name="author" content="preatorlabs">
+<title>preatorlabs · LLM prompt ablation study — 7 controlled experiments</title>
+<meta name="description" content="Prompt ablation study: measure the real impact of each segment on Claude Haiku and Sonnet. LLM prompt analysis, controlled ablation, prompt engineering. Reproducible data by preatorlabs.">
+<meta name="application-name" content="preatorlabs">
+<meta name="keywords" content="preatorlabs, prompt ablation, ablation study, LLM prompt analysis, prompt engineering, ablation prompt, Claude prompt, prompt debugger">
+<meta name="robots" content="index, follow, max-image-preview:large">
 <link rel="canonical" href="https://preatorlabs.dev/etude/en">
+<link rel="home" href="https://preatorlabs.dev/en/">
 
 <!-- hreflang -->
 <link rel="alternate" hreflang="fr" href="https://preatorlabs.dev/etude">
@@ -15,9 +18,10 @@
 
 <!-- Open Graph -->
 <meta property="og:type" content="article">
+<meta property="og:site_name" content="preatorlabs">
 <meta property="og:url" content="https://preatorlabs.dev/etude/en">
-<meta property="og:title" content="What really matters in a prompt — Ablation study">
-<meta property="og:description" content="Seven controlled experiments measuring the real impact of each prompt segment across two Claude models.">
+<meta property="og:title" content="preatorlabs · LLM prompt ablation study — 7 experiments">
+<meta property="og:description" content="Measure the real impact of each prompt segment through controlled ablation on Claude. LLM prompt analysis, prompt engineering, reproducible data.">
 <meta property="og:image" content="https://preatorlabs.dev/etude/og-etude.png">
 <meta property="og:locale" content="en_US">
 <meta property="og:locale:alternate" content="fr_FR">
@@ -26,23 +30,37 @@
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="What really matters in a prompt">
-<meta name="twitter:description" content="Seven controlled ablation experiments. One principle: distance from the default.">
+<meta name="twitter:title" content="preatorlabs · LLM prompt ablation study">
+<meta name="twitter:description" content="7 controlled ablation experiments. Measure the real impact of each prompt segment on Claude.">
 <meta name="twitter:image" content="https://preatorlabs.dev/etude/og-etude.png">
 
 <!-- JSON-LD Article -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "ScholarlyArticle",
-  "headline": "What really matters in a prompt: seven ablation experiments",
-  "description": "Empirical study measuring the real impact of each prompt segment through controlled ablation on Claude Haiku 4.5 and Sonnet 4.6.",
-  "author": { "@type": "Organization", "name": "preatorlabs", "url": "https://www.preatorlabs.dev" },
-  "publisher": { "@type": "Organization", "name": "preatorlabs", "url": "https://www.preatorlabs.dev" },
-  "datePublished": "2026-06-12",
-  "inLanguage": "en",
-  "url": "https://preatorlabs.dev/etude/en",
-  "keywords": ["prompt engineering", "ablation study", "LLM", "Claude", "prompt optimization", "prompt analysis", "preatorlabs"]
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "preatorlabs", "item": "https://preatorlabs.dev/en/" },
+        { "@type": "ListItem", "position": 2, "name": "LLM prompt ablation study", "item": "https://preatorlabs.dev/etude/en" }
+      ]
+    },
+    {
+      "@type": "ScholarlyArticle",
+      "headline": "What really matters in a prompt: seven ablation experiments",
+      "alternativeHeadline": "LLM prompt ablation study — preatorlabs",
+      "description": "Empirical study measuring the real impact of each prompt segment through controlled ablation on Claude Haiku 4.5 and Sonnet 4.6.",
+      "author": { "@type": "Organization", "name": "preatorlabs", "url": "https://preatorlabs.dev/" },
+      "publisher": { "@type": "Organization", "name": "preatorlabs", "url": "https://preatorlabs.dev/" },
+      "datePublished": "2026-06-12",
+      "dateModified": "2026-06-18",
+      "inLanguage": "en",
+      "url": "https://preatorlabs.dev/etude/en",
+      "isPartOf": { "@type": "WebSite", "name": "preatorlabs", "url": "https://preatorlabs.dev/" },
+      "keywords": ["preatorlabs", "prompt ablation", "ablation study", "LLM prompt analysis", "prompt engineering", "Claude", "LLM", "prompt debugger"]
+    }
+  ]
 }
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -260,7 +278,7 @@ footer{padding:30px 0 70px;font-family:var(--mono);font-size:12.5px;color:var(--
     <div class="eyebrow"><span class="no">§</span><span class="of">Why I did this</span></div>
     <h2 class="plain">Measuring instead of guessing</h2>
     <p>The standard prompt-engineering cycle is empirical. You write a first prompt, feed it to the model, observe the result, then refine it. This approach works — but it has a structural limitation: it is very hard, even impossible, to analyze the effectiveness of each individual adjustment. A seemingly decorative sentence can genuinely affect the model's behavior; a seemingly essential one can be ignored.</p>
-    <p>So I built this instrument: <a href="https://www.preatorlabs.dev">preatorlabs</a>. In practice, it segments the prompt automatically, then ablates those segments across user-defined scenarios, and analyzes the impact of each segment to determine how much it influences the model's behavior in producing its output.</p>
+    <p>So I built this instrument: <a href="https://preatorlabs.dev">preatorlabs</a>. In practice, it segments the prompt automatically, then ablates those segments across user-defined scenarios, and analyzes the impact of each segment to determine how much it influences the model's behavior in producing its output.</p>
 
     <div class="thesis">
       <p class="lbl">The thesis, in one sentence</p>
@@ -882,7 +900,7 @@ footer{padding:30px 0 70px;font-family:var(--mono);font-size:12.5px;color:var(--
   <section id="donnees" style="padding-top:14px;border-top:1px solid var(--line);margin-top:34px">
     <div class="eyebrow"><span class="no">§</span><span class="of">Reproducibility</span></div>
     <h2 class="plain">Raw data and results</h2>
-    <p>All the analysis files produced by <a href="https://www.preatorlabs.dev">preatorlabs</a> are made available below. Each JSON file contains: the full prompt, the segmentation, the test scenarios, the baseline and ablation outputs, and the computed impact scores. These files can be imported directly into the preatorlabs interface to visualize per-segment impact charts.</p>
+    <p>All the analysis files produced by <a href="https://preatorlabs.dev">preatorlabs</a> are made available below. Each JSON file contains: the full prompt, the segmentation, the test scenarios, the baseline and ablation outputs, and the computed impact scores. These files can be imported directly into the preatorlabs interface to visualize per-segment impact charts.</p>
     <p class="data-meta">37 files · ~940 KB total</p>
 
     <div class="data-drawer" id="data-drawer">
@@ -893,7 +911,7 @@ footer{padding:30px 0 70px;font-family:var(--mono);font-size:12.5px;color:var(--
         <span class="data-drawer__chevron">▸</span>
       </button>
       <div class="data-drawer__body" id="data-drawer__body" hidden>
-        <p class="data-drawer__intro">Each JSON file contains the full prompt, the segmentation, the baseline and ablation outputs, and the impact scores. Import them into the <a href="https://www.preatorlabs.dev" target="_blank" rel="noopener">preatorlabs</a> interface ("Import an analysis" button) to visualize per-segment impact charts.</p>
+        <p class="data-drawer__intro">Each JSON file contains the full prompt, the segmentation, the baseline and ablation outputs, and the impact scores. Import them into the <a href="https://preatorlabs.dev" target="_blank" rel="noopener">preatorlabs</a> interface ("Import an analysis" button) to visualize per-segment impact charts.</p>
         <div class="data-drawer__grid" id="data-drawer__grid"></div>
       </div>
     </div>
@@ -992,7 +1010,7 @@ const DataDrawer = (() => {
 
 <footer>
   <div class="wrap">
-    Tool, method and data: <a href="https://www.preatorlabs.dev">preatorlabs.dev</a> — open source, reproducible analyses at temperature 0.<br>
+    Tool, method and data: <a href="https://preatorlabs.dev">preatorlabs.dev</a> — open source, reproducible analyses at temperature 0.<br>
     Your feedback and replications are welcome.
     <span class="credit">Written with the help of Claude Opus 4.8</span>
   </div>
